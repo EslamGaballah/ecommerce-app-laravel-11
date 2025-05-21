@@ -1,0 +1,36 @@
+<?php
+## 🔐 أولاً: JWT (JSON Web Token)
+### ✅ ما هو JWT؟
+JWT هو بروتوكول لتأمين API باستخدام 
+"توكن" يتم إصداره عند تسجيل الدخول ويُستخدم لاحقًا في كل طلب.
+### 🔧 استخدام JWT في Laravel:
+#### 1. التثبيت:
+نستخدم مكتبة \[tymon/jwt-auth]:
+composer require tymon/jwt-auth
+نشر الإعدادات:
+php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServiceProvider"
+php artisan jwt:secret
+#### 2. إعداد `config/auth.php`:
+'guards' => [
+    'api' => [
+        'driver' => 'jwt',
+        'provider' => 'users',
+    ],
+],
+#### 3. استخدامه في الـ Login:
+use Illuminate\Http\Request;
+use Tymon\JWTAuth\Facades\JWTAuth;
+public function login(Request $request)
+{   $credentials = $request->only('email', 'password');
+    if (!$token = JWTAuth::attempt($credentials)) {
+        return response()->json(['error' => 'Unauthorized'], 401);
+    }
+    return response()->json(['token' => $token]);
+}
+#### 4. الوصول إلى المستخدم:
+$user = JWTAuth::parseToken()->authenticate();
+### 💡 مميزات JWT:
+* مناسب لتطبيقات الجوال أو SPA.
+* لا يعتمد على الجلسات (stateless).
+* كل توكن يحتوي على البيانات مشفرة.
+?>
