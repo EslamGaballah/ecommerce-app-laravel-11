@@ -1,7 +1,0 @@
-SendOrderCreatedNotification
-
-SendPodcastNotification
-
-php artisan make:event OrderCreated
-
-php artisan make:listener SendOrderCreatedNotification --event=OrderCreated

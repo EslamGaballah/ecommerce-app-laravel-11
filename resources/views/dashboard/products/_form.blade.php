@@ -16,10 +16,10 @@
         <label for="">Description</label>
         <x-form.textarea name="description" :value="$product->description" />
     </div>
-    <div class="form-group">
+    {{-- <div class="form-group">
         <label for="">Quantity</label>
         <x-form.textarea name="quantity" :value="$product->quantity" />
-    </div>
+    </div> --}}
    
     <div class="form-group">
         <label for="">price</label>
@@ -33,8 +33,21 @@
         {{-- <x-form.input label="Tags" name="tags" :value="$tags" /> --}}
     </div>
     <div class="form-group">
+        @foreach($attributes as $attribute)
+        <label>{{ $attribute->name }}</label>
+        <select name="attributes[{{ $attribute->id }}]">
+            <option value="">{{ $attribute->name }}</option>
+
+            @foreach($attribute->values as $value)
+                <option value="{{ $value->id }}">{{ $value->value }}</option>
+            @endforeach
+        </select>
+    @endforeach
+    </div>
+    <div class="form-group">
         <x-form.label id="image">Image</x-form.label>
-        <x-form.input type="file" name="image" accept="image/*" />
+        <x-form.input type="file" name="image[]" accept="image/*"  multiple/>
+        {{-- <x-form.input type="file" name="image" accept="image/*" /> --}}
         @if ($product->image)
         <img src="{{ asset('storage/' . $product->image) }}" alt="" height="60">
         @endif

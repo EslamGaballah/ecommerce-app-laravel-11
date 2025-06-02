@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
-use App\Models\Product;
+use App\Models\Products\Attribute;
+use App\Models\Products\Product;
 use App\Traits\uploadImages;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 
 class ProductsController extends Controller
@@ -20,7 +23,7 @@ class ProductsController extends Controller
     {
         $request = request();
 
-        $products = Product::with('category')
+        $products = Product::with('category','images')
         ->filter($request->query())
         ->paginate(5);
 
@@ -32,10 +35,13 @@ class ProductsController extends Controller
      */
     public function create()
     {
+        $attributes = Attribute::with('values')->get();
         $category = Category::all();
+
         $product = new Product();
-        // dd();
-        return view('dashboard.products.create',compact('product', 'category'));
+
+        // dd($attributes);
+        return view('dashboard.products.create',compact('product', 'category', 'attributes'));
     }
 
     /**
@@ -44,6 +50,7 @@ class ProductsController extends Controller
     public function store(Request $request)
     {
         // dd($request);
+        // dd($request->all());
         $request->validate([
             'name' => 'required|string|max:255',
              'description' => 'nullable|string|max:255',
@@ -55,17 +62,31 @@ class ProductsController extends Controller
  
  
          ]);
-        //  dd($request);
- 
+        $imagePaths = $this->uploadImages($request, 'image');
+
          $request->merge([
              'slug' => str::slug($request->post('name'))
          ]);
-         $data = $request->except('image');
-        //  $data['image'] = $this->uploadImages($request);
+         $data = $request->except('image', 'attributes');
 
-         
-          
          $product = Product::create($data);
+
+        foreach ($request->attributes as $attributeId => $valueId) {
+            DB::table('variant_attribute_value')->insert([
+                'id' => $product->id,
+                'variant_id' => $attributeId,
+                'attribute_value_id' => $valueId,
+        ]);
+    }
+
+
+
+         if ($imagePaths) {
+            foreach ($imagePaths as $path) {
+                $product->images()->create(['image' => $path]);
+            }
+        }
+        //  dd($request->all());
 
         return Redirect::route('dashboard.products.index')->with('sucess', 'product created');
 
@@ -109,8 +130,32 @@ class ProductsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Product $product)
     {
-        $product = Product::findOrFail($id)->deleteOrFail();
+        // $product = Product::findOrFail($id)->deleteOrFail();
+        $product->delete();
+        return Redirect::route('dashboard.products.index')
+        ->with('sucess', 'Product Deleted');
     }
+
+     public function trash()
+    {
+        $products = Product::onlyTrashed()->paginate();
+        return view('dashboard.products.trash', compact('products'));
+    }
+     public function restore( $id)
+    {
+        $product = Product::onlyTrashed()->findOrFail($id);
+        $product->restore();
+        return Redirect::route('dashboard.products.trash' )
+        ->with('success', 'Product restored');
+    }
+    public function forceDelete($id)
+    {
+        $product = Product::onlyTrashed()->findOrFail($id);
+        $product->forceDelete();
+        return Redirect::route('dashboard.products.trash' )
+        ->with('success', 'Product deleted');
+    }
+
 }

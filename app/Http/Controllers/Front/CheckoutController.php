@@ -83,7 +83,7 @@ class CheckoutController extends Controller
         // dd($request->all());
 
                 return response()->json([
-                    'message' => 'تم إضافة المنتج إلى السلة بنجاح',
+                    'message' => 'تم تسجيل الاوردر بنجاح',
                 ]);
 
             } catch (Throwable $e) {

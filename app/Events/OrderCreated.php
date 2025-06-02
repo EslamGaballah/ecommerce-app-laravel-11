@@ -30,13 +30,21 @@ class OrderCreated implements ShouldBroadcast
      */
     public function broadcastOn(): array
     {
-        return [
-            new PrivateChannel('OrderChannel'),
-        ];
+        // return [
+        //     new PrivateChannel('OrderChannel'),
+        // ];
+        //   return [
+        //     new Channel('OrderChannel'),
+        // ];
+         return ['my-channel'];
+        // dd('chanel');
+
     }
 
    public function broadcastAs(): string
 {
-    return 'OrderCreated';
+
+    // return 'OrderCreated';
+     return 'my-event';
 }
 }

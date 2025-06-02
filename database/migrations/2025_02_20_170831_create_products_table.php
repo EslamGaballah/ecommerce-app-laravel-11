@@ -18,12 +18,11 @@ return new class extends Migration
             $table->string('name');
             $table->text('description');
             $table->string('slug')->unique();
-            $table->string('image')->nullable();
-            $table->float('price')->default(0);
-            $table->float('compare_price')->nullable();
-            $table->unsignedSmallInteger('quantity')->default(0);
-            $table->json('options')->nullable();
-            $table->float('rating')->default(0);
+            $table->decimal('price', 8, 2)->default(0);
+            $table->decimal('compare_price', 8, 2)->nullable();
+            // $table->unsignedSmallInteger('quantity')->default(0);
+            // $table->json('options')->nullable();
+            $table->float('rating',1, 1)->default(0);
             $table->boolean('featured')->default(0);
             $table->enum('status',['active', 'draft', 'archived'])->default('active');
             $table->timestamps();

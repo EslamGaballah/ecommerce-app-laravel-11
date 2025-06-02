@@ -18,9 +18,9 @@ return new class extends Migration
                 ->constrained('products')
                 ->nullOnDelete();
             $table->string('product_name');
-            $table->float('price');
+            $table->decimal('price',8, 2);
             $table->unsignedSmallInteger('quantity')->default(1);
-            $table->json('options')->nullable();
+            // $table->json('options')->nullable();
 
             $table->unique(['order_id', 'product_id']);
            

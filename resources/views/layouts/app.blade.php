@@ -26,15 +26,15 @@
                 cluster: 'eu'
                 });
 
-                var channel = pusher.subscribe('my-channel');
-                channel.bind('OrderChannel', function(data) {
+                var channel = pusher.subscribe('OrderChannel');
+                channel.bind('OrderCreated', function(data) {
                 alert(JSON.stringify(data));
                 });
 
 
                 window.Echo.private(`App.Models.User.{{ Auth::id() }}`)
-    .notification((notification) => {
-        console.log('📢 إشعار جديد:', notification);
+                .notification((notification) => {
+                console.log('📢 إشعار جديد:', notification);
     });
             </script>
 

@@ -1,119 +1,0 @@
-<?php
-## 🌐 2. Broadcasting + Pusher + Laravel WebSockets
-### 📡 ما هو Broadcasting؟
-Broadcasting يسمح بإرسال بيانات فورية من السيرفر إلى المتصفح باستخدام WebSockets. Laravel يدعمه عن طريق:
-* Pusher (خدمة خارجية)
-* Laravel WebSockets (باكدج تعمل محليًا)
-### 🛠️ الإعدادات الأساسية:
-#### 📁 ملف `.env`:
-BROADCAST_DRIVER=pusher
-PUSHER_APP_ID=local
-PUSHER_APP_KEY=local
-PUSHER_APP_SECRET=local
-PUSHER_HOST=127.0.0.1
-PUSHER_PORT=6001
-PUSHER_SCHEME=http
-PUSHER_APP_CLUSTER=mt1
-#### 📁 ملف `config/broadcasting.php`:
-تأكد أن قناة `pusher` تحتوي على التالي:
-'connections' => [
-    'pusher' => [
-        'driver' => 'pusher',
-        'key' => env('PUSHER_APP_KEY'),
-        'secret' => env('PUSHER_APP_SECRET'),
-        'app_id' => env('PUSHER_APP_ID'),
-        'options' => [
-            'cluster' => env('PUSHER_APP_CLUSTER'),
-            'useTLS' => false,
-            'host' => env('PUSHER_HOST'),
-            'port' => env('PUSHER_PORT'),
-            'scheme' => env('PUSHER_SCHEME'),
-        ],
-    ],
-]
-## 🔌 Laravel WebSockets
-### 📦 التثبيت:
-composer require beyondcode/laravel-websockets
-php artisan vendor:publish --tag=websockets-config
-php artisan migrate
-```
-
-### 📡 تشغيل السيرفر:
-
-```bash
-php artisan websockets:serve
-```
-
----
-
-### 🧪 إنشاء حدث للبث:
-
-```bash
-php artisan make:event OrderShipped
-```
-
-```php
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-
-class OrderShipped implements ShouldBroadcast
-{
-    public $order;
-
-    public function __construct($order)
-    {
-        $this->order = $order;
-    }
-
-    public function broadcastOn()
-    {
-        return new PrivateChannel('orders.' . $this->order->id);
-    }
-}
-```
-
----
-
-## 🧑‍💻 إعداد الـ Frontend
-
-1. ثبت المكتبات في المشروع الأمامي (Vue أو Blade):
-
-```bash
-npm install --save laravel-echo pusher-js
-```
-
-2. ملف JavaScript:
-
-```js
-import Echo from 'laravel-echo';
-window.Pusher = require('pusher-js');
-
-window.Echo = new Echo({
-    broadcaster: 'pusher',
-    key: 'local',
-    wsHost: window.location.hostname,
-    wsPort: 6001,
-    forceTLS: false,
-    disableStats: true,
-});
-
-window.Echo.private('orders.123')
-    .listen('OrderShipped', (e) => {
-        console.log('تم شحن الطلب:', e.order);
-    });
-```
-
----
-
-## ✅ خلاصة:
-
-| الميزة             | الغرض                                |
-| ------------------ | ------------------------------------ |
-| Notifications      | إرسال إشعارات للمستخدم عبر عدة قنوات |
-| Pusher             | خدمة خارجية لإرسال البث (WebSockets) |
-| Laravel WebSockets | بديل مجاني يعمل على السيرفر المحلي   |
-
----
-
-هل تحب أحول لك الشرح لملف Word زي ما عملنا قبل كده؟

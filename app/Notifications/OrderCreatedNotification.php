@@ -28,16 +28,18 @@ class OrderCreatedNotification extends Notification
      */
     public function via(object $notifiable): array // $notifiable = model like user that will receive notification
     {
-        // return ['mail', 'database', 'broadcast'];
+        return [
+            // 'mail',
+             'database', 'broadcast'];
 
         $channels = ['database'];  // database (default)
 
-        if ($notifiable->notification_preferences['order_created']['sms'] ?? false) {
-            $channels[] = 'vonage';
-        }
-        if ($notifiable->notification_preferences['order_created']['mail'] ?? false) {
-            $channels[] = 'mail';
-        }
+        // if ($notifiable->notification_preferences['order_created']['sms'] ?? false) {
+        //     $channels[] = 'vonage';
+        // }
+        // if ($notifiable->notification_preferences['order_created']['mail'] ?? false) {
+        //     $channels[] = 'mail';
+        // }
         if ($notifiable->notification_preferences['order_created']['broadcast'] ?? false) {
             $channels[] = 'broadcast';
         }
@@ -47,28 +49,28 @@ class OrderCreatedNotification extends Notification
     /**
      * Get the mail representation of the notification.
      */
-    public function toMail(object $notifiable): MailMessage
-    {
-        return (new MailMessage)
-                    ->subject ('New Order #' . $this->order->number)
-                    // ->from('notification@ajyal-store.ps', 'AJYAL Store') // default from env data
-                    ->greeting("Hi {$notifiable->name},")
-                    ->line('A new order has been created by ')
-                    ->line('bla bla bla bla ')
-                    ->action('view order', url('/'))
-                    ->line('Thank you for using our application!');
-    }
+    // public function toMail(object $notifiable): MailMessage
+    // {
+    //     return (new MailMessage)
+    //                 ->subject ('New Order #' . $this->order->number)
+    //                 // ->from('notification@ajyal-store.ps', 'AJYAL Store') // default from env data
+    //                 ->greeting("Hi {$notifiable->name},")
+    //                 ->line('A new order has been created by ')
+    //                 ->line('bla bla bla bla ')
+    //                 ->action('view order', url('/'))
+    //                 ->line('Thank you for using our application!');
+    // }
 
-    public function toDatabase(object $notifiable)
-    {
-        return [
-             'body' => "A new order (#{$this->order->number}) created by ((bla bla )).",
-            'icon' => 'fas fa-file',
-            'url' => url('/dashboard'),
-            'order_id' => $this->order->id,
-        ];
+    // public function toDatabase(object $notifiable)
+    // {
+    //     return [
+    //          'body' => "A new order (#{$this->order->number}) created by ((bla bla )).",
+    //         'icon' => 'fas fa-file',
+    //         'url' => url('/dashboard'),
+    //         'order_id' => $this->order->id,
+    //     ];
                     
-    }
+    // }
      public function toBroadcast($notifiable)
     {
 

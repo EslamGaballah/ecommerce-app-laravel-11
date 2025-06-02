@@ -1,50 +1,0 @@
-<?php
-## 🔌 Laravel WebSockets
-### 📦 التثبيت:
-composer require beyondcode/laravel-websockets
-php artisan vendor:publish --tag=websockets-config
-php artisan migrate
-### 📡 تشغيل السيرفر:
-php artisan websockets:serve
-### 🧪 إنشاء حدث للبث:
-php artisan make:event OrderShipped
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-class OrderShipped implements ShouldBroadcast
-{       public $order;
-    public function __construct($order)
-    {   $this->order = $order;
-    }
-    public function broadcastOn()
-    {  return new PrivateChannel('orders.' . $this->order->id);
-    }
-}
-## 🧑‍💻 إعداد الـ Frontend
-1. ثبت المكتبات في المشروع الأمامي (Vue أو Blade):
-npm install --save laravel-echo pusher-js
-2. ملف JavaScript:
-import Echo from 'laravel-echo';
-window.Pusher = require('pusher-js');
-window.Echo = new Echo({
-    broadcaster: 'pusher',
-    key: 'local',
-    wsHost: window.location.hostname,
-    wsPort: 6001,
-    forceTLS: false,
-    disableStats: true,
-});
-window.Echo.private('orders.123')
-    .listen('OrderShipped', (e) => {
-        console.log('تم شحن الطلب:', e.order);
-    });
-## ✅ خلاصة:
-
-| ------------------ | ------------------------------------ |
-| Notifications      | إرسال إشعارات للمستخدم عبر عدة قنوات |
-| Pusher             | خدمة خارجية لإرسال البث (WebSockets) |
-| Laravel WebSockets | بديل مجاني يعمل على السيرفر المحلي   |
-
----
-
-هل تحب أحول لك الشرح لملف Word زي ما عملنا قبل كده؟

@@ -11,6 +11,7 @@
 
 <div class="mb-5">
     <a href="{{ route('dashboard.products.create') }}" class="btn btn-sm btn-outline-primary mr-2">Create</a>
+     <a href="{{ route('dashboard.products.trash') }}" class="btn btn-sm btn-outline-dark">Trash</a>
 </div>
 
 <x-alert type="success" />
@@ -45,7 +46,14 @@
     <tbody>
         @forelse($products as $product)
         <tr>
-            <td><img src="{{ asset('storage/' . $product->image) }}" alt="" height="50"></td>
+            <td>
+    @if ($product->images->isNotEmpty())
+        <img src="{{ asset('storage/' . $product->images->first()->image) }}" 
+        alt="" height="50">
+    @else
+        <span>No Image</span>
+    @endif
+</td>
             <td>{{ $product->id }}</td>
             <td> <a href="{{ route('dashboard.products.show', $product->id) }}">{{ $product->name }}</td>
             <td>{{ $product->category->name }}</td>

@@ -16,10 +16,12 @@ class CategoriesController extends Controller
      */
     public function index()
     {
-       $categories = Category::with('parent')->paginate(5); // شغالة
+        $request = request();
+       $categories = Category::with('parent')
+       ->filter($request->query())
+       ->paginate(5); // شغالة
         
-    //    $categories = Category::with('parent')->get();  //  مش شغالة
-
+    //    $categories = Category::with('parent')->get();  //    لا تعمل لاستدعاء (links )  فى blade
        return view('dashboard.categories.index',compact('categories'));
     }
 

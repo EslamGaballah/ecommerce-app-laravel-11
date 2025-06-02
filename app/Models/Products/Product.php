@@ -1,7 +1,7 @@
 <?php
 
-namespace App\Models;
-
+namespace App\Models\Products;
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Builder; 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -14,7 +14,6 @@ class Product extends Model
         'name',
         'slug',
         'description',
-        'image',
         'category_id',
         'price', 
         'compare_price',
@@ -27,7 +26,13 @@ class Product extends Model
         return $this->belongsTo(Category::class, 'category_id', 'id');
     }
 
+     public function images() {
+        return $this->hasMany(ProductImage::class);
+    }
 
+  public function variants() {
+        return $this->hasMany(ProductVariant::class);
+    }
 public static function scopeFilter (Builder $builder, $filters){
 
     $builder->when($filters['name'] ?? false, function($builder, $value){

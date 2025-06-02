@@ -25,7 +25,9 @@ window.Echo = new Echo({
   forceTLS: true
 });
 
-var channel = Echo.channel('my-channel');
-channel.listen('.my-event', function(data) {
+var channel = Echo.private(`App.Models.User.${userID}`);
+channel.notification( function(data) {
+  console.log(data);
+  alert(data.body);
   alert(JSON.stringify(data));
 });

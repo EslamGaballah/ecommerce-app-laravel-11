@@ -7,6 +7,8 @@ use Illuminate\Support\ServiceProvider;
 
 class BroadcastServiceProvider extends ServiceProvider
 {
+
+    
     /**
      * Register services.
      */
@@ -20,6 +22,8 @@ class BroadcastServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // dd('channel');
+
           Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
             return (int) $user->id === (int) $id;
         });
