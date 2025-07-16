@@ -30,6 +30,8 @@ class CategoriesController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Category::class);
+
         $parents = Category::all();
         $category = new Category();
        
@@ -99,6 +101,9 @@ class CategoriesController extends Controller
         $category = Category::findOrFail($id);
         $data = $request->all();
         $category->update($data);
+
+        return Redirect::route('dashboard.categories.index')
+            ->with('success', 'Category updated!');
 
     }
 

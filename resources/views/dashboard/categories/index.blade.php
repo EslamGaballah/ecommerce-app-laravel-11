@@ -10,9 +10,9 @@
 @section('content')
 
 <div class="mb-5">
-    {{-- @if(Auth::user()->can('categories.create')) --}}
+    @if(Auth::user()->can('categories.create'))
     <a href="{{ route('dashboard.categories.create') }}" class="btn btn-sm btn-outline-primary mr-2">Create</a>
-    {{-- @endif --}}
+    @endif
     {{-- <a href="{{ route('dashboard.categories.trash') }}" class="btn btn-sm btn-outline-dark">Trash</a> --}}
 </div>
 
@@ -48,13 +48,14 @@
             <td><img src="{{ asset('storage/' . $category->image) }}" alt="" height="50"></td>
             <td>{{ $category->id }}</td>
             <td><a href="{{ route('dashboard.categories.show', $category->id) }}">{{ $category->name }}</a></td>
-            <td>{{ $category->name }}</td>
 
             <td>
                 @if ($category->parent)
                 {{ $category->parent->name }}
                 @endif
             </td>
+            <td>{{ $category->description }}</td>
+
                 
             {{-- <td>{{ $category->products_number }}</td> --}}
             <td>{{ $category->status }}</td>

@@ -163,7 +163,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
               <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
             </div>
             <div class="info">
-              <a href="#" class="d-block">Alexander Pierce</a>
+              @if(auth()->check())
+                <p> {{ auth()->user()->name }}</p>
+              @endif
             </div>
           </div>
     
@@ -213,6 +215,30 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <span class="right badge badge-danger">New</span>
                   </p>
                 </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{route('login')}}" class="nav-link">
+                  <i class="nav-icon fas fa-th"></i>
+                  <p>
+                    login
+                    <span class="right badge badge-danger">New</span>
+                  </p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{route('register')}}" class="nav-link">
+                  <i class="nav-icon fas fa-th"></i>
+                  <p>
+                    register
+                    <span class="right badge badge-danger">New</span>
+                  </p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <form method="POST" action="{{ route('logout') }}">
+                  @csrf
+                  <button type="submit">تسجيل الخروج</button>
+                </form>
               </li>
             </ul>
           </nav>

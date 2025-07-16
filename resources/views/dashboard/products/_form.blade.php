@@ -20,30 +20,24 @@
         <label for="">Quantity</label>
         <x-form.textarea name="quantity" :value="$product->quantity" />
     </div> --}}
-   
+   <div class="form-group">
+        <label for="">quantity</label>
+        <x-form.input label="quantity" name="quantity" :value="$product->quantity" />
+    </div>
+    
     <div class="form-group">
         <label for="">price</label>
         <x-form.input label="Price" name="price" :value="$product->price" />
     </div>
+    
     <div class="form-group">
         <label for="">Compare price</label>
         <x-form.input label="Compare Price" name="compare_price" :value="$product->compare_price" />
     </div>
-    <div class="form-group">
-        {{-- <x-form.input label="Tags" name="tags" :value="$tags" /> --}}
-    </div>
-    <div class="form-group">
-        @foreach($attributes as $attribute)
-        <label>{{ $attribute->name }}</label>
-        <select name="attributes[{{ $attribute->id }}]">
-            <option value="">{{ $attribute->name }}</option>
-
-            @foreach($attribute->values as $value)
-                <option value="{{ $value->id }}">{{ $value->value }}</option>
-            @endforeach
-        </select>
-    @endforeach
-    </div>
+    {{-- <div class="form-group">
+        <x-form.input label="Tags" name="tags" :value="$tags" />
+    </div> --}}
+    
     <div class="form-group">
         <x-form.label id="image">Image</x-form.label>
         <x-form.input type="file" name="image[]" accept="image/*"  multiple/>
