@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\Product;
+use App\Interfaces\CartRepositoryInterface;
+use App\Repositories\CartRepository;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
@@ -17,15 +20,25 @@ class CartController extends Controller
      */
    
     public $cartItems;
-   public function cartCookieId()
-   {
-    $cookie_id = Cookie::get('cart_id');
-    if(!$cookie_id) {
-        $cookie_id = Str::uuid();
-        Cookie::queue('cart_id', $cookie_id, 30*24*60 );
+
+    protected $cart;
+
+     public function __construct(CartRepository $cart)
+    {
+        $this->cart = $cart;
     }
-    return $cookie_id;
-   }
+
+
+    // moved to controller
+//    public function cartCookieId()
+//    {
+//     $cookie_id = Cookie::get('cart_id');
+//     if(!$cookie_id) {
+//         $cookie_id = Str::uuid();
+//         Cookie::queue('cart_id', $cookie_id, 30*24*60 );
+//     }
+//     return $cookie_id;
+//    }
 
     public function index()
     {
@@ -33,83 +46,48 @@ class CartController extends Controller
         //     $cartItems = Auth::user()->cart()->with('product')->get();
         // } else {
             // $cartItems = $this->cartCookieId();
-            $cart = Cart::where('cookie_id', '=', $this->cartCookieId())
-            ->with('product')
-            ->get();
+            // $cart = Cart::where('cookie_id', '=', $this->cartCookieId())
+            // ->with('product')
+            // ->get();
             // $cart = Cart::with('product')->get();
-            $total = $cart->sum(fn($item)
-          
-            => $item->quantity  * ($item->product->price ?? 0));
+            // $total = $cart->sum(fn($item)
+            //     => $item->quantity  * ($item->product->price ?? 0));
         // }
         // return $cartItems;
         // dd($cart);
-        return view('cart', compact('cart','total'));
+        return view('cart', [
+            'cart' => $this->cart,
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+    
 
     /**
      * Store a newly created resource in storage.
      */
-    // public function add(Request $request, $id)
-    // {
-    //     // $quantity = 1;
-    //    $validated= $request->validate([
-    //         'product_id' => ['required', 'int', 'exists:products,id'],
-    //         'quantity' => ['required', 'int', 'min:1']
-    //     ]);
-    //     $product = Product::findOrFail($validated('product_id'));
-
-    //     $cartItems = Cart::where('product_id', '=', $product->id)->first();
-
-    //     if ($cartItems) {
-    //         $cartItems->quantity += $validated['quantity'];
-    //         $cartItems->save();
-    //     } else {
-    //           Cart::create([
-    //             'product_id' => $product->id,
-    //             'quantity' => $validated['quantity']
-    //         ]);
-           
-    //             }
-    //     dd($request);
-    //     return response()->json([
-    //     'message' => 'تم إضافة المنتج إلى السلة بنجاح',
-    // ]);
-        // return redirect()->back()->with('succes' , 'product added to cart');
-    // }
+   
     public function store(Request $request)
     {
         
        $validated= $request->validate([
             'product_id' => ['required', 'int', 'exists:products,id'],
-            'quantity' => ['required', 'int', 'min:1']
+            'quantity' => ['nullable', 'int', 'min:1'] // quentity default(1)
         ]);
-        $product = Product::findOrFail($request->product_id);
 
-        $cartItems = Cart::where('product_id', '=', $product->id)->first();
+        $product = Product::findOrFail($request->post('product_id'));
+        $this->cart->add($product, $request->post('quantity'));
 
-        if ($cartItems) {
-            $cartItems->quantity += $request['quantity'];
-            $cartItems->save();
-        } else {
-              Cart::create([
-                'product_id' => $product->id,
-                'quantity' => $request['quantity']
-            ]);
-           
-                }
-        // dd($request);
-    //     return response()->json([
-    //     'message' => 'تم إضافة المنتج إلى السلة بنجاح',
-    // ]);
-        return redirect()->back()->with('success' , 'product added to cart');
+        if ($request->expectsJson()) {
+            
+            return response()->json([
+                'message' => 'Item added to cart!',
+            ], 201);
+        }
+        
+        return redirect()->route('cart.index')
+            ->with('success', 'Product added to cart!');
+       
+        // return redirect()->back()->with('success' , 'product added to cart');
     }
 
 
@@ -118,9 +96,9 @@ class CartController extends Controller
      */
     public function show( $id)
     {
-        $cart = Cart::findOrFail($id);
+        // $cart = Cart::findOrFail($id);
 
-        return view('front.cart.show', compact('cart'));
+        // return view('front.cart.show', compact('cart'));
     }
 
     /**
@@ -136,10 +114,11 @@ class CartController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        Cart::where('id', '=', $id)
-        ->update([
-            'quantity' => $request->quantity
+        $request->validate([
+            'quantity' => ['required', 'int', 'min:1'],
         ]);
+
+         $this->cart->update($id, $request->post('quantity'));
     }
 
     /**
@@ -147,6 +126,10 @@ class CartController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+         $this->cart->delete($id);
+        
+        return [
+            'message' => 'Item deleted!',
+        ];
     }
 }

@@ -10,21 +10,27 @@
 @section('content')
 
 <div class="mb-5">
-    @if(Auth::user()->can('categories.create'))
+
+    {{-- @if(Auth::user()->can('categories.create')) --}}
     <a href="{{ route('dashboard.categories.create') }}" class="btn btn-sm btn-outline-primary mr-2">Create</a>
-    @endif
     {{-- <a href="{{ route('dashboard.categories.trash') }}" class="btn btn-sm btn-outline-dark">Trash</a> --}}
+    {{-- @endif --}}
 </div>
 
 {{-- <x-alert type="success" />
 <x-alert type="info" /> --}}
 
-<form action="{{ URL::current() }}" method="get" class="d-flex justify-content-between mb-4">
+<form action="{{ url()->current() }}" method="get" class="d-flex justify-content-between mb-4">
     <x-form.input name="name" placeholder="Name" class="mx-2" :value="request('name')" />
     <select name="status" class="form-control mx-2">
         <option value="">All</option>
-        <option value="active" @selected(request('status') == 'active')>Active</option>
-        <option value="archived" @selected(request('status') == 'archived')>Archived</option>
+        {{-- <option value="active" @selected(request('status') == 'active')>Active</option>
+        <option value="archived" @selected(request('status') == 'archived')>Archived</option> --}}
+            @foreach (['active' => 'Active' ,'arvived' => 'Archived'] as $value => $label )
+                <option value="{{ $value }}" @selected(request('status') == $value)>
+                    {{ $label }}
+                </option>
+            @endforeach
     </select>
     <button class="btn btn-dark mx-2">Filter</button>
 </form>

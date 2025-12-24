@@ -72,8 +72,9 @@
                         </div>
 
                         <div class="col-lg-2 col-md-2 col-12">
-                            {{-- <p>{{ Currency::format($item->quantity * $item->product->price) }}</p> --}}
-                            <p>{{ $item->product->price }}</p>
+                            <p>{{ Currency::format($item->product->price) }}</p>
+                            <p>{{ App\Helpers\Currency::format($item->product->price) }}</p>
+                            {{-- <p>{{ $item->product->price }}</p> --}}
                         </div>
 
                         <div class="col-lg-2 col-md-2 col-12">
@@ -82,8 +83,8 @@
                             </div>
                         </div>
                         <div class="col-lg-2 col-md-2 col-12">
-                            {{-- <p>{{ Currency::format($item->quantity * $item->product->price) }}</p> --}}
-                            <p>{{$item->quantity * $item->product->price }}</p>
+                            <p>{{ Currency::format($item->quantity * $item->product->price) }}</p>
+                            {{-- <p>{{$item->quantity * $item->product->price }}</p> --}}
                         </div>
                         {{-- <div class="col-lg-2 col-md-2 col-12">
                             <p>{{ Currency::format(0) }}</p>
@@ -117,7 +118,7 @@
                             <div class="col-lg-4 col-md-6 col-12">
                                 <div class="right">
                                     <ul>
-                                        <li>Cart Subtotal<span>{{ $total }}</span></li>
+                                        <li>Cart Subtotal<span>{{ $cart->total() }}</span></li>
                                         {{-- <li>Cart Subtotal<span>{{ Currency::format($cart->total()) }}</span></li> --}}
                                         <li>Shipping<span>Free</span></li>
                                         <li>You Save<span>$29.00</span></li>
@@ -145,7 +146,10 @@
         const csrf_token = "{{ csrf_token() }}";
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="{{ asset('js/cart.js') }}"></script>
+
+    {{-- using vite (new) --}}
+    @vite(['resources/js/cart.js'])
+
     @endpush
 
 </x-front-layout>

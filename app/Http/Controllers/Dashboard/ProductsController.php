@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
-use App\Models\Products\Product;
-use App\Traits\uploadImages;
+use App\Models\Product;
+use App\Models\ProductImage;
+use App\Traits\UploadImageTrait;
+// use App\Traits\uploadImages;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -13,10 +15,12 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
+use Throwable;
 
 class ProductsController extends Controller
 {
-    use uploadImages;
+    use UploadImageTrait ;
+
     /**
      * Display a listing of the resource.
      */
@@ -36,6 +40,8 @@ class ProductsController extends Controller
      */
     public function create()
     {
+
+        // Gate::authorize('create-product');
          $this->authorize('create', Product::class);
 
         $category = Category::all();
@@ -52,8 +58,34 @@ class ProductsController extends Controller
     {
          $this->authorize('create', Product::class);
 
-        // dd($request);
-        // dd($request->all());
+    //     // dd($request);
+    //     // dd($request->all());
+    //    $request->validate([
+    //         'name' => 'required|string|max:255',
+    //          'description' => 'nullable|string|max:255',
+    //          'status' => 'in:active,archived,draft',
+    //          'category_id' => 'required|exists:categories,id',
+    //          'price' => 'required|numeric|min:0',
+    //          'compare_price' => 'nullable|numeric|gt:price',
+    //          'image.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+    //      ]);
+    //     $imagePaths = $this->uploadImages($request, 'image');
+
+    //      $request->merge([
+    //          'slug' => str::slug($request->post('name')),
+    //         'user_id'=> auth()->id()
+    //      ]);
+    //     //  $data['user_id']= auth()->id();
+    //      $data = $request->except('image');
+
+    //      $product = Product::create($data);
+       
+    //      if ($imagePaths) {
+    //         foreach ($imagePaths as $path) {
+    //             $product->images()->create(['image' => $path]);
+    //         }
+    //     }
+    //     //  dd($request->all());
         $request->validate([
             'name' => 'required|string|max:255',
              'description' => 'nullable|string|max:255',
@@ -61,29 +93,46 @@ class ProductsController extends Controller
              'category_id' => 'required|exists:categories,id',
              'price' => 'required|numeric|min:0',
              'compare_price' => 'nullable|numeric|gt:price',
-             'image\*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
- 
- 
+             'image.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
          ]);
-        $imagePaths = $this->uploadImages($request, 'image');
+         DB::beginTransaction();
 
-         $request->merge([
-             'slug' => str::slug($request->post('name')),
-            'user_id'=> auth()->id()
-         ]);
+            try { 
+                $product = Product::create([
+                    'name' => $request['name'],
+                    'category_id' => $request['category_id'],
+                    'description' => $request['description'],
+                    'slug' => str::slug($request->post('name')),
+                    'quantity' => $request ['quantity'],
+                    'price' => $request['price'],
+                    'compare_price' => $request['compare_price'],
+                    'status' => $request['status'],
+                    'user_id' => auth()->id()
+                ]);
+                // create images
+                if ($request->hasFile('image')) {
+                    foreach ($request->file('image') as $index => $imageFile) {
 
-        //  $data['user_id']= auth()->id();
+                        $path = $this->uploadImage($imageFile, 'products');
 
-         $data = $request->except('image');
+                        $image_alt = $request->image_alt[$index] ?? null;
 
-         $product = Product::create($data);
-       
-         if ($imagePaths) {
-            foreach ($imagePaths as $path) {
-                $product->images()->create(['image' => $path]);
+                        // post_images table
+                        ProductImage::create([
+                            'product_id'    => $product->id,
+                            'image' => $path,
+                            'image_alt'   => $image_alt,
+                        ]);
+                    }
+                }
+                 DB::commit();
+
+             } catch (Throwable $e) {
+                    DB::rollBack();
+                    throw $e;
+                    return back()->with('error', 'Failed to create product');
             }
-        }
-        //  dd($request->all());
+
 
         return Redirect::route('dashboard.products.index')->with('sucess', 'product created');
 
@@ -92,9 +141,9 @@ class ProductsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Product $product)
     {
-        $product = Product::findOrFail($id);
+        // $product = Product::findOrFail($id);
 
         return view('dashboard.products.show', compact('product'));
         
@@ -103,11 +152,10 @@ class ProductsController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Product $product)
     {
-         $this->authorize('uopdate', $product);
+         $this->authorize('update', $product);
 
-        $product = Product::findOrFail($id);
         return view('dashboard.products.edit', compact('product'));
     }
 
@@ -117,14 +165,15 @@ class ProductsController extends Controller
     public function update(Request $request,  Product $product)
     {
 
-        if (! Gate::allows('update-product', $product)) {
-            abort(403);
-        }
+        $this->authorize('update', $product);
+
+        // if (! Gate::allows('update-product', $product)) {
+        //     abort(403);
+        // }
 
         // $product = Product::findOrFail($id);
 
-        $product->get();
-
+        // $product->get();
 
         $slug = $request->merge([
             'slug' => str::slug($request->post('name'))
@@ -140,12 +189,31 @@ class ProductsController extends Controller
      */
     public function destroy(Product $product)
     {
-         $this->authorize('delete', $product);
+        $this->authorize('delete', $product);
 
-        // $product = Product::findOrFail($id)->deleteOrFail();
-        $product->delete();
-        return Redirect::route('dashboard.products.index')
-        ->with('sucess', 'Product Deleted');
+        DB::beginTransaction();
+
+        try {
+            // Delete Images
+        //     if ($product->images->isNotEmpty()) {
+        //         foreach ($product->images as $image) {
+        //             $this->deleteImage($image->image);
+        //         }
+        //     // Delete image from database
+        //     // $product->images()->delete();
+        // }
+        
+            $product->delete();
+            
+            DB::commit();
+            
+        } catch (Throwable $e) {
+            DB::rollBack();
+            return Redirect::route('products.index')
+                ->with('error', 'Failed to delete product');
+        }
+            return Redirect::route('dashboard.products.index')
+                ->with('sucess', 'Product Deleted');
     }
 
      public function trash()
@@ -153,6 +221,7 @@ class ProductsController extends Controller
         $products = Product::onlyTrashed()->paginate();
         return view('dashboard.products.trash', compact('products'));
     }
+
      public function restore( $id)
     {
         $product = Product::onlyTrashed()->findOrFail($id);
@@ -163,13 +232,37 @@ class ProductsController extends Controller
         return Redirect::route('dashboard.products.trash' )
         ->with('success', 'Product restored');
     }
+
     public function forceDelete($id)
     {
         $product = Product::onlyTrashed()->findOrFail($id);
 
          $this->authorize('forcedelete', $product);
 
+          DB::beginTransaction();
+
+        try {
+            // Delete Images
+            if ($product->images->isNotEmpty()) {
+                foreach ($product->images as $image) {
+                    $this->deleteImage($image->image);
+                }
+            // Delete image from database
+            $product->images()->delete();
+        }
+        
         $product->forceDelete();
+        
+        DB::commit();
+        
+        } catch (Throwable $e) {
+            DB::rollBack();
+            return Redirect::route('products.index')
+                ->with('error', 'Failed to delete product');
+        }
+
+        // $product->forceDelete();
+
         return Redirect::route('dashboard.products.trash' )
         ->with('success', 'Product deleted');
     }

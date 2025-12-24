@@ -13,7 +13,7 @@
         </select>
     </div>
     <div class="form-group">
-        <label for="">Description</label>
+        <label for="" required >Description</label>
         <x-form.textarea name="description" :value="$product->description" />
     </div>
     {{-- <div class="form-group">
@@ -57,14 +57,14 @@
     </div>
 
 @push('styles')
-<link href="{{ asset('css/tagify.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('css/tagify.css') }}" rel="stylesheet" type="text/css" />
 @endpush
 
 @push('scripts')
-<script src="{{ asset('js/tagify.min.js') }}"></script>
-<script src="{{ asset('js/tagify.polyfills.min.js') }}"></script>
-<script>
-    var inputElm = document.querySelector('[name=tags]'),
-    tagify = new Tagify (inputElm);
-</script>
+    <script src="{{ asset('js/tagify.min.js') }}"></script>
+    <script src="{{ asset('js/tagify.polyfills.min.js') }}"></script>
+    <script>
+        var inputElm = document.querySelector('[name=tags]'),
+        tagify = new Tagify (inputElm);
+    </script>
 @endpush

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Observers\CartObserver;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Str;
@@ -19,7 +20,25 @@ class Cart extends Model
         'quantity',
         'options',
     ];
+    
+    Protected static function booted()
+    {
+        static::observe(CartObserver::class);
 
+        static::addGlobalScope('cookie_id', function(builder $builder) {
+            $builder->where('cookie_id', '=', Cart::cartCookieId());
+        });
+    }
+
+    public static function cartCookieId()
+    {
+    $cookie_id = Cookie::get('cart_id');
+    if (!$cookie_id) {
+        $cookie_id = Str::uuid();
+        Cookie::queue('cart_id', $cookie_id, 30*24*60 );
+    }
+    return $cookie_id;
+   }
     public function user()
     {
         return $this->belongsTo(User::class)->withDefault([
@@ -32,19 +51,6 @@ class Cart extends Model
         return $this->belongsTo(Product::class);
     }
 
-    Protected static function booted()
-    {
-        static::observe(CartObserver::class);
-    }
-
-    public static function cartCookieId()
-   {
-    $cookie_id = Cookie::get('cart_id');
-    if(!$cookie_id) {
-        $cookie_id = Str::uuid();
-        Cookie::queue('cart_id', $cookie_id, 30*24*60 );
-    }
-    return $cookie_id;
-   }
+   
 }
 

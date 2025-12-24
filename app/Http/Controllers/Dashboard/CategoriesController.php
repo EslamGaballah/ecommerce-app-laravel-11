@@ -17,9 +17,9 @@ class CategoriesController extends Controller
     public function index()
     {
         $request = request();
-       $categories = Category::with('parent')
-       ->filter($request->query())
-       ->paginate(5); // شغالة
+        $categories = Category::with('parent')
+            ->filter($request->query())
+            ->paginate(5); // شغالة
         
     //    $categories = Category::with('parent')->get();  //    لا تعمل لاستدعاء (links )  فى blade
        return view('dashboard.categories.index',compact('categories'));
@@ -50,7 +50,7 @@ class CategoriesController extends Controller
                 'name' => 'required|string|max:255',
                 'description' => 'nullable|string|max:255',
                 'status' => 'in:active,archived',
-                'parent_id' => 'nullable'
+                'parent_id' => 'nullable|exists:categories,id'
             ]);
     
             $request->merge([

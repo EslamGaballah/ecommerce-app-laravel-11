@@ -165,7 +165,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <div class="info">
               @if(auth()->check())
                 <p> {{ auth()->user()->name }}</p>
-              @endif
+              @else
+                <p>not signed in !</p>
+                @endif
             </div>
           </div>
     
@@ -174,7 +176,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
               <!-- Add icons to the links using the .nav-icon class
                    with font-awesome or any other icon font library -->
-              <li class="nav-item has-treeview menu-open">
+                   
+              {{-- <li class="nav-item has-treeview menu-open">
                 <a href="#" class="nav-link active">
                   <i class="nav-icon fas fa-tachometer-alt"></i>
                   <p>
@@ -196,7 +199,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     </a>
                   </li>
                 </ul>
-              </li>
+              </li> --}}
               
               <li class="nav-item">
                 <a href="{{route('dashboard.categories.index')}}" class="nav-link">
@@ -217,15 +220,38 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </a>
               </li>
               <li class="nav-item">
-                <a href="{{route('login')}}" class="nav-link">
+                <a href="{{route('dashboard.users.index')}}" class="nav-link">
                   <i class="nav-icon fas fa-th"></i>
                   <p>
-                    login
+                    users
                     <span class="right badge badge-danger">New</span>
                   </p>
                 </a>
               </li>
               <li class="nav-item">
+                <a href="{{route('dashboard.roles.index')}}" class="nav-link">
+                  <i class="nav-icon fas fa-th"></i>
+                  <p>
+                    roles
+                    <span class="right badge badge-danger">New</span>
+                  </p>
+                </a>
+              </li>
+              @if (!auth()->check())
+                <li class="nav-item">
+                  <a href="{{route('login')}}" class="nav-link">
+                    <i class="nav-icon fas fa-th"></i>
+                    <p>
+                      login
+                      <span class="right badge badge-danger">New</span>
+                    </p>
+                  </a>
+                </li>
+              
+              @endif
+              
+              @if (!auth()->check())
+                <li class="nav-item">
                 <a href="{{route('register')}}" class="nav-link">
                   <i class="nav-icon fas fa-th"></i>
                   <p>
@@ -234,12 +260,19 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   </p>
                 </a>
               </li>
-              <li class="nav-item">
-                <form method="POST" action="{{ route('logout') }}">
-                  @csrf
-                  <button type="submit">تسجيل الخروج</button>
-                </form>
-              </li>
+              
+              @endif
+              
+              @if (auth()->check()) 
+                <li class="nav-item">
+                  <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit">logout</button>
+                  </form>
+                </li>
+              
+              @endif
+             
             </ul>
           </nav>
           <!-- /.sidebar-menu -->

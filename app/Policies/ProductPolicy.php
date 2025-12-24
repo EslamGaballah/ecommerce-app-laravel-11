@@ -3,19 +3,36 @@
 namespace App\Policies;
 
 use Illuminate\Auth\Access\Response;
-use App\Models\Products\Product;
+use App\Models\Product;
 use App\Models\User;
+use Illuminate\Support\Facades\Gate;
 
 class ProductPolicy
 {
-    
+    public function before(User $user, string $ability): bool|null
+    {
+
+        if (!$user) {
+        return null;
+        }
+        
+       if ($user->hasRole('admin')) {
+            return true;
+        
+        }
+
+        return null;  
+    }
 
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return in_array($user->role, ['admin', 'seller']);
+        // return in_array($user->role, ['admin', 'seller']);
+                return $user->hasPermission('view-product');
+
+
     }
 
     /**
@@ -23,7 +40,7 @@ class ProductPolicy
      */
     public function view(User $user, Product $product): bool
     {
-        return $user->role === 'admin' || $product->user_id === $user->id;
+        return $user->hasPermission('view-product');
     }
 
     /**
@@ -31,7 +48,8 @@ class ProductPolicy
      */
     public function create(User $user): bool
     {
-        return $user->role === 'seller';
+        return $user->hasPermission('create-product');
+
     }
 
     /**
@@ -39,7 +57,9 @@ class ProductPolicy
      */
     public function update(User $user, Product $product): bool
     {
-        return $product->user_id === $user->id;
+
+        return  $user->hasPermission('edit-product') &&
+            $user->id === $product->user_id;
     }
 
     /**
@@ -47,7 +67,11 @@ class ProductPolicy
      */
     public function delete(User $user, Product $product): bool
     {
-        return $product->user_id === $user->id;
+        return
+            $user->hasPermission('delete-product')
+            && (
+                $user->id === $product->user_id
+            );
     }
 
     /**
@@ -55,7 +79,11 @@ class ProductPolicy
      */
     public function restore(User $user, Product $product): bool
     {
-        return $product->user_id === $user->id;
+       return
+            $user->hasPermission('restore-product')
+            && (
+                $user->id === $product->user_id
+            );
     }
 
     /**
@@ -63,6 +91,11 @@ class ProductPolicy
      */
     public function forceDelete(User $user, Product $product): bool
     {
-        return $product->user_id === $user->id;
+        return
+            $user->hasPermission('force-delete-product');
+            // && (
+            //     $user->id === $product->user_id
+            //     // || $user->hasRole('admin')
+            // );
     }
 }

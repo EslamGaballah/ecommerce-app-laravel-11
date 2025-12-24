@@ -159,6 +159,8 @@
                         </div>
                         <!-- End Main Menu Search -->
                     </div>
+
+                    
                     <div class="col-lg-4 col-md-2 col-5">
                         <div class="middle-right-area">
                             <div class="nav-hotline">
@@ -174,7 +176,11 @@
                                         <span class="total-items">0</span>
                                     </a>
                                 </div>
+
+                                {{-- start cart menu --}}
                                 <x-cart-menu />
+                                {{-- end cart menu --}}
+
                             </div>
                         </div>
                     </div>

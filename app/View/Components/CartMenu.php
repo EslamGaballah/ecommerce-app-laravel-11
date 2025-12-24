@@ -2,6 +2,7 @@
 
 namespace App\View\Components;
 
+use App\Facades\Cart;
 use Closure;
 use Illuminate\View\Component;
 use Illuminate\Contracts\View\View;
@@ -15,11 +16,11 @@ class CartMenu extends Component
     /**
      * Create a new component instance.
      */
-    // public function __construct($cart)
-    // {
-    //     $this->items = $cart->get();
-    //     $this->total = $cart->total();
-    // }
+    public function __construct()
+    {
+        $this->items = Cart::get();
+        $this->total = Cart::total();
+    }
 
     /**
      * Get the view / contents that represent the component.
