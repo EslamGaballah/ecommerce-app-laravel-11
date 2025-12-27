@@ -2,18 +2,24 @@
 
 namespace App\Providers;
 
+use App\Models\Category;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use App\Models\Product;
+use App\Models\Role;
 use App\Models\User;
+use App\Policies\CategoryPolicy;
 use App\Policies\ProductPolicy;
+use App\Policies\RolePolicy;
 use App\Policies\UserPolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
     protected $policies = [
+        User::class => UserPolicy::class,
+        Role::class => RolePolicy::class,
+        Category::class => CategoryPolicy::class,
         Product::class => ProductPolicy::class,
-            User::class => UserPolicy::class,
 
     ];
 
@@ -22,10 +28,9 @@ class AuthServiceProvider extends ServiceProvider
 
         $this->registerPolicies();
 
-        // Gate::policy(Product::class, ProductPolicy::class);
+        Gate::policy(Product::class, ProductPolicy::class);
 
         Gate::before(function ($user, $ability) {
-
             if (!$user) {
             return null;
             }
@@ -35,7 +40,6 @@ class AuthServiceProvider extends ServiceProvider
             }
             return null;
         });
-
        
         $permissions = collect(config('permissions'))->flatten(); // flatten return array to string
 

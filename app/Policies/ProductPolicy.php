@@ -9,30 +9,25 @@ use Illuminate\Support\Facades\Gate;
 
 class ProductPolicy
 {
-    public function before(User $user, string $ability): bool|null
-    {
-
-        if (!$user) {
-        return null;
-        }
+    // public function before(User $user, string $ability): bool|null
+    // {
+    //     if (!$user) {
+    //     return null;
+    //     }
         
-       if ($user->hasRole('admin')) {
-            return true;
-        
-        }
+    //    if ($user->hasRole('admin')) {
+    //         return true;
+    //     }
 
-        return null;  
-    }
+    //     return null;  
+    // }
 
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        // return in_array($user->role, ['admin', 'seller']);
-                return $user->hasPermission('view-product');
-
-
+        return $user->hasPermission('view-product');
     }
 
     /**
@@ -92,10 +87,10 @@ class ProductPolicy
     public function forceDelete(User $user, Product $product): bool
     {
         return
-            $user->hasPermission('force-delete-product');
-            // && (
-            //     $user->id === $product->user_id
-            //     // || $user->hasRole('admin')
-            // );
+            $user->hasPermission('force-delete-product')
+            && (
+                $user->id === $product->user_id
+                
+            );
     }
 }

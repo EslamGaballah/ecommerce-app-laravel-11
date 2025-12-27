@@ -16,9 +16,10 @@ class RolePolicy
         return null;
         }
         
-       if ($user->hasRole('admin')) {
+      if 
+      ($user->hasRole('admin') ||
+        $user->hasPermission('manage-roles')) {
             return true;
-        
         }
 
         return null;  
@@ -28,7 +29,9 @@ class RolePolicy
      */
     public function viewAny(User $user): bool
     {
+        // return $user->hasPermission('manage-roles');
         return false;
+
     }
 
     /**

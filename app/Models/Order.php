@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Products\Product;
+use App\Models\Product;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
@@ -15,25 +15,6 @@ class Order extends Model
         'total'
         
     ];
-
-    public function user() {
-
-        return $this->belongsTo(User::class);
-    }
-    public function products() {
-
-        return $this->belongsToMany(Product::class, 'order_items', 'order_id', 'product_id', 'id', 'id')
-        ->using(OrderItem::class)
-        ->as('Order_item')->withPivot(['product_name', 'price', 'quantity', 'options']);
-    }
-
-    public function items() {
-        return $this->hasMany(OrderItem::class, 'order_id');
-    }
-
-    public function address() {
-        return $this->hasOne(OrderAddress::class);
-    }
 
     protected static function booted()
     {
@@ -53,4 +34,27 @@ class Order extends Model
         }
         return $year . '00001';
     }
+
+    public function user() 
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function products() 
+    {
+        return $this->belongsToMany(Product::class, 'order_items', 'order_id', 'product_id', 'id', 'id')
+        ->using(OrderItem::class)
+        ->as('Order_item')->withPivot(['product_name', 'price', 'quantity', 'options']);
+    }
+
+    public function items() 
+    {
+        return $this->hasMany(OrderItem::class, 'order_id');
+    }
+
+    public function address() 
+    {
+        return $this->hasOne(OrderAddress::class);
+    }
+    
 }

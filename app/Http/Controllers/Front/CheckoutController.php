@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Front;
 
 use App\Events\OrderCreated;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreOrderRequest;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -28,17 +29,11 @@ class CheckoutController extends Controller
         );
         return view('front.checkout',compact('cart', 'total'));
     }
-    public function store(Request $request ) {
-        // dd($request->all());
-         $request->validate([
-            'first_name' => ['required', 'string', 'max:255'],
-            'last_name' => ['required', 'string', 'max:255'],
-            'email' => ['string', 'max:255'],
-            'phone_number' => ['required', 'string', 'max:255'],
-            'city' => ['required', 'string', 'max:255'],
-            'street_address' => ['required', 'string', 'max:255'],
-        ]);
-       $cart = Cart::get();
+
+    public function store(StoreOrderRequest $request ) 
+    {
+        $data= $request->validated();
+        $cart = Cart::get();
         if ($cart->count() == 0) {
             // throw new InvalidOrderException('Cart is impty');
             return 'cart is impty';
@@ -65,22 +60,11 @@ class CheckoutController extends Controller
                     ]);
                 }
               
-                    $order->address()->create([
-                        'first_name' =>$request->first_name,
-                        'last_name' =>$request->last_name,
-                        'email' =>$request->email,
-                        'phone_number' =>$request->phone_number,
-                        'street_address' => $request->street_address,
-                        'city' =>$request->city,
-                        'state' =>$request->state,
-                        'country' =>$request->country,
-                    ]);
+                $order->address()->create($data);
                     
                 Db::commit();
 
                  event(new OrderCreated($order));
-
-        // dd($request->all());
 
                 return response()->json([
                     'message' => 'تم تسجيل الاوردر بنجاح',

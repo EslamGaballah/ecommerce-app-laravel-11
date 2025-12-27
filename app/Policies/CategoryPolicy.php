@@ -31,8 +31,6 @@ class CategoryPolicy
     public function viewAny(User $user): bool
     {
         return $user->hasPermission('view-category');
-
-
     }
 
     /**
@@ -48,9 +46,7 @@ class CategoryPolicy
      */
     public function create(User $user): bool
     {
-
         return $user->hasPermission('create-category');
-
     }
 
     /**
@@ -59,7 +55,6 @@ class CategoryPolicy
     public function update(User $user, Category $category): bool
     {
         return $user->hasPermission('edit-category');
-
     }
 
     /**

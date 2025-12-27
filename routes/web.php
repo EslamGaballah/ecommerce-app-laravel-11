@@ -34,3 +34,31 @@ Route::post('/checkout',[CheckoutController::class,'store'])
 
 require __DIR__.'/auth.php';
 require __DIR__.'/dashboard.php';
+
+
+// use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Gate;
+
+Route::get('/test-gate', function () {
+    $user = auth()->user();
+
+    if (!$user) {
+        return 'No user logged in';
+    }
+
+    // تحقق من role
+    $hasRole = $user->hasRole('admin') ? 'Yes' : 'No';
+
+    // تحقق من permission
+    $hasPermission = $user->hasPermission('manage-roles') ? 'Yes' : 'No';
+
+    // تحقق من Gate مباشرة
+    $canGate = Gate::allows('manage-roles') ? 'Yes' : 'No';
+
+    return "
+        User: {$user->name} <br>
+        hasRole('admin')? {$hasRole} <br>
+        hasPermission('manage-roles')? {$hasPermission} <br>
+        Gate::allows('manage-roles')? {$canGate}
+    ";
+});

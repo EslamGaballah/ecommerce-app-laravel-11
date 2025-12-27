@@ -13,9 +13,9 @@ use Throwable;
 class UserController extends Controller
 {
 
-    public function __construct()
+   public function __construct()
 {
-    $this->authorizeResource(User::class, 'user');
+$this->middleware('can:viewAny,' . \App\Models\User::class);
 }
     /**
      * Display a listing of the resource.
@@ -29,10 +29,8 @@ class UserController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create($user)
     {
-        $user = new User();
-
         $roles = Role::all();
         return view('dashboard.users.create', compact('user','roles'));
     }
@@ -42,8 +40,6 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-
-        // dd($request->all());
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
@@ -85,13 +81,11 @@ class UserController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $user)
+    public function edit(User $user)
     {
-
         $roles = Role::all();
 
         return view('dashboard.users.edit', compact('user','roles'));
-
     }
 
     /**

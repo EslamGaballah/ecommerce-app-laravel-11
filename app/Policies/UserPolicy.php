@@ -15,7 +15,8 @@ class UserPolicy
         return null;
         }
         
-       if ($user->hasRole('admin') ||
+       if
+        ($user->hasRole('admin') ||
         $user->hasPermission('manage-users')) {
             return true;
         
@@ -28,7 +29,7 @@ class UserPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->hasPermission('manage-users');
     }
 
     /**

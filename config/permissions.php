@@ -5,6 +5,10 @@ return [
         'manage-users',
         ],
 
+    'roles' => [
+        'manage-roles',
+    ],
+
     'categories' => [
         'view-categories',
         'create-categories',
@@ -23,14 +27,14 @@ return [
         'force-delete-product',
     ],
 
-    'role' => [
-        'view-Role',
-        'create-Role',
-        'edit-Role',
-        'delete-Role',
-        'restore-Role',
-        'force-delete-Role',
-    ],
+    // 'role' => [
+    //     'view-Role',
+    //     'create-Role',
+    //     'edit-Role',
+    //     'delete-Role',
+    //     'restore-Role',
+    //     'force-delete-Role',
+    // ],
 
     'cart' => [
         'view-cart',

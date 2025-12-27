@@ -3,19 +3,21 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Role\StoreRoleRequest;
+use App\Http\Requests\Role\UpdateRoleRequest;
 use App\Models\Permission;
 use App\Models\Role;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class RolesController extends Controller
 {
 
-    //  public function __construct()
-    // {
-    //     $this->authorizeResource(Role::class, 'role');    
-    // }
+    public function __construct()
+    {
+        $this->middleware('can:viewAny,' . \App\Models\Role::class);
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -28,43 +30,28 @@ class RolesController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Role $role)
     {
-        $role = new Role();
-        // $permissions = Permission::all();
-        
         $permissions = Permission::all()->groupBy(function ($permission) {
             $parts = explode('-', $permission->name);
             return count($parts) > 1 ? end($parts) : 'other';
         });
 
-
-
         return view('dashboard.roles.create', compact('role', 'permissions'));
-
-
-        
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreRoleRequest $request)
     {
-         $request->validate([
-            'name' => 'required|unique:roles,name|string|max:255',
-            'permissions' => 'required|array|min:1',
-            'permissions.*' => 'exists:permissions,id'
-        ]);
+         $data = $request->validated();
         
         DB::beginTransaction();
 
         try { 
 
-            $role = Role::create([
-                'name' => $request->name,
-                // 'permission_id' => $request->permissions[],
-            ]);
+            $role = Role::create($data);
 
             $role->permissions()->attach($request->permissions);
 
@@ -111,21 +98,15 @@ class RolesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Role $role)
+    public function update(UpdateRoleRequest $request, Role $role)
     {
-        $request->validate([
-            'name' => 'required|unique:roles,name|string|max:255',
-            'permissions' => 'required|array|min:1',
-            'permissions.*' => 'exists:permissions,id'
-        ]);
+        $data = $request->validated();
 
         DB::beginTransaction();
 
         try { 
 
-            $role->update([
-                'name' => $request->name,
-            ]);
+            $role->update($data);
 
             $role->permissions()->sync($request->permissions ?? []); // aync => delete old permissions and add new
          
@@ -144,7 +125,8 @@ class RolesController extends Controller
      */
     public function destroy(Role $role)
     {
-         $role->delete();
+        $role->delete();
+
         return back();
     }
 }

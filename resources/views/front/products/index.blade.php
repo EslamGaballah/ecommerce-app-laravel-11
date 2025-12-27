@@ -11,7 +11,7 @@
 
 
 
-<form action="{{ URL::current() }}" method="get" class="d-flex justify-content-between mb-4">
+<form action="{{ url()->current() }}" method="get" class="d-flex justify-content-between mb-4">
     <x-form.input name="name" placeholder="Name" class="mx-2" :value="request('name')" />
     <select name="status" class="form-control mx-2">
         <option value="">All</option>
@@ -24,13 +24,14 @@
 <table class="table">
     <thead>
         <tr>
-            <th></th>
+            <th>#</th>
             <th>ID</th>
             <th>Name</th>
             <th>description </th>
             <th>category</th>
             <th>price</th>
             <th>Status</th>
+            {{-- <th>Quantity</th> --}}
             <th>####</th>
             <th colspan="2"></th>
         </tr>
@@ -42,9 +43,6 @@
             <td>{{ $product->id }}</td>
             <td><a href="{{ route('front.products.show', $product->id) }}">{{ $product->name }}</a></td>
             <td>{{ $product->description }}</td>
-
-           
-                
             {{-- <td>{{ $category->products_number }}</td> --}}
             <td>{{ $product->category->name }}</td>
             <td>{{ $product->price }}</td>
@@ -55,7 +53,7 @@
                     <input type="hidden" name="product_id" value="{{ $product->id }}">
                     <div class="col-lg-4 col-md-4 col-12">
                         <div class="form-group quantity">
-                            <label for="color">Quantity</label>
+                            {{-- <label for="quantity">Quantity</label> --}}
                             <select class="form-control" name="quantity">
                                 <option>1</option>
                                 <option>2</option>

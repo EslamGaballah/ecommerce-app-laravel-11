@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Products\Product;
+use App\Models\Product;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -16,22 +16,10 @@ class Category extends Model
         'status'
 
     ];
-    public function products(){
-        return $this->hasMany(Product::class,'category_id', 'id');
-    }
-
-    public function parent(){
-        return $this->belongsTo(Category::class, 'parent_id', 'id');
-    }
-    public function children(){
-        return $this->hasMany(Category::class, 'parent_id', 'id');
-    }
-
 
     // glopale scope
-     public function scopeFilter(Builder $builder, $filters)
+    public function scopeFilter(Builder $builder, $filters)
     {
-
         $builder->when($filters['name'] ?? false, function($builder, $value) {
             $builder->where('categories.name', 'LIKE', "%{$value}%");
         });
@@ -39,7 +27,19 @@ class Category extends Model
         $builder->when($filters['status'] ?? false, function($builder, $value) {
             $builder->where('categories.status', '=', $value);
         });
-
     }
 
+    public function products()
+    {
+        return $this->hasMany(Product::class,'category_id', 'id');
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(Category::class, 'parent_id', 'id');
+    }
+
+    public function children(){
+        return $this->hasMany(Category::class, 'parent_id', 'id');
+    }
 }

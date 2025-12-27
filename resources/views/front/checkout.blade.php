@@ -294,19 +294,19 @@
                             </div>
                             <div class="checkout-sidebar-price-table mt-30">
                                 <h5 class="title">Pricing Table</h5>
-    
                                 <div class="sub-total-price">
                                     <div class="total-price">
                                         <p class="value">Subotal Price:</p>
-                                        {{-- <p class="price">{{ Currency::format($cart->total()) }}</p> --}}
-                                        <p class="price">{{ $total }}</p>
+                                        <p class="price">{{ Currency::format($total)}}</p>
+                                        {{-- {{ Currency::format($total) }} --}}
+                                        {{-- <p class="price">{{ $total }}</p> --}}
                                     </div>
                                     <div class="total-price shipping">
-                                        <p class="value">Subotal Price:</p>
+                                        <p class="value">shipping Price:</p>
                                         <p class="price">$10.50</p>
                                     </div>
                                     <div class="total-price discount">
-                                        <p class="value">Subotal Price:</p>
+                                        <p class="value">Subotal discount:</p>
                                         <p class="price">$10.00</p>
                                     </div>
                                 </div>
@@ -314,7 +314,7 @@
                                 <div class="total-payable">
                                     <div class="payable-price">
                                         <p class="value">Subotal Price:</p>
-                                        {{-- <p class="price">{{ Currency::format($cart->total()) }}</p> --}}
+                                        <p class="price">{{ Currency::format($total) }}</p>
                                     </div>
                                 </div>
                                 {{-- <div class="price-table-btn button">

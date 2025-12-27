@@ -29,8 +29,7 @@
         <div class="bottom">
             <div class="total">
                 <span>Total</span>
-                {{-- <span class="total-amount">{{ Currency::format($total) }}</span> --}}
-                <span class="total-amount">{{ $total }}</span>
+                <span class="total-amount">{{ Currency::format($total) }}</span>
             </div>
             <div class="button">
                 <a href="{{ route('checkout.create') }}" class="btn animate">Checkout</a>

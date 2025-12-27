@@ -23,6 +23,17 @@ class Product extends Model
         'status',
     ];
 
+    public static function scopeFilter (Builder $builder, $filters)
+    {
+        $builder->when($filters['name'] ?? false, function($builder, $value){
+            $builder->where('products.name', 'LIKE', "%{$value}");
+        });
+
+        $builder->when($filters['status'] ?? false, function($builder, $value) {
+            $builder->where('products.status', '=', $value);
+        });
+    }
+
     public function user() 
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
@@ -33,20 +44,9 @@ class Product extends Model
         return $this->belongsTo(Category::class, 'category_id', 'id');
     }
 
-     public function images() {
+    public function images() 
+    {
         return $this->hasMany(ProductImage::class);
     }
-
-public static function scopeFilter (Builder $builder, $filters){
-
-    $builder->when($filters['name'] ?? false, function($builder, $value){
-        $builder->where('products.name', 'LIKE', "%{$value}");
-    });
-
-    $builder->when($filters['status'] ?? false, function($builder, $value) {
-        $builder->where('products.status', '=', $value);
-    });
-
-}
 
 }

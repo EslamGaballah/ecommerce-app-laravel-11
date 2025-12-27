@@ -29,17 +29,18 @@ class RolePermissionSeeder extends Seeder
         }
 
         // create roles
-        $user   = Role::firstOrCreate(['name' => 'user']);
+       
         $admin = Role::firstOrCreate(['name' => 'admin']);
-        // $editor = Role::firstOrCreate(['name' => 'editor']);
+        $user   = Role::firstOrCreate(['name' => 'user']);
+        $editor = Role::firstOrCreate(['name' => 'editor']);
 
         // permissions roles
         $admin->permissions()->sync(Permission::pluck('id'));
 
-        // $editorPerms = Permission::whereIn('name', [
-        //     'create-product', 'edit-product', 'view-product'
-        // ])->pluck('id');
-        // $editor->permissions()->sync($editorPerms);
+        $editorPerms = Permission::whereIn('name', [
+            'create-product', 'edit-product', 'view-product'
+        ])->pluck('id');
+        $editor->permissions()->sync($editorPerms);
 
         $userPerms = Permission::whereIn('name', [
             'create-product', 'view-product'

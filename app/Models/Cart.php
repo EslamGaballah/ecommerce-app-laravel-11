@@ -32,13 +32,14 @@ class Cart extends Model
 
     public static function cartCookieId()
     {
-    $cookie_id = Cookie::get('cart_id');
-    if (!$cookie_id) {
-        $cookie_id = Str::uuid();
-        Cookie::queue('cart_id', $cookie_id, 30*24*60 );
+        $cookie_id = Cookie::get('cart_id');
+        if (!$cookie_id) {
+            $cookie_id = Str::uuid();
+            Cookie::queue('cart_id', $cookie_id, 30*24*60 );
+        }
+        return $cookie_id;
     }
-    return $cookie_id;
-   }
+
     public function user()
     {
         return $this->belongsTo(User::class)->withDefault([
@@ -51,6 +52,5 @@ class Cart extends Model
         return $this->belongsTo(Product::class);
     }
 
-   
 }
 

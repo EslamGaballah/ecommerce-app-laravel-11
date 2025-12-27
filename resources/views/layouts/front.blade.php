@@ -90,7 +90,10 @@
                             @auth
                             <div class="user">
                                 <i class="lni lni-user"></i>
-                                {{ Auth::user()->name }}
+                                {{-- {{ Auth::user()->name }} --}}
+                                {{ \Illuminate\Support\Facades\Auth::user()->name }}
+
+
                             </div>
                             <ul class="user-login">
                                 <li>

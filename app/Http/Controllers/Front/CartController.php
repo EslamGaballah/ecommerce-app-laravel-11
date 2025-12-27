@@ -28,39 +28,12 @@ class CartController extends Controller
         $this->cart = $cart;
     }
 
-
-    // moved to controller
-//    public function cartCookieId()
-//    {
-//     $cookie_id = Cookie::get('cart_id');
-//     if(!$cookie_id) {
-//         $cookie_id = Str::uuid();
-//         Cookie::queue('cart_id', $cookie_id, 30*24*60 );
-//     }
-//     return $cookie_id;
-//    }
-
     public function index()
     {
-        // if (Auth::check()) {
-        //     $cartItems = Auth::user()->cart()->with('product')->get();
-        // } else {
-            // $cartItems = $this->cartCookieId();
-            // $cart = Cart::where('cookie_id', '=', $this->cartCookieId())
-            // ->with('product')
-            // ->get();
-            // $cart = Cart::with('product')->get();
-            // $total = $cart->sum(fn($item)
-            //     => $item->quantity  * ($item->product->price ?? 0));
-        // }
-        // return $cartItems;
-        // dd($cart);
         return view('cart', [
             'cart' => $this->cart,
         ]);
     }
-
-    
 
     /**
      * Store a newly created resource in storage.
@@ -78,7 +51,6 @@ class CartController extends Controller
         $this->cart->add($product, $request->post('quantity'));
 
         if ($request->expectsJson()) {
-            
             return response()->json([
                 'message' => 'Item added to cart!',
             ], 201);
@@ -86,19 +58,14 @@ class CartController extends Controller
         
         return redirect()->route('cart.index')
             ->with('success', 'Product added to cart!');
-       
-        // return redirect()->back()->with('success' , 'product added to cart');
     }
-
 
     /**
      * Display the specified resource.
      */
-    public function show( $id)
+    public function show( Cart $cart)
     {
-        // $cart = Cart::findOrFail($id);
-
-        // return view('front.cart.show', compact('cart'));
+        return view('front.cart.show', compact('cart'));
     }
 
     /**
