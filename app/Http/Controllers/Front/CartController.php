@@ -6,12 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\Product;
 use App\Interfaces\CartRepositoryInterface;
-use App\Repositories\CartRepository;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Str;
 
 class CartController extends Controller
 {
@@ -19,18 +15,17 @@ class CartController extends Controller
      * Display a listing of the resource.
      */
    
-    public $cartItems;
 
     protected $cart;
 
-     public function __construct(CartRepository $cart)
+     public function __construct(CartRepositoryInterface $cart)
     {
         $this->cart = $cart;
     }
 
     public function index()
     {
-        return view('cart', [
+        return view('front.cart', [
             'cart' => $this->cart,
         ]);
     }
@@ -65,7 +60,9 @@ class CartController extends Controller
      */
     public function show( Cart $cart)
     {
-        return view('front.cart.show', compact('cart'));
+        return view('front.cart', [
+            'cart' => $this->cart,
+        ]);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 return [
     'users' => [
+        'access-dashboard',
         'manage-users',
         ],
 

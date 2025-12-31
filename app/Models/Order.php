@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Product;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
@@ -33,6 +34,18 @@ class Order extends Model
             return $number + 1;
         }
         return $year . '00001';
+    }
+
+     // glopale scope
+    public function scopeFilter(Builder $builder, $filters)
+    {
+        $builder->when($filters['number'] ?? false, function($builder, $value) {
+            $builder->where('orders.number', 'LIKE', "%{$value}%");
+        });
+
+        $builder->when($filters['status'] ?? false, function($builder, $value) {
+            $builder->where('orders.status', '=', $value);
+        });
     }
 
     public function user() 

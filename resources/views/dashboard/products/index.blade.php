@@ -23,15 +23,11 @@
     <x-form.input name="name" placeholder="Name" class="mx-2" :value="request('name')" />
     <select name="status" class="form-control mx-2">
         <option value="">All</option>
-        {{-- <option value="active" @selected(request('status') == 'active')>Active</option>
-        <option value="archived" @selected(request('status') == 'archived')>Archived</option>
-        <option value="draft" @selected(request('status') == 'draft')>Draft</option> --}}
-
-        @foreach (['active' => 'Active' ,'arvived' => 'Archived', 'draft' => 'Draft'] as $value => $label )
-            <option value="{{ $value }}" @selected(request('status') == $value)>
-                {{ $label }}
-            </option>
-        @endforeach
+            @foreach (['active' => 'Active' ,'arvived' => 'Archived', 'draft' => 'Draft'] as $value => $label )
+                <option value="{{ $value }}" @selected(request('status') == $value)>
+                    {{ $label }}
+                </option>
+            @endforeach
     </select>
     <button class="btn btn-dark mx-2">Filter</button>
 </form>
@@ -95,9 +91,9 @@
 {{ $products->links('pagination::bootstrap-5') }} 
 
 
-{{-- {{ $products
+{{ $products
 ->withQueryString()->appends(['search' => 1])
-->links() }} --}}
+->links() }}
 
 
 @endsection

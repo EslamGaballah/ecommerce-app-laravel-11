@@ -28,6 +28,7 @@ class StoreOrderRequest extends FormRequest
             'phone_number' => ['required', 'string', 'max:255'],
             'city' => ['required', 'string', 'max:255'],
             'street_address' => ['required', 'string', 'max:255'],
+            'country' => ['required', 'string', 'max:255'],
         ];
     }
 }

@@ -3,12 +3,10 @@
 namespace App\Providers;
 
 use App\Listeners\SendOrderCreatedNotification;
-use App\Models\Product;
+use App\Models\Category;
 use App\Models\User;
-use App\Policies\OrderPolice;
-use App\Policies\ProductPolicy;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -29,7 +27,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-   
-        
+        View::composer('partials.category-menu', function ($view) {
+        $categories = Category::whereNull('parent_id')
+            ->where('status', 'active')
+            ->with('childrenRecursive')
+            ->get();
+
+        $view->with('categories', $categories);
+        });
+
     }
 }

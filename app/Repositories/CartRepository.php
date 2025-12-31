@@ -28,8 +28,7 @@ class CartRepository implements CartRepositoryInterface
 
     public function add(Product $product, $quantity = 1)
     {
-        $item =  Cart::where('product_id', '=', $product->id)
-            ->first();
+        $item =  Cart::where('product_id', '=', $product->id)->first();
         
         if (!$item) {
             $cart = Cart::create([
@@ -65,12 +64,6 @@ class CartRepository implements CartRepositoryInterface
 
     public function total() : float
     {   
-        // with out collections
-        /*return (float) Cart::join('products', 'products.id', '=', 'carts.product_id')
-            ->selectRaw('SUM(products.price * carts.quantity) as total')
-            ->value('total');*/
-
-
             // using collection
         return $this->get()->sum(function($item) {
             return $item->quantity * $item->product->price;

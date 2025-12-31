@@ -10,22 +10,21 @@
 @section('content')
 
 <div class="mb-5">
-
-    {{-- @if(Auth::user()->can('categories.create')) --}}
-    <a href="{{ route('dashboard.categories.create') }}" class="btn btn-sm btn-outline-primary mr-2">Create</a>
-    {{-- <a href="{{ route('dashboard.categories.trash') }}" class="btn btn-sm btn-outline-dark">Trash</a> --}}
-    {{-- @endif --}}
+    @if(auth()->user()->can('create-categories'))
+        <a href="{{ route('dashboard.categories.create') }}" class="btn btn-sm btn-outline-primary mr-2">Create</a>
+        {{-- <a href="{{ route('dashboard.categories.trash') }}" class="btn btn-sm btn-outline-dark">Trash</a>  --}}
+     @endif
 </div>
 
-{{-- <x-alert type="success" />
-<x-alert type="info" /> --}}
+<x-alert type="success" />
+<x-alert type="info" />
 
+{{-- start filter --}}
 <form action="{{ url()->current() }}" method="get" class="d-flex justify-content-between mb-4">
     <x-form.input name="name" placeholder="Name" class="mx-2" :value="request('name')" />
     <select name="status" class="form-control mx-2">
         <option value="">All</option>
-        {{-- <option value="active" @selected(request('status') == 'active')>Active</option>
-        <option value="archived" @selected(request('status') == 'archived')>Archived</option> --}}
+       
             @foreach (['active' => 'Active' ,'arvived' => 'Archived'] as $value => $label )
                 <option value="{{ $value }}" @selected(request('status') == $value)>
                     {{ $label }}
@@ -34,6 +33,7 @@
     </select>
     <button class="btn btn-dark mx-2">Filter</button>
 </form>
+{{-- end filter --}}
 
 <table class="table">
     <thead>
@@ -91,12 +91,9 @@
     </tbody>
 </table>
 
-{{ $categories->
-// withQueryString()->
-// appends(['search' => 1])->
-links() }}
+{{ $categories->appends(request()->query())->links('pagination::bootstrap-5') }}
+{{ $categories->links('pagination::bootstrap-5') }}
 
-{{-- {{ $categories->appends(request()->query())->links('pagination::bootstrap-5') }} --}}
-{{-- {{ $categories->links('pagination::bootstrap-5') }} --}}
+{{ $categories->withQueryString()->appends(['search' => 1])->links() }}
 
 @endsection

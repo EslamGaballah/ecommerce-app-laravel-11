@@ -53,7 +53,7 @@
                   </li>
                 </ul>
               </li> --}}
-              {{-- @can('view-categories') --}}
+              @can('view-categories')
                 <li class="nav-item">
                   <a href="{{route('dashboard.categories.index')}}" class="nav-link">
                     <i class="nav-icon fas fa-th"></i>
@@ -63,9 +63,9 @@
                     </p>
                   </a>
                 </li>
-               {{-- @endcan --}}
+               @endcan
 
-              {{-- @can('view-product') --}}
+              @can('view-product')
                 <li class="nav-item">
                   <a href="{{route('dashboard.products.index')}}" class="nav-link">
                     <i class="nav-icon fas fa-th"></i>
@@ -75,9 +75,21 @@
                     </p>
                   </a>
                 </li>
+              @endcan
+
+              {{-- @can('view-product') --}}
+                <li class="nav-item">
+                  <a href="{{route('dashboard.orders.index')}}" class="nav-link">
+                    <i class="nav-icon fas fa-th"></i>
+                    <p>
+                      orders
+                      <span class="right badge badge-danger">New</span>
+                    </p>
+                  </a>
+                </li>
               {{-- @endcan --}}
 
-              {{-- @can('manage-users') --}}
+              @can('manage-users')
                 <li class="nav-item">
                   <a href="{{route('dashboard.users.index')}}" class="nav-link">
                     <i class="nav-icon fas fa-th"></i>
@@ -87,7 +99,7 @@
                     </p>
                   </a>
                 </li>
-              {{-- @endcan --}}
+              @endcan
 
               @can('manage-roles')
                 <li class="nav-item">

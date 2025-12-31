@@ -4,21 +4,24 @@ namespace App\Http\Controllers\Api\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
-use App\Traits\uploadImages;
+use App\Models\ProductImage;
+use App\Traits\UploadImageTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Throwable;
 
 class ProductsController extends Controller
 {
 
-    use uploadImages;
+    use UploadImageTrait ;
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $request = request();
-        $products = Product::filter($request->query())
+        $products = Product::with('category','images')
+        ->filter($request->query())
         ->orderBy('products.name')
         ->paginate();
         return response()->json($products);
@@ -29,28 +32,39 @@ class ProductsController extends Controller
      */
     public function store(Request $request)
     {
+        $data = $request->validated();
+        $data['user_id'] = auth()->id();
+        $data['slug'] = str::slug($request->post('name'));
 
-        info($request);
-        $request->validate([
-           'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:255',
-            'status' => 'in:active,archived,draft',
-            'category_id' => 'required|exists:categories,id',
-            'price' => 'required|numeric|min:0',
-            'compare_price' => 'nullable|numeric|gt:price',
-            'image' => 'nullable|mimes:jpg,jpeg,png|max:2048'
+         DB::beginTransaction();
 
+            try { 
+                $product = Product::create($data);
 
-        ]);
+                // create images
+                if ($request->hasFile('image')) {
+                    foreach ($request->file('image') as $index => $imageFile) {
 
-        $slug = $request->merge([
-            'slug' => str::slug($request->post('name'))
-        ]);
-        $data = $request->except('image');
-        $data['image'] = $this->uploadImages($request);
-         
+                        $path = $this->uploadImage($imageFile, 'products');
 
-        $product = Product::create($data);
+                        $image_alt = $request->image_alt[$index] ?? null;
+
+                        // post_images table
+                        ProductImage::create([
+                            'product_id' => $product->id,
+                            'image' => $path,
+                            'image_alt' => $image_alt,
+                        ]);
+                    }
+                }
+
+                 DB::commit();
+
+                } catch (Throwable $e) {
+                    DB::rollBack();
+                    throw $e;
+                    return back()->with('error', 'Failed to create product');
+                }
         return response()->json($product,201, );
 
     }
@@ -69,31 +83,22 @@ class ProductsController extends Controller
      */
     public function update(Request $request, string $id)
     {
-         $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-             'description' => 'nullable|string|max:255',
-             'status' => 'in:active,archived,draft',
-             'category_id' => ' sometimes|required|exists:categories,id',
-             'price' => 'sometimes|required|numeric|min:0',
-             'compare_price' => 'nullable|numeric|gt:price',
-             'quantity' => 'numeric'
- 
-         ]);
+        $data = $request->validated();
+        $data['user_id'] = auth()->id();
+        $data['slug'] = str::slug($request->post('name'));
 
-        $request->merge([
-             'slug' => str::slug($request->post('name'))
-         ]);
          $product = Product::findOrFail($id);
-         $product->update($request->all());
+         $product->update($data);
          return response()->json($product,201, );
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Product $product)
     {
-        $product = Product::findOrFail($id);
+        $this->authorize('delete', $product);
+
         $product->delete();
         return response()->json([
             'message' => 'product soft deleted successfully'

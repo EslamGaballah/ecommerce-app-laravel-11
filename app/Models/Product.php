@@ -4,12 +4,13 @@ namespace App\Models;
 use App\Models\Category;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder; 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, HasFactory;
     
     protected $fillable = [
         'user_id',

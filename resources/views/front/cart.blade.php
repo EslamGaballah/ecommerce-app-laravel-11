@@ -1,4 +1,3 @@
-
 <x-front-layout title="Cart">
 
     <x-slot:breadcrumb>
@@ -12,7 +11,7 @@
                     </div>
                     <div class="col-lg-6 col-md-6 col-12">
                         <ul class="breadcrumb-nav">
-                            {{-- <li><a href="{{ route('home') }}"><i class="lni lni-home"></i> Home</a></li> --}}
+                            <li><a href="{{ route('home') }}"><i class="lni lni-home"></i> Home</a></li>
                             <li><a href="{{ route('products.index') }}">Shop</a></li>
                             <li>Cart</li>
                         </ul>
@@ -119,7 +118,7 @@
                                         <li class="last">You Pay<span>$2531.00</span></li>
                                     </ul>
                                     <div class="button">
-                                        <a href="{{ Route('checkout.create') }}" class="btn">Checkout</a>
+                                        <a href="{{ Route('checkout') }}" class="btn">Checkout</a>
                                         <a href="product-grids.html" class="btn btn-alt">Continue shopping</a>
                                     </div>
                                 </div>

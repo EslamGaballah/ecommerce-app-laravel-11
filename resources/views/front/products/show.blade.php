@@ -35,9 +35,7 @@
                                 <div class="images">
                                     <img src="https://via.placeholder.com/1000x670" class="img" alt="#">
                                     <img src="https://via.placeholder.com/1000x670" class="img" alt="#">
-                                    <img src="https://via.placeholder.com/1000x670" class="img" alt="#">
-                                    <img src="https://via.placeholder.com/1000x670" class="img" alt="#">
-                                    <img src="https://via.placeholder.com/1000x670" class="img" alt="#">
+                                   
                                 </div>
                             </main>
                         </div>
@@ -45,12 +43,11 @@
                     <div class="col-lg-6 col-md-12 col-12">
                         <div class="product-info">
                             <h2 class="title">{{ $product->name }}</h2>
-                            <p class="category"><i class="lni lni-tag"></i> Drones:<a href="javascript:void(0)">{{ $product->category->name }}</a></p>
-                            {{-- <h3 class="price">{{ Currency::format($product->price) }}@if($product->compare_price)<span>{{ Currency::format($product->compare_price) }}</span>@endif</h3> --}}
-                            <h3 class="price"> {{$product->price}} @if($product->compare_price)<span>{{ $product->compare_price }}</span>@endif</h3>
+                            <p class="category"><i class="lni lni-tag"></i> Category:<a href="javascript:void(0)">{{ $product->category->name }}</a></p>
+                            <h3 class="price">{{ Currency::format($product->price) }}@if($product->compare_price)<span>{{ Currency::format($product->compare_price) }}</span>@endif</h3>
                             <p class="info-text">{{ $product->description }}</p>
 
-                            {{-- ############################################################## --}}
+                            {{--start add to cart --}}
                             <form action="{{ route('cart.store') }}" method="post">
                                 @csrf
                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
@@ -118,7 +115,9 @@
                                         </div>
                                     </div>
                                 </div>
+                            {{--start add to cart --}}
                             </form>
+                            
                         </div>
                     </div>
                 </div>
