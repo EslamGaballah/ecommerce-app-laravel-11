@@ -3,12 +3,14 @@
 namespace App\Providers;
 
 use App\Models\Category;
+use App\Models\Comment;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use App\Models\Product;
 use App\Models\Role;
 use App\Models\User;
 use App\Policies\CategoryPolicy;
+use App\Policies\CommentPolicy;
 use App\Policies\ProductPolicy;
 use App\Policies\RolePolicy;
 use App\Policies\UserPolicy;
@@ -20,6 +22,7 @@ class AuthServiceProvider extends ServiceProvider
         Role::class => RolePolicy::class,
         Category::class => CategoryPolicy::class,
         Product::class => ProductPolicy::class,
+        Comment::class => CommentPolicy::class,
 
     ];
 

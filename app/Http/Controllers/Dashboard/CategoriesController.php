@@ -19,7 +19,9 @@ class CategoriesController extends Controller
     public function index(Request $request)
     {
         $categories = Category::with('parent')
+            ->withCount('products')
             ->filter($request->query())
+            ->orderByDesc('products_count')
             ->paginate(5); // شغالة
         
     //    $categories = Category::with('parent')->get();  //    لا تعمل لاستدعاء (links )  فى blade

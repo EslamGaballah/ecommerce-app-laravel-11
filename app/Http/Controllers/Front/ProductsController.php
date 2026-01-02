@@ -13,15 +13,10 @@ class ProductsController extends Controller
         $products = Product::paginate(15);
         return view('front.products.index', compact('products'));
     }
-    public function show( $id)
+    public function show( Product $product)
     {
-        // if ($product->status != 'active') {
-        //     abort(404);
-        // }
-        $product = Product::findOrFail($id);
+        $comments = $product->comments()->whereNull('parent_id')->with('children')->get();
 
-        // dd($product);
-
-        return view('front.products.show', compact('product'));
+        return view('front.products.show', compact('product', 'comments'));
     }
 }

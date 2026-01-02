@@ -50,4 +50,25 @@ class Product extends Model
         return $this->hasMany(ProductImage::class);
     }
 
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class);
+    }
+
+    public function favoritedBy()
+    {
+        return $this->belongsToMany(User::class, 'favorites');
+    }
+
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class);
+    }
+
+    public function averageRating()
+    {
+        return round($this->ratings()->avg('rating'), 1);
+    }
+
+
 }

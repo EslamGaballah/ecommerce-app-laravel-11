@@ -18,7 +18,11 @@ return [
         'restore-categories',
         'force-delete-categories',
         ],
-        
+
+        'tags' =>[
+        'manage-tags',
+    ],
+
     'product' => [
         'view-product',
         'create-product',
@@ -28,14 +32,9 @@ return [
         'force-delete-product',
     ],
 
-    // 'role' => [
-    //     'view-Role',
-    //     'create-Role',
-    //     'edit-Role',
-    //     'delete-Role',
-    //     'restore-Role',
-    //     'force-delete-Role',
-    // ],
+    'comments' =>[
+        'manage-comments'
+    ],
 
     'cart' => [
         'view-cart',

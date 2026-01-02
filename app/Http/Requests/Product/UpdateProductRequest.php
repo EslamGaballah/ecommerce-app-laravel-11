@@ -26,12 +26,12 @@ class UpdateProductRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-             'description' => 'nullable|string|max:255',
-             'status' => 'in:active,archived,draft',
-             'category_id' => 'required|exists:categories,id',
-             'price' => 'required|numeric|min:0',
-             'compare_price' => 'nullable|numeric|gt:price',
-             'image.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+            'description' => 'nullable|string|max:255',
+            'status' => 'in:active,archived,draft',
+            'category_id' => 'required|exists:categories,id',
+            'price' => 'required|numeric|min:0',
+            'compare_price' => 'nullable|numeric|gt:price',
+            'image.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
         ];
     }
 }

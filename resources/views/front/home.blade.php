@@ -1,6 +1,6 @@
 <x-front-layout>
     <!-- Start Hero Area -->
-    <section class="hero-area">
+    {{-- <section class="hero-area">
         <div class="container">
             <x-alert type="info" />
             
@@ -78,11 +78,11 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> --}}
     <!-- End Hero Area -->
 
     <!-- Start Featured Categories Area -->
-    <section class="featured-categories section">
+    {{-- <section class="featured-categories section">
         <div class="container">
             <div class="row">
                 <div class="col-12">
@@ -198,7 +198,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> --}}
     <!-- End Features Area -->
 
     <!-- Start Trending Product Area -->

@@ -110,6 +110,19 @@
                                         </div>
                                         <div class="col-lg-4 col-md-4 col-12">
                                             <div class="wish-button">
+                                                @if(auth()->user()->favorites->contains($product->id))
+                                                    <form method="POST" action="{{ route('favorites.destroy', $product) }}">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button class="btn"><i class="lni lni-heart">Remove from Favorites</button>
+                                                    </form>
+                                                @else
+                                                    <form method="POST" action="{{ route('favorites.store', $product) }}">
+                                                        @csrf
+                                                        <button class="btn"><i class="lni lni-heart">Add to Favorites</button>
+                                                    </form>
+                                                @endif
+
                                                 <button class="btn"><i class="lni lni-heart"></i> To Wishlist</button>
                                             </div>
                                         </div>

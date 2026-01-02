@@ -62,4 +62,15 @@ class User extends Authenticatable
                 $query->where('name', $permission);
             })->exists();
     }
+
+    public function favorites()
+    {
+        return $this->belongsToMany(Product::class, 'favorites');
+    }
+
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class);
+    }
+
 }

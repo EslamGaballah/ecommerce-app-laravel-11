@@ -41,7 +41,7 @@ class OrdersController extends Controller
             'status' => 'required|in:pending,processing,delivering,completed,cancelled,refunded',
         ]);
 
-       DB::transaction(function () use ($request, $order) {
+        DB::transaction(function () use ($request, $order) {
 
         $oldStatus = $order->status;
         $newStatus = $request->status;

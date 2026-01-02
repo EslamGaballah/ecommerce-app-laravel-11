@@ -6,6 +6,7 @@ use App\Http\Controllers\Dashboard\OrdersController;
 use App\Http\Controllers\Dashboard\ProductsController;
 use App\Http\Controllers\Dashboard\RolesController;
 use App\Http\Controllers\Dashboard\UserController;
+use App\Http\Controllers\Dashboard\TagsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Middleware\CheckUserType;
 use Illuminate\Support\Facades\Route;
@@ -29,6 +30,8 @@ Route::middleware(['auth','can:access-dashboard'])
 
 
     Route::resource('categories', CategoriesController::class)->names('categories');
+
+    Route::resource('tags', TagsController::class)->names('tags');
 
     Route::get('products/trash', [ProductsController::class, 'trash'])->name('products.trash');
     Route::put('products/{id}/restore', [ProductsController::class, 'restore'])->name('products.restore');
