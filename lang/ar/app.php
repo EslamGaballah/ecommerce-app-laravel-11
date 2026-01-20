@@ -34,7 +34,7 @@ return [
     'view_cart' => 'عرض السلة',
     'checkout' => 'اكمال الطلب',
     'total' => 'الاجمالى',
-    'shipping' => 'مصاريف الشحن',
+    'shipping_price' => 'مصاريف الشحن',
     'cart_subtotal' => 'اجمالى السلة',
     'add_to_cart' => 'إضافة الى السلة',
     'favorites' => 'المفضلة',
@@ -114,6 +114,13 @@ return [
     'canceled' => 'ملغى',
     'refunded' => 'مرفوض',
     'returned' => 'مرتجع',
+
+    'governorates' => 'المحافظات',
+    'avilable' => 'متاح',
+    'unAvilable' => 'غير متاح',
+    'shipping_status' => ' حالة الشحن',
+    'delivery_days' => ' مدة الشحن'
+
 
 
 

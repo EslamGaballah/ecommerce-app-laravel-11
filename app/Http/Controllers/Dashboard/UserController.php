@@ -8,6 +8,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Validation\Rule;
 use Throwable;
 
 class UserController extends Controller
@@ -20,9 +22,17 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::with('roles')->latest()->paginate(10);
+        $users = User::with('roles')->latest()
+        ->filter($request->query())
+        ->paginate(10);
+
+        if ($request->ajax()) {
+        // نرجع فقط ملف الـ Blade الذي يحتوي على الـ <table>
+        return view('dashboard.users._table', compact('users'))->render();
+        }
+
         return view('dashboard.users.index', compact('users'));
     }
 
@@ -95,20 +105,29 @@ class UserController extends Controller
     {
          $request->validate([
             'name' => 'required',
-            'email' => 'required|email|unique:users',
+            'email' => [
+            'required',
+            'email',
+            Rule::unique('users', 'email')->ignore($user->id),
+    ],
             'password' => 'nullable|confirmed|min:8',
-            'role_id' => 'required'
+            'role_id' => 'required|exists:roles,id'
         ]);
 
-        $user->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+       $data = [
+        'name' => $request->name,
+        'email' => $request->email,
+    ];
 
-        $user->roles()->sync($request->roles);
+    if ($request->filled('password')) {
+        $data['password'] = Hash::make($request->password);
+    }
 
-        return back()->with('success','User created successfully');
+    $user->update($data);
+
+        $user->roles()->sync($request->role_id);
+
+        return Redirect()->route('dashboard.users.index')->with('success','User updated successfully');
 
     }
 

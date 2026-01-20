@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\ProductStatus;
 use App\Models\Category;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -20,6 +21,10 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         $name = fake()->words(3, true);
+
+        $status = ProductStatus::cases();
+        $randomStatus = $this->faker->randomElement($status);
+
         return [
             'name' => $name,
             'slug' => Str::slug($name),
@@ -27,7 +32,7 @@ class ProductFactory extends Factory
             'description'=> fake()->paragraph(),
             'compare_price' => fake()->numberBetween(201, 300),
             'quantity' => fake()->numberBetween(50, 200),
-            'status' => fake()->randomElement(['active', 'draft', 'archived']),
+            'status' => $randomStatus,
 
             'user_id' => User::inRandomOrder()->first()?->id?? User::factory(),
             'category_id' =>Category::inRandomOrder()->first()?->id?? Category::factory(),

@@ -14,7 +14,7 @@
         <x-form.input label="{{ __('app.name') }}" class="form-control-lg" role="input" name="name" :value="$governorate->name" />
     </div>
     <div class="form-group">
-    <x-form.input label="{{ __ ('app.shipping_price')}}" name="price" :value="$governorate->shipping_price" />
+    <x-form.input label="{{ __ ('app.shipping_price')}}" name="shipping_price" :value="$governorate->shipping_price" />
     </div>
     <div class="form-group">
         <label class="form-label">مدة التوصيل (بالأيام)</label>
@@ -29,11 +29,14 @@
     <div class="form-group">
         <label for="">{{ __('app.status') }}</label>
         <div>
-            <x-form.radio name="is_active" :checked="$governorate->status" 
+            <x-form.radio 
+                name="is_active" 
+                :checked="old('is_active', $governorate->is_active)" 
                 :options="[
-                    'active' =>  __('app.active') , 
-                    'archived' =>  __('app.archived') 
-                    ]" />
+                    1 => __('app.active'), 
+                    0 => __('app.archived')
+                ]"
+            />
         </div>
     </div>
     <div class="form-group">

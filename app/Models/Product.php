@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Models;
+use App\Enums\ProductStatus;
+
 use App\Models\Category;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder; 
@@ -22,6 +24,10 @@ class Product extends Model
         'compare_price',
         'quantity',
         'status',
+    ];
+
+    protected $casts = [
+        'status' => ProductStatus::class,
     ];
 
     public static function scopeFilter (Builder $builder, $filters)

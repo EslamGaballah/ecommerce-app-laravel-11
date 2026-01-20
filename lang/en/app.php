@@ -31,7 +31,7 @@ return [
     'view_cart' => 'View Cart',
     'checkout' => 'Checkout',
     'total' => 'Total',
-    'shipping' => 'Shipping',
+    'shipping_price' => 'Shipping Price',
     'cart_subtotal' => 'Cart Subtotal',
     'add_to_cart' => 'Add To Cart',
     'favorites' => 'Favorites',
@@ -109,7 +109,12 @@ return [
     'refunded' => 'Refunded',
     'returned' => 'Returned',
 
-    
+    'governorates' => 'Governorates',
+    'avilable' => 'Avilable',
+    'unAvilable' => 'UnAvilable',
+    'shipping_status' => 'Shipping Status',
+    'delivery_days' => 'Delivery Days'
+
 
 
 

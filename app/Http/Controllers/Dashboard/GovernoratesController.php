@@ -11,9 +11,11 @@ class GovernoratesController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $governorates = Governorate::latest()->paginate(10);
+        $governorates = Governorate::latest()
+        ->filter($request->query())
+        ->paginate(10);
 
         return view('dashboard.governorates.index', compact('governorates'));
     }
@@ -21,9 +23,9 @@ class GovernoratesController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Governorate $governorate)
     {
-         return view('dashboard.governorates.create');
+         return view('dashboard.governorates.create',compact('governorate'));
     }
 
     /**
@@ -55,7 +57,7 @@ class GovernoratesController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(governorate $governorate)
     {
         return view('dashboard.governorates.edit', compact('governorate'));
     }

@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Edit Admin')
+@section('title', 'Edit Users')
 
 @section('breadcrumb')
 @parent
@@ -10,11 +10,11 @@
 
 @section('content')
 
-<form action="{{ route('dashboard.admins.update', $admin->id) }}" method="post" enctype="multipart/form-data">
+<form action="{{ route('dashboard.users.update', $user->id) }}" method="post" enctype="multipart/form-data">
     @csrf
     @method('put')
     
-    @include('dashboard.admins._form', [
+    @include('dashboard.users._form', [
         'button_label' => 'Update'    
     ])
 </form>

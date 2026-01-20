@@ -57,7 +57,6 @@
                    @checked(old('role_id', $user->role_id) == $role->id)
                    >
 
-
         <label class="form-check-label">
             {{ $role->name }}
         </label>
