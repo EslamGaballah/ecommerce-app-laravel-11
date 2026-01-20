@@ -11,7 +11,7 @@
 @section('content')
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>تفاصيل الطلب #{{ $order->number }}</h2>
+        <h2>{{__('app.order_number')}}:{{ $order->number }}</h2>
         <div>
             <a href="{{ route('dashboard.orders.index') }}" class="btn btn-secondary btn-sm">العودة للقائمة</a>
             <button onclick="window.print()" class="btn btn-primary btn-sm">طباعة الفاتورة</button>
@@ -21,32 +21,54 @@
     <div class="row">
         <div class="col-md-4">
             <div class="card mb-4">
-                <div class="card-header bg-light"><strong>معلومات العميل</strong></div>
+                <div class="card-header bg-light"><strong>{{__('app.customer')}}</strong></div>
                 <div class="card-body">
-                    <p><strong>الاسم:</strong> {{ $order->user?->name ?? 'ضيف' }}</p>
-                    <p><strong>البريد:</strong> {{ $order->user?->email ?? 'N/A' }}</p>
+                    <p><strong>{{__('app.name')}}:</strong> {{ $order->user?->name ?? 'ضيف' }}</p>
+                    <p><strong>{{__('app.email')}}:</strong> {{ $order->user?->email ?? 'N/A' }}</p>
                     <hr>
-                    <h6>عنوان الشحن</h6>
+                    <h6> {{__('app.shipping_address')}}</h6>
                     <p>
                         {{ $order->address->first_name }} {{ $order->address->last_name }}<br>
                         {{ $order->address->street_address }}<br>
                         {{ $order->address->city }}, {{ $order->address->country }}
                     </p>
                 </div>
+
+                 <h5>{{__('app.states_history')}}</h5>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>{{__('app.updated_by')}}</th>
+                        <th>{{__('app.date')}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($order->statusHistories as $history)
+                        <tr>
+                            <td>{{ ucfirst($history->old_status) }}</td>
+                            <td>{{ ucfirst($history->new_status) }}</td>
+                            <td>{{ $history->user?->name ?? '—' }}</td>
+                            <td>{{ $history->created_at }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
             </div>
         </div>
 
         <div class="col-md-8">
             <div class="card mb-4">
-                <div class="card-header bg-light"><strong>المنتجات المطلوبة</strong></div>
+                <div class="card-header bg-light"><strong>{{__('app.products')}} </strong></div>
                 <div class="card-body">
                     <table class="table table-bordered">
                         <thead class="bg-light">
                             <tr>
-                                <th>المنتج</th>
-                                <th>السعر</th>
-                                <th>الكمية</th>
-                                <th>الإجمالي</th>
+                                <th>{{__('app.products')}}</th>
+                                <th>{{__('app.price')}}</th>
+                                <th>{{__('app.quantity')}}</th>
+                                <th>{{__('app.total')}}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -61,23 +83,23 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th colspan="3" class="text-end">المجموع الفرعي:</th>
+                                <th colspan="3" class="text-end">{{__('app.products_total_price')}} :</th>
                                 <td>{{ number_format($order->total, 2) }}</td>
                             </tr>
                             <tr>
-                                <th colspan="3" class="text-end">الخصم :</th>
+                                <th colspan="3" class="text-end">{{__('app.discount')}} :</th>
                                 <td>{{ number_format($order->total, 2) }}</td>
                             </tr>
                             <tr>
-                                <th colspan="3" class="text-end">الاجمالى بعد الخصم :</th>
+                                <th colspan="3" class="text-end">{{__('app.total')}}   :</th>
                                 <td>{{ number_format($order->total, 2) }}</td>
                             </tr>
                             <tr>
-                                <th colspan="3" class="text-end text-success">الشحن:</th>
+                                <th colspan="3" class="text-end text-success">{{__('app.shipping')}}:</th>
                                 <td>0.00</td> 
                             </tr>
                             <tr class="table-dark">
-                                <th colspan="3" class="text-end">الإجمالي الكلي:</th>
+                                <th colspan="3" class="text-end"> {{__('app.total')}}:</th>
                                 <td>{{ number_format($order->total, 2) }}</td>
                             </tr>
                         </tfoot>
@@ -92,17 +114,33 @@
                         @method('PUT')
                         <div class="row align-items-center">
                             <div class="col-md-6">
-                                <label>تحديث حالة الطلب الحالية:</label>
-                                <select name="status" class="form-select">
-                                    <option value="pending" @selected($order->status == 'pending')>قيد الانتظار</option>
-                                    <option value="processing" @selected($order->status == 'processing')>قيد التنفيذ</option>
-                                    <option value="completed" @selected($order->status == 'completed')>مكتمل</option>
-                                    <option value="cancelled" @selected($order->status == 'cancelled')>ملغي</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 mt-4">
-                                <button type="submit" class="btn btn-success">تحديث الحالة</button>
-                            </div>
+                                <td>
+                {{-- @php
+                    $badgeClass = [
+                        'pending' => 'bg-warning',
+                        'processing' => 'bg-info',
+                        'completed' => 'bg-success',
+                        'cancelled' => 'bg-danger',
+                        'refunded' => 'bg-danger'
+                    ][$order->status] ?? 'bg-secondary';
+                @endphp --}}
+                <span class="badge bg-{{ $order->status->color() }} badge-{{ $order->id }}">
+                    {{ $order->status->label() }}
+                </span>
+            </td>
+            <td>
+                <select 
+                    class="form-select form-select-sm order-status"
+                    name="status"
+                    data-id="{{ $order->id }}"
+                    data-old="{{ $order->status->value }}"
+                >
+                    @foreach(\App\Enums\OrderStatus::cases() as $status)
+                        <option value="{{ $status->value }}" @selected($order->status == $status)>
+                           {{ $status->label() }}
+                        </option>
+                    @endforeach
+                </select>
                         </div>
                     </form>
                 </div>
@@ -110,4 +148,70 @@
         </div>
     </div>
 </div>
+@endsection
+
+@push('script')
+
+<script>
+
+    $(document).on('change', '.order-status', function () {
+
+        let select   = $(this);
+        let newStatus = select.val();
+        let oldStatus = select.data('old');
+        let orderId   = select.data('id');
+
+        // same status
+        if (newStatus === oldStatus) {
+            return;
+        }
+
+        select.prop('disabled', true);
+
+        $.ajax({
+            url: `/dashboard/orders/${orderId}`,
+            type: 'PUT',
+            data: {
+                status: newStatus,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function (response) {
+
+                // update old value
+                select.data('old', response.status);
+
+                // updated by
+                $('.updated-by-' + orderId).text(response.updated_by);
+
+                // updated at
+                $('.updated-at-' + orderId).text(response.updated_at);
+
+                // badge
+                // let badgeClass = {
+                //     pending: 'bg-warning',
+                //     processing: 'bg-info',
+                //     completed: 'bg-success',
+                //     cancelled: 'bg-danger',
+                //     refunded: 'bg-danger'
+                // };
+
+                let badge = $('.badge-' + orderId);
+                badge
+                    .removeClass(function (index, className) {
+                    return (className.match(/bg-\S+/g) || []).join(' ');
+                })
+                   .addClass('bg-' + response.color)
+                    .text(response.label);
+            },
+            complete: function () {
+                select.prop('disabled', false);
+            }
+        });
+    });
+
+</script>
+
+@endpush
+
+
 @endsection

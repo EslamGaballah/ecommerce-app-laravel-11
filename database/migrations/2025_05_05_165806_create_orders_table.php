@@ -18,11 +18,17 @@ return new class extends Migration
                 ->constrained('users')
                 ->nullOnDelete();
             $table->string('number')->unique();
-            $table->string('payment_method')->default('cash on delivery');
-            $table->enum('status', ['pending', 'processing', 'delivering', 'completed', 'cancelled', 'refunded'])
-            ->default('pending');
-            $table->enum('payment_status', ['pending', 'paid', 'failed'])
-            ->default('pending');
+            // $table->string('payment_method')->default('cash on delivery');
+            $table->string('payment_method')->default('cash');
+            $table->string('status')->default('pending');
+
+            // $table->enum('status', ['pending', 'processing', 'delivering', 'completed', 'cancelled', 'refunded'])
+            //     ->default('pending');
+            // $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();    
+            // $table->enum('payment_status', ['pending', 'paid', 'failed'])
+            //     ->default('pending');
+            $table->string('payment_status')->default('pending');
+
             
             $table->float('shipping')->default(0);
             $table->float('tax')->default(0);

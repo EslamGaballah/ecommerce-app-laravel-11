@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             RolePermissionSeeder::class,
             CategorySeeder::class,
             ProductSeeder::class,
+            GovernorateSeeder::class
         ]);
 
 

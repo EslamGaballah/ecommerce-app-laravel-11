@@ -11,19 +11,19 @@
 @endif
 
     <div class="form-group">
-        <x-form.input label="Category Name" class="form-control-lg" role="input" name="name" :value="$category->name" />
+        <x-form.input label="{{ __('app.name') }}" class="form-control-lg" role="input" name="name" :value="$category->name" />
     </div>
     <div class="form-group">
-        <label for="">Category Parent</label>
+        <label for="">{{ __('app.parent') }}</label>
          <select name="parent_id" class="form-control form-select">
-            <option value="">Primary Category</option>
+            <option value="">{{ __('app.parent') }}</option>
             @foreach($parents as $parent)
             <option value="{{ $parent->id }}" @selected(old('parent_id', $category->parent_id) == $parent->id)>{{ $parent->name }}</option>
             @endforeach
         </select>
     </div>
     <div class="form-group">
-        <label for="">Description</label>
+        <label for="">{{ __('app.description') }}</label>
         <x-form.textarea name="description" :value="$category->description" />
     </div>
     {{-- <div class="form-group">
@@ -34,11 +34,15 @@
         @endif
     </div> --}}
     <div class="form-group">
-        <label for="">Status</label>
+        <label for="">{{ __('app.status') }}</label>
         <div>
-            <x-form.radio name="status" :checked="$category->status" :options="['active' => 'Active', 'archived' => 'Archived']" />
+            <x-form.radio name="status" :checked="$category->status" 
+                :options="[
+                    'active' =>  __('app.active') , 
+                    'archived' =>  __('app.archived') 
+                    ]" />
         </div>
     </div>
     <div class="form-group">
-        <button type="submit" class="btn btn-primary">{{ $button_label ?? 'Save' }}</button>
+        <button type="submit" class="btn btn-primary">{{ __( $button_label ?? 'app.save') }}</button>
     </div>

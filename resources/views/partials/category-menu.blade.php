@@ -1,8 +1,8 @@
  <div class="mega-category-menu">
-    <span class="cat-button"><i class="lni lni-menu"></i>All Categories</span>
+    <span class="cat-button"><i class="lni lni-menu"></i>{{ __('app.categories') }}</span>
     <ul class="sub-category">
         @foreach ($categories as $category )
-            <li><a href="{{ route('dashboard.categories.show', $category->slug) }}">
+            <li><a href="{{ route('dashboard.categories.show', $category->id) }}">
                 {{ $category->name }}
                 <i class="lni lni-chevron-right"></i></a>
                 

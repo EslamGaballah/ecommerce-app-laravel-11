@@ -35,6 +35,51 @@ class Product extends Model
         });
     }
 
+    public function scopeByCategory($query, $categoryIds)
+    {
+        return $query->when($categoryIds, function ($q) use ($categoryIds) {
+        $q->whereIn('category_id', (array)$categoryIds);
+    });
+    }
+
+    
+    // public function scopeByBrand($query, $brandId)
+    // {
+    //     return $query->when($brandId, function ($q) use ($brandId) {
+    //         $q->where('brand_id', $brandId);
+    //     });
+    // }
+
+   
+    public function scopeByPriceRange($query, $min_price, $max_price)
+    {
+        return $query->when($min_price, fn($q) => $q->where('price', '>=', $min_price))
+                    ->when($max_price, fn($q) => $q->where('price', '<=', $max_price));
+    }
+
+    public function scopeSortBy($query, $type)
+    {
+        return match ($type) {
+            'low_price'  => $query->orderBy('price', 'asc'),
+            'high_price' => $query->orderBy('price', 'desc'),
+            'newest'     => $query->orderBy('created_at', 'desc'),
+            'oldest'     => $query->orderBy('created_at', 'asc'),
+            default      => $query->orderBy('id', 'desc'), 
+        };
+    }
+
+    public function favoritedBy()
+    {
+        return $this->belongsToMany(User::class, 'favorites');
+    }
+
+    public function getIsFavoritedAttribute()
+    {
+        if (!auth()->check()) return false;
+        
+        return $this->favoritedBy()->where('user_id', auth()->id())->exists();
+    }
+
     public function user() 
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
@@ -47,22 +92,22 @@ class Product extends Model
 
     public function images() 
     {
-        return $this->hasMany(ProductImage::class);
+        // return $this->hasMany(ProductImage::class);
+
+        return $this->morphMany(Image::class, 'imageable');
+        
     }
 
     public function tags()
     {
-        return $this->belongsToMany(Tag::class);
+        // return $this->belongsToMany(Tag::class);
+
+         return $this->morphToMany(Tag::class, 'taggable');
     }
 
-    public function favoritedBy()
+    public function reviews()
     {
-        return $this->belongsToMany(User::class, 'favorites');
-    }
-
-    public function ratings()
-    {
-        return $this->hasMany(Rating::class);
+        return $this->hasMany(Review::class);
     }
 
     public function averageRating()

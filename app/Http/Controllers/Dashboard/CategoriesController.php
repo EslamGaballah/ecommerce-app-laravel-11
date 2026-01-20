@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
@@ -58,7 +59,8 @@ class CategoriesController extends Controller
      */
     public function show (Category $category)
     {
-        return view('dashboard.categories.show',compact('category'));
+        $products = Product::where('category_id', $category->id)->paginate();
+        return view('dashboard.categories.show',compact('category', 'products'));
     }
 
     /**

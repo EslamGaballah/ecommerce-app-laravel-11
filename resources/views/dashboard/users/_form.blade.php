@@ -1,6 +1,6 @@
 
 <div class="form-group">
-    <label for="">Name</label>
+    <label for="">{{__('app.name')}}</label>
     <x-form.input 
         label="name" 
         class="form-control-lg" 
@@ -11,7 +11,7 @@
 
 <!-- Email Address -->
 <div class="form-group">
-    <label for="">Email</label>
+    <label for="">{{__('app.email')}}</label>
     <x-form.input 
         label="Email" 
         type="email" 
@@ -23,7 +23,7 @@
 
 <!-- Password -->
 <div class="form-group">
-    <label for="">password</label>
+    <label for="">{{__('app.password')}}</label>
     <x-form.input 
         label="password" 
         class="form-control-lg" 
@@ -33,7 +33,7 @@
 
  <!-- Confirm Password -->
 <div class="form-group">
-    <label for="">Confirm Password</label>
+    <label for="">{{__('app.confirm_password')}}</label>
     <x-form.input 
         label="password" 
         class="form-control-lg" 

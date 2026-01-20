@@ -4,14 +4,14 @@
 
 @section('breadcrumb')
     @parent
-    <li class="breadcrumb-item active">Tags</li>
+    <li class="breadcrumb-item active">{{__('app.tags')}}</li>
 @endsection
 
 @section('content')
 
 <div class="mb-5">
     @if(auth()->user()->can('create-tags'))
-        <a href="{{ route('dashboard.Tags.create') }}" class="btn btn-sm btn-outline-primary mr-2">Create</a>
+        <a href="{{ route('dashboard.Tags.create') }}" class="btn btn-sm btn-outline-primary mr-2">{{__('app.create')}}</a>
         {{-- <a href="{{ route('dashboard.categories.trash') }}" class="btn btn-sm btn-outline-dark">Trash</a>  --}}
      @endif
 </div>
@@ -31,7 +31,7 @@
                 </option>
             @endforeach
     </select>
-    <button class="btn btn-dark mx-2">Filter</button>
+    <button class="btn btn-dark mx-2">{{__('app.filter')}}</button>
 </form>
 {{-- end filter --}}
 
@@ -40,10 +40,10 @@
         <tr>
             
             <th>ID</th>
-            <th>Name</th>
-            <th>Product Count</th>
-            <th>Created At</th>
-            <th colspan="2"></th>
+            <th>{{__('app.name')}}</th>
+            <th>{{__('app.numper')}}</th>
+            <th>{{__('app.created_at')}}</th>
+            <th colspan="2">{{__('app.actions')}}</th>
         </tr>
     </thead>
     <tbody>
@@ -59,7 +59,7 @@
             <td>{{ $category->created_at }}</td>
             <td>
                 {{-- @can('categories.update') --}}
-                <a href="{{ route('dashboard.tags.edit', $tag->id) }}" class="btn btn-sm btn-outline-success">Edit</a>
+                <a href="{{ route('dashboard.tags.edit', $tag->id) }}" class="btn btn-sm btn-outline-success">{{__('app.edit')}}</a>
                 {{-- @endcan --}}
             </td> 
              <td> 
@@ -69,7 +69,7 @@
                     <!-- Form Method Spoofing -->
                     <input type="hidden" name="_method" value="delete">
                     @method('delete')
-                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                    <button type="submit" class="btn btn-sm btn-outline-danger">{{ __('app.delete') }}</button>
                 </form>
                 {{-- @endcan --}}
             </td>
@@ -85,6 +85,6 @@
 {{ $tag->appends(request()->query())->links('pagination::bootstrap-5') }}
 {{ $tag->links('pagination::bootstrap-5') }}
 
-{{ $tag->withQueryString()->appends(['search' => 1])->links() }}
+{{ $tag->withQueryString()->appends(['search' => 1])->links('pagination::bootstrap-5') }}
 
 @endsection

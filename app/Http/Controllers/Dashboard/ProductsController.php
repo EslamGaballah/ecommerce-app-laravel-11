@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Models\Category;
+use App\Models\Image;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Traits\UploadImageTrait;
@@ -44,7 +45,7 @@ class ProductsController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreProductRequest $request)
+    public function store(StoreProductRequest $request, Product $product)
     {
         $data = $request->validated();
         $data['user_id'] = auth()->id();
@@ -61,13 +62,10 @@ class ProductsController extends Controller
 
                         $path = $this->uploadImage($imageFile, 'products');
 
-                        $image_alt = $request->image_alt[$index] ?? null;
-
-                        // post_images table
-                        ProductImage::create([
-                            'product_id' => $product->id,
+                        // product_images 
+                            $product->images()->create([ // image table with morph
                             'image' => $path,
-                            'image_alt' => $image_alt,
+                            'alt' => $request->image_alt[$index] ?? null
                         ]);
                     }
                 }
@@ -115,24 +113,25 @@ class ProductsController extends Controller
             try { 
                 $product->update($data);
 
-                // update images
-                if ($request->hasFile('image')) {
-                    // delete old Image
-                    if ($product->image) {
-                       $this->deleteImage($product->image);
+                // update Image_alt
+                if ($request->filled('existing_image_alt')) {
+                    foreach ($request->existing_image_alt as $imageId => $alt) {
+                        Image::where('id', $imageId)->update([
+                            'alt' => $alt
+                        ]);
                     }
-                    
+                }
+
+                // add images without deleting old images
+                 if ($request->hasFile('image')) {
+
                     foreach ($request->file('image') as $index => $imageFile) {
 
                         $path = $this->uploadImage($imageFile, 'products');
 
-                        $image_alt = $request->image_alt[$index] ?? null;
-
-                        // post_images table
-                        ProductImage::create([
-                            'product_id' => $product->id,
+                        $product->images()->create([
                             'image' => $path,
-                            'image_alt' => $image_alt,
+                            'alt'   => $request->image_alt[$index] ?? null,
                         ]);
                     }
                 }

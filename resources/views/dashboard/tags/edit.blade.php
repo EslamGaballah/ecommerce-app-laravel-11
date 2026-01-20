@@ -4,8 +4,8 @@
 
 @section('breadcrumb')
 @parent
-<li class="breadcrumb-item active">Tags</li>
-<li class="breadcrumb-item active">Edit Tag</li>
+<li class="breadcrumb-item active">{{__('app.tags')}}</li>
+<li class="breadcrumb-item active">{{__('app.edit')}}</li>
 @endsection
 
 @section('content')

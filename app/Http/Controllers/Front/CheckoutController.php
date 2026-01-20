@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Front;
 
+use App\Enums\OrderStatus;
 use App\Events\OrderCreated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOrderRequest;
 use App\Interfaces\CartRepositoryInterface;
 use App\Models\Cart;
+use App\Models\Governorate;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Repositories\CartRepository;
@@ -33,7 +35,7 @@ class CheckoutController extends Controller
             $item->quantity * ($item->product->price ?? 0)
         );
 
-        return view('front.checkout',compact('items', 'total'));
+        return view('front.checkout',compact('items', 'total', 'governorate'));
     }
 
     public function store(StoreOrderRequest $request , CartRepositoryInterface $cart) 
@@ -50,7 +52,8 @@ class CheckoutController extends Controller
         try {
                 $order = Order::create([
                     'user_id' => Auth::id(),
-                    'total'=>$total
+                    'total'=>$total,
+                    'status' => OrderStatus::Pending,
                 ]);
             
                 foreach ($items as $item) {
@@ -69,8 +72,10 @@ class CheckoutController extends Controller
                 Db::commit();
                 
                 $cart->empty();
+
                  event(new OrderCreated($order));
-            return redirect()->route('home')->with('success' , 'order created successfully');
+
+                return redirect()->route('home')->with('success' , 'order created successfully');
             } catch (Throwable $e) {
                 DB::rollBack();
                 throw $e;

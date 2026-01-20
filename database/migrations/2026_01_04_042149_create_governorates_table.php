@@ -11,17 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('product_tag', function (Blueprint $table) {
+        Schema::create('governorates', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')
-                ->constrained()
-                ->cascadeOnDelete();
-
-            $table->foreignId('tag_id')
-                ->constrained()
-                ->cascadeOnDelete();
-
-            $table->unique(['product_id', 'tag_id']);
+            $table->string('name'); 
+            $table->decimal('shipping_price', 8, 2);
+            $table->unsignedInteger('delivery_days');
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
         });
     }
 
@@ -30,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('product_tag');
+        Schema::dropIfExists('governorates');
     }
 };

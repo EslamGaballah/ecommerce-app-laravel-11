@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\OrderStatus;
 use App\Models\Product;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -13,8 +14,12 @@ class Order extends Model
         'user_id',
         'status',
         'payment_status',
-        'total'
-        
+        'total',
+        'updated_by',
+    ];
+
+    protected $casts = [
+        'status' => OrderStatus::class,
     ];
 
     protected static function booted()
@@ -68,6 +73,17 @@ class Order extends Model
     public function address() 
     {
         return $this->hasOne(OrderAddress::class);
+    }
+
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+
+    }
+
+    public function statusHistories()
+    {
+        return $this->hasMany(OrdersStatusHistory::class);
     }
     
 }

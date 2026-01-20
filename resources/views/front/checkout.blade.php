@@ -92,9 +92,15 @@
                                                 </div> --}}
                                                 <div class="col-md-6">
                                                     <div class="single-form form-default">
-                                                        <label>Region/State</label>
+                                                        <label>{{__('app.governorate')}}</label>
                                                         <div class="select-items">
-                                                            <x-form.input name="state" placeholder="State" />
+                                                           <option value="">اختر المحافظة</option>
+                                                            @foreach($governorates as $gov)
+                                                                <option value="{{ $gov->id }}">
+                                                                    {{ $gov->name }} - شحن {{ $gov->shipping_price }} جنيه
+                                                                    ({{ $gov->delivery_days }} أيام)
+                                                                </option>
+                                                            @endforeach
                                                         </div>
                                                     </div>
                                                 </div>

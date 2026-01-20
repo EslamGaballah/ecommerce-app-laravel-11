@@ -39,7 +39,7 @@ class AuthenticatedSessionController extends Controller
         
         // return redirect()->intended(route('dashboard', absolute: false));
         if ($request->user()->can('access-dashboard')) {
-            return redirect()->intended(route('dashboard.home'));
+            return redirect()->intended(route('dashboard.index'));
         }
 
         // intended back to last bage after login else ->(route('home'));

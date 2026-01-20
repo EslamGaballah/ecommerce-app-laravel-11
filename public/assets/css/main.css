@@ -29,9 +29,46 @@ Index Of css
 /*======================================
     Variables
 ========================================*/
+
+/* ============== start whatsapp ==================== */
+.whatsapp-float {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 55px;
+    height: 55px;
+    background-color: #25d366;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.3);
+    z-index: 9999;
+    transition: transform .3s ease, box-shadow .3s ease;
+}
+
+.whatsapp-float:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 18px rgba(0,0,0,.4);
+}
+
+@media (max-width: 768px) {
+    .whatsapp-float {
+        bottom: 15px;
+        right: 15px;
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+    }
+}
+/* ============== end whatsapp ==================== */
+
 /*======================================
     Normalize CSS
 ========================================*/
+
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap");
 html {
   scroll-behavior: smooth;
@@ -4595,7 +4632,7 @@ blockquote span {
 
 .post-comments .comments-list li {
   padding: 30px;
-  padding-left: 130px;
+  padding-left: 100px;
   position: relative;
   font-size: 14px;
   border-radius: 4px;
@@ -4662,6 +4699,34 @@ blockquote span {
   color: #888;
 }
 
+.post-comments .comments-list li .comment-desc .desc-top .edit {
+ position: absolute;
+  right: 0;
+  top: 25px;
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 2;
+  background-color: transparent;
+  border-radius: 5px;
+  color: #888;
+  
+}
+
+.post-comments .comments-list li .comment-desc .desc-top .delete {
+  position: absolute;
+  right: 0;
+  top: 50px;
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 2;
+  background-color: transparent;
+  border-radius: 5px;
+  color: #888;
+  
+}
+
 @media (max-width: 767px) {
   .post-comments .comments-list li .comment-desc .desc-top .reply-link {
     position: relative;
@@ -4688,12 +4753,13 @@ blockquote span {
 }
 
 .post-comments .comments-list li.children {
-  margin-left: 130px;
+  margin-left: 30px;
 }
 
 @media (max-width: 767px) {
   .post-comments .comments-list li.children {
     margin: 0;
+
   }
 }
 

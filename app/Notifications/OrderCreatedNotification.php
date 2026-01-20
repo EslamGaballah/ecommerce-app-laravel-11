@@ -7,8 +7,12 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Support\Facades\Log;
 
-class OrderCreatedNotification extends Notification
+use function Laravel\Prompts\info;
+
+class OrderCreatedNotification extends Notification implements ShouldBroadcast, ShouldQueue
 {
     use Queueable;
 
@@ -29,24 +33,57 @@ class OrderCreatedNotification extends Notification
     public function via(object $notifiable): array // $notifiable = model like user that will receive notification
     {
         return [
-            // 'mail',
-             'database', 'broadcast'];
-
-        $channels = ['database'];  // database (default)
-
-        // if ($notifiable->notification_preferences['order_created']['sms'] ?? false) {
-        //     $channels[] = 'vonage';
+             'database', 'broadcast',
+              // 'mail',
+            ];
+        //     $channels = ['database'];  // database (default)
+        // // if ($notifiable->notification_preferences['order_created']['sms'] ?? false) {
+        // //     $channels[] = 'vonage';
+        // // }
+        // // if ($notifiable->notification_preferences['order_created']['mail'] ?? false) {
+        // //     $channels[] = 'mail';
+        // // }
+        // if ($notifiable->notification_preferences['order_created']['broadcast'] ?? false) {
+        //     $channels[] = 'broadcast';
         // }
-        // if ($notifiable->notification_preferences['order_created']['mail'] ?? false) {
-        //     $channels[] = 'mail';
-        // }
-        if ($notifiable->notification_preferences['order_created']['broadcast'] ?? false) {
-            $channels[] = 'broadcast';
-        }
-        return $channels;
+        // return $channels;
+    }
+
+    
+
+    public function toDatabase(object $notifiable): array
+    {
+        return [
+            'message'  => '  طلب جديد رقم # ' . $this->order->id,
+            'order_id' => $this->order->id,
+        ];
+    }
+    
+     public function toBroadcast($notifiable)
+    {
+            // info(kj);
+        return new BroadcastMessage([
+            'message'  => '  طلب جديد رقم # ' . $this->order->id,
+            'order_id' => $this->order->id,
+           
+        ]);
+
     }
 
     /**
+     * Get the array representation of the notification.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(object $notifiable): array
+    {
+         return [
+            'order_id' => $this->order->id,
+            'message' => 'تم اكتمال الطلب رقم #' . $this->order->id,
+        ];
+    }
+}
+/**
      * Get the mail representation of the notification.
      */
     // public function toMail(object $notifiable): MailMessage
@@ -60,50 +97,3 @@ class OrderCreatedNotification extends Notification
     //                 ->action('view order', url('/'))
     //                 ->line('Thank you for using our application!');
     // }
-
-    // public function toDatabase(object $notifiable)
-    // {
-    //     return [
-    //          'body' => "A new order (#{$this->order->number}) created by ((bla bla )).",
-    //         'icon' => 'fas fa-file',
-    //         'url' => url('/dashboard'),
-    //         'order_id' => $this->order->id,
-    //     ];
-                    
-    // }
-     public function toBroadcast($notifiable)
-    {
-
-        //object
-        return new BroadcastMessage([
-            'body' => "A new order (#{$this->order->number}) created by",
-            'icon' => 'fas fa-file',
-            'url' => url('/dashboard'),
-            'order_id' => $this->order->id,
-        ]);
-
-        // array
-        //   return[
-        //     'body' => "A new order (#{$this->order->number}) created by",
-        //     'icon' => 'fas fa-file',
-        //     'url' => url('/dashboard'),
-        //     'order_id' => $this->order->id,
-        // ];
-    }
-
-
-
-
-    /**
-     * Get the array representation of the notification.
-     *
-     * @return array<string, mixed>
-     */
-    public function toArray(object $notifiable): array
-    {
-         return [
-            // 'message' => 'تم إرسال إشعار جديد',
-            // 'user_id' => $notifiable->id,
-        ];
-    }
-}

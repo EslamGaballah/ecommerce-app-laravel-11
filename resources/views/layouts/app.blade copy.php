@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
@@ -17,26 +17,52 @@
 
           <!-- pusher Scripts -->
          <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
-            <script>
+        <script>
+        // Enable pusher logging - don't include this in production
+        Pusher.logToConsole = true;
 
-                // Enable pusher logging - don't include this in production
-                Pusher.logToConsole = true;
+        var pusher = new Pusher('833b9593418dfdb26f5a', {
+          cluster: 'eu',
+          authEndpoint: "/broadcasting/auth",
+          auth: {
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        }
+        });
 
-                var pusher = new Pusher('833b9593418dfdb26f5a', {
-                cluster: 'eu'
-                });
+        var userId = {{ auth()->id() }};
 
-                var channel = pusher.subscribe('OrderChannel');
-                channel.bind('OrderCreated', function(data) {
-                alert(JSON.stringify(data));
-                });
+        var channel = pusher.subscribe(
+            'private-App.Models.User.' + userId
+        );
 
+        channel.bind('Illuminate\\Notifications\\Events\\BroadcastNotificationCreated',
+         function(data) {
+            // alert(JSON.stringify(data));
+            addNotification(data);
+            
+        });
 
-                window.Echo.private(`App.Models.User.{{ Auth::id() }}`)
-                .notification((notification) => {
-                console.log('📢 إشعار جديد:', notification);
-    });
-            </script>
+        function addNotification(data) {
+
+        let payload = data.notification;
+
+        let count = document.getElementById('notification-count');
+
+        count.innerText = parseInt(count.innerText) + 1;
+
+        let li = document.createElement('li');
+
+        li.innerHTML = `
+            <a href="/dashboard/orders/${payload.order_id}">
+                🔔 ${payload.message}
+            </a>
+        `;
+
+        document.getElementById('notification-list').prepend(li);
+        }
+        </script>
 
     </head>
     <body class="font-sans antialiased">
@@ -58,4 +84,4 @@
             </main>
         </div>
     </body>
-</html>
+</html> 

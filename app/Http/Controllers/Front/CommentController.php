@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Front;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Comment\StoreCommentRequest;
 use App\Http\Requests\Comment\UpdateCommentRequest;
 use App\Models\Comment;
@@ -13,12 +14,9 @@ class CommentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index( )
     {
-       $comments = Comment::whereNull('parent_id')
-            ->with('replies')
-            ->latest()
-            ->get();
+      
     }
 
     /**
@@ -42,13 +40,14 @@ class CommentController extends Controller
 
         // return response()->json($data);
 
-        return response()->json([
-            'id' => $comment->id,
-            'body' => $comment->body,
-            'parent_id' => $comment->parent_id,
-            'user' => $comment->user->name,
-        ]);
+        // return response()->json([
+        //     'id' => $comment->id,
+        //     'body' => $comment->body,
+        //     'parent_id' => $comment->parent_id,
+        //     'user' => $comment->user->name,
+        // ]);
 
+        return back();
         // return response()->json([
         // 'message' => 'Comment created successfully',
         // ]);
@@ -79,10 +78,10 @@ class CommentController extends Controller
         $comment->update([
         'comment' => $request->comment,
     ]);
-
-        return response()->json([
-        'message' => 'Comment updated successfully',
-        ]);
+        return back();
+        // return response()->json([
+        // 'message' => 'Comment updated successfully',
+        // ]);
     }
 
     /**
@@ -90,6 +89,8 @@ class CommentController extends Controller
      */
     public function destroy(comment $comment)
     {
-        //
+        $comment->delete();
+
+        return back();
     }
 }

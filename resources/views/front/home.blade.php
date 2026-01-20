@@ -207,7 +207,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="section-title">
-                        <h2>Trending Product</h2>
+                        <h2>{{ __('app.trending_products') }}</h2>
                         <p>There are many variations of passages of Lorem Ipsum available, but the majority have
                             suffered alteration in some form.</p>
                     </div>
@@ -225,7 +225,7 @@
     <!-- End Trending Product Area -->
 
     <!-- Start Banner Area -->
-    <section class="banner section">
+    {{-- <section class="banner section">
         <div class="container">
             <div class="row">
                 <div class="col-lg-6 col-md-6 col-12">
@@ -254,11 +254,11 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> --}}
     <!-- End Banner Area -->
 
     <!-- Start Special Offer -->
-    <section class="special-offer section">
+    {{-- <section class="special-offer section">
         <div class="container">
             <div class="row">
                 <div class="col-12">
@@ -428,11 +428,11 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> --}}
     <!-- End Special Offer -->
 
     <!-- Start Home Product List -->
-    <section class="home-product-list section">
+    {{-- <section class="home-product-list section">
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 col-md-4 col-12 custom-responsive-margin">
@@ -563,11 +563,11 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> --}}
     <!-- End Home Product List -->
 
     <!-- Start Brands Area -->
-    <div class="brands">
+    {{-- <div class="brands">
         <div class="container">
             <div class="row">
                 <div class="col-lg-6 offset-lg-3 col-md-12 col-12">
@@ -603,7 +603,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
     <!-- End Brands Area -->
 
     <!-- Start Blog Section Area -->
@@ -612,36 +612,45 @@
             <div class="row">
                 <div class="col-12">
                     <div class="section-title">
-                        <h2>Our Latest News</h2>
+                        <h2>{{ __('app.our_latest_news') }}</h2>
                         <p>There are many variations of passages of Lorem
                             Ipsum available, but the majority have suffered alteration in some form.</p>
                     </div>
                 </div>
             </div>
             <div class="row">
-                <div class="col-lg-4 col-md-6 col-12">
-                    <!-- Start Single Blog -->
-                    <div class="single-blog">
-                        <div class="blog-img">
-                            <a href="blog-single-sidebar.html">
-                                <img src="https://via.placeholder.com/370x215" alt="#">
-                            </a>
-                        </div>
-                        <div class="blog-content">
-                            <a class="category" href="javascript:void(0)">eCommerce</a>
-                            <h4>
-                                <a href="blog-single-sidebar.html">What information is needed for shipping?</a>
-                            </h4>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                                incididunt.</p>
-                            <div class="button">
-                                <a href="javascript:void(0)" class="btn">Read More</a>
+                @forelse ($posts as $post)
+
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <!-- Start Single Blog -->
+                        <div class="single-blog">
+                            <div class="blog-img">
+                                <a href="{{ route('dashboard.posts.show', $post->id) }}">
+                                    <img src="{{ asset('storage/' . $post->images->first()?->image) ?? 'https://via.placeholder.com/850x460' }}" 
+                                    alt="{{ $post->title }}">
+                                </a>
+                            </div>
+                            <div class="blog-content">
+                                @if($post->category)
+                                    <a class="category" href="{{ route('dashboard.categories.show', $post->category->id) }}">{{ $post->category->name }}</a>
+                                @endif
+                                <h4>
+                                    <a href="{{ route('dashboard.posts.show', $post->id) }}">{{$post->title}}</a>
+                                </h4>
+                                <p>{{ $post->excerpt }}</p>
+                                <div class="button">
+                                    <a href="{{ route('dashboard.posts.show', $post->id) }}" class="btn">{{ __('app.read_more') }}</a>
+                                </div>
                             </div>
                         </div>
+                        <!-- End Single Blog -->
                     </div>
-                    <!-- End Single Blog -->
-                </div>
-                <div class="col-lg-4 col-md-6 col-12">
+
+                 @empty
+                    No posts yet!
+                @endforelse
+
+                {{-- <div class="col-lg-4 col-md-6 col-12">
                     <!-- Start Single Blog -->
                     <div class="single-blog">
                         <div class="blog-img">
@@ -662,8 +671,8 @@
                         </div>
                     </div>
                     <!-- End Single Blog -->
-                </div>
-                <div class="col-lg-4 col-md-6 col-12">
+                </div> --}}
+                {{-- <div class="col-lg-4 col-md-6 col-12">
                     <!-- Start Single Blog -->
                     <div class="single-blog">
                         <div class="blog-img">
@@ -685,7 +694,7 @@
                         </div>
                     </div>
                     <!-- End Single Blog -->
-                </div>
+                </div> --}}
             </div>
         </div>
     </section>

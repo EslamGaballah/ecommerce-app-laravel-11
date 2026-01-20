@@ -4,7 +4,7 @@
 
 @section('breadcrumb')
     @parent
-    <li class="breadcrumb-item active">Favorites</li>
+    <li class="breadcrumb-item active">{{ __('app.favorites') }}</li>
 @endsection
 
 @section('content')
@@ -15,13 +15,13 @@
 <table class="table">
     <thead>
         <tr>
-            <th>image</th>
+            <th>{{ __('app.images') }}</th>
             <th>ID</th>
-            <th>Product</th>
-            <th>Category</th>
-            <th>description </th>
-            <th>stock</th>
-            <th colspan="2"></th>
+            <th>{{ __('app.products') }}</th>
+            <th>{{ __('app.categories') }}</th>
+            <th>{{ __('app.description') }} </th>
+            <th>{{ __('app.stock') }}</th>
+            <th colspan="2">{{ __('app.actions') }}</th>
         </tr>
     </thead>
     <tbody>
@@ -36,17 +36,17 @@
             <td>{{ $favorite->description }}</td>
             <td>
                 @if ($favorite->products_number > 0)
-                    {{ $favorite->products_number }}
+                   {{ __('app.in_stock') }}
                 @else
-                    <span class="text-danger">out of stock</span>
+                    <span class="text-danger">{{ __('app.out_of_stock') }}</span>
                 @endif
             </td>
             <td> 
-                <form method="POST" action="{{ route('favorites.destroy', $favorite->id) }}">
+                <form method="POST" action="{{ route('favorites.toggle', $favorite->id) }}">
                     @csrf
                         <input type="hidden" name="_method" value="delete">
                     @method('DELETE')
-                    <button type="submit" class="btn btn-sm btn-outline-danger">Remove from Favorites</button>
+                    <button type="submit" class="btn btn-sm btn-outline-danger">{{__('app.remove_from_favorites')}}</button>
                 </form>
             </td>
         </tr>

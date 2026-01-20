@@ -18,15 +18,18 @@ return new class extends Migration
 
 
             $table->string('name');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->string('slug')->unique();
             $table->decimal('price', 8, 2)->default(0);
             $table->decimal('compare_price', 8, 2)->nullable();
             $table->unsignedSmallInteger('quantity')->default(0);
             $table->json('options')->nullable();
-            $table->float('rating',1, 1)->default(0);
+            $table->decimal('rating_avg', 3, 2)->default(0);
+            $table->unsignedInteger('rating_count')->default(0);
             $table->boolean('featured')->default(0);
-            $table->enum('status',['active', 'draft', 'archived'])->default('active');
+            // $table->enum('status',['active', 'draft', 'archived'])->default('active');
+            $table->string('status')->default('active');
+
             $table->timestamps();
 
             $table->softDeletes();

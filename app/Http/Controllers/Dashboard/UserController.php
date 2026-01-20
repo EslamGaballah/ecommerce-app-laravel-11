@@ -15,7 +15,7 @@ class UserController extends Controller
 
    public function __construct()
 {
-$this->middleware('can:viewAny,' . \App\Models\User::class);
+// $this->middleware('can:viewAny,' . \App\Models\User::class);
 }
     /**
      * Display a listing of the resource.

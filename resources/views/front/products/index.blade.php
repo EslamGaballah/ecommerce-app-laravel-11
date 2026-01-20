@@ -1,100 +1,367 @@
-@extends('layouts.dashboard')
+<x-front-layout >
 
-@section('title', 'Products')
-
-@section('breadcrumb')
-    @parent
-    <li class="breadcrumb-item active">Products</li>
-@endsection
-
-@section('content')
-
-
-
-<form action="{{ url()->current() }}" method="get" class="d-flex justify-content-between mb-4">
-    <x-form.input name="name" placeholder="Name" class="mx-2" :value="request('name')" />
-    <select name="status" class="form-control mx-2">
-        <option value="">All</option>
-        <option value="active" @selected(request('status') == 'active')>Active</option>
-        <option value="archived" @selected(request('status') == 'archived')>Archived</option>
-    </select>
-    <button class="btn btn-dark mx-2">Filter</button>
-</form>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>#</th>
-            <th>ID</th>
-            <th>Name</th>
-            <th>description </th>
-            <th>category</th>
-            <th>price</th>
-            <th>Status</th>
-            {{-- <th>Quantity</th> --}}
-            <th>####</th>
-            <th colspan="2"></th>
-        </tr>
-    </thead>
-    <tbody>
-        @forelse($products as $product)
-        <tr>
-            <td><img src="{{ asset('storage/' . $product->image) }}" alt="" height="50"></td>
-            <td>{{ $product->id }}</td>
-            <td><a href="{{ route('front.products.show', $product->id) }}">{{ $product->name }}</a></td>
-            <td>{{ $product->description }}</td>
-            {{-- <td>{{ $category->products_number }}</td> --}}
-            <td>{{ $product->category->name }}</td>
-            <td>{{ $product->price }}</td>
-            <td>{{ $product->status }}</td>
-            <td>
-                <form method="post" action="{{ route('cart.store') }}">
-                    @csrf
-                    <input type="hidden" name="product_id" value="{{ $product->id }}">
-                    <div class="col-lg-4 col-md-4 col-12">
-                        <div class="form-group quantity">
-                            {{-- <label for="quantity">Quantity</label> --}}
-                            <select class="form-control" name="quantity">
-                                <option>1</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
-                                <option>5</option>
-                            </select>
+    <x-slot:breadcrumb>
+        <div class="breadcrumbs">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 col-md-6 col-12">
+                        <div class="breadcrumbs-content">
+                            <h1 class="page-title">{{ __('app.products')  }}</h1>
                         </div>
                     </div>
-                    
-                    <button type="submit" class="btn btn-sm btn-outline-success">add to cart</button>
-                </form>
-                {{-- @can('categories.update') --}}
-                {{-- @endcan --}}
-            </td> 
-             <td> 
-                {{-- @can('categories.delete') --}}
-                {{-- <form action="{{ route('dashboard.categories.destroy', $category->id) }}" method="post">
-                    @csrf
-                    <!-- Form Method Spoofing -->
-                    <input type="hidden" name="_method" value="delete">
-                    @method('delete')
-                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                </form> --}}
-                {{-- @endcan --}}
-            </td>
-        </tr>
-        @empty
-        <tr>
-            <td colspan="9">No categories defined.</td>
-        </tr>
-        @endforelse
-    </tbody>
-</table>
+                    <div class="col-lg-6 col-md-6 col-12">
+                        <ul class="breadcrumb-nav">
+                            <li><a href="{{ route('home') }}"><i class="lni lni-home"></i> {{ __('app.home') }}</a></li>
+                            <li><a href="{{ route('products.index') }}">{{ __('app.shop') }}</a></li>
+                            <li>{{ __('app.products')  }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </x-slot:breadcrumb>
+       
 
-{{ $products->
-// withQueryString()->
-// appends(['search' => 1])->
-links() }}
+    <!-- Start Product Grids -->
+    <section class="product-grids section">
+        <div class="container">
+            <div class="row">
 
-{{-- {{ $categories->appends(request()->query())->links('pagination::bootstrap-5') }} --}}
-{{-- {{ $categories->links('pagination::bootstrap-5') }} --}}
+                    <!----------------- Start Product Sidebar ------------------->
+                <aside class="col-lg-3 col-12">
+                    <div class="filter-sidebar">
+                        <div class="product-sidebar">
+                            <!-- Start Single Widget -->
+                            {{-- <div class="single-widget search">
+                                <h3>{{ __('app.search') }}</h3>
+                                <form action="#">
+                                    <input type="text" placeholder="{{ __('app.search') }}...">
+                                    <button type="submit"><i class="lni lni-search-alt"></i></button>
+                                </form>
+                            </div> --}}
+                            <!-- End Single Widget -->
+                            <!-- Start Single Widget -->
+                            <div class="single-widget">
+                                <h3>{{ __('app.categories') }}</h3>
+                                  @foreach($categories as $category)
+                                    <div class="form-check">
+                                        <input class="form-check-input filter-input" 
+                                            type="checkbox" 
+                                            name="category_id[]" 
+                                            value="{{ $category->id }}" 
+                                            id="cat-{{ $category->id }}">
+                                        <label class="form-check-label" for="cat-{{ $category->id }}">{{ $category->name }}
+                                            <span>({{ $category->products_count }})</span>
+                                        </label>
+                                    </div>
+                                @endforeach  
 
-@endsection
+                                <!-- End Single Widget -->
+                            </div>
+                            <!-- End Single Widget -->
+                            <!-- Start Single Widget -->
+                            {{-- <div class="single-widget range">
+                                <h3>Price Range</h3>
+                                <input type="range" class="form-range" name="range" step="1" min="100" max="10000"
+                                    value="10" onchange="rangePrimary.value=value">
+                                <div class="range-inner">
+                                    <label>$</label>
+                                    <input type="text" id="rangePrimary" placeholder="100" />
+                                </div>
+                            </div> --}}
+                            <!-- End Single Widget -->
+                            <!-- Start Single Widget -->
+                            <div class="single-widget condition">
+                                <h3>Filter by Price</h3>
+                                {{-- <div class="form-check"> --}}
+                                    <input class="form-control filter-input" type="number"
+                                        name= "min_price" 
+                                        value="" 
+                                        placeholder="أقل سعر"
+                                        >
+                                    {{-- <label class="form-check-label" for="flexCheckDefault1">
+                                        $50 - $100L (208)
+                                    </label> --}}
+                                {{-- </div> --}}
+                                {{-- <div class="form-check"> --}}
+                                    <input class="form-control filter-input" type="number"
+                                        name= "max_price" 
+                                        value="" 
+                                        placeholder="اعلى سعر"
+                                        >
+                                    {{-- <label class="form-check-label" for="flexCheckDefault1">
+                                        $50 - $100L (208)
+                                    </label> --}}
+                                {{-- </div> --}}
+                                {{-- <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault2">
+                                    <label class="form-check-label" for="flexCheckDefault2">
+                                        $100L - $500 (311)
+                                    </label>
+                                </div> --}}
+                            </div>
+                            <!-- End Single Widget -->
+                            <!-- Start Single Widget -->
+                            {{-- <div class="single-widget condition">
+                                <h3>Filter by Brand</h3>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault11">
+                                    <label class="form-check-label" for="flexCheckDefault11">
+                                        Apple (254)
+                                    </label>
+                                </div>
+                                
+                            </div> --}}
+                            <!-- End Single Widget -->
+                        </div>
+                        <!-- End Product Sidebar -->
+                    </div>
+                </aside>
+
+                    <!-- Start Products area -->
+                <div class="col-lg-9 col-12">
+                    <div class="product-grids-head">
+                        <div class="product-grid-topbar">
+                            <div class="row align-items-center">
+                                <div class="col-lg-7 col-md-8 col-12">
+                                    <div class="product-sorting">
+
+                                       <form method="GET" id="sortingForm">
+                                            <label for="sorting">Sort by:</label>
+                                            <select class="form-control filter-input" id="sorting" name="sort_by"
+                                                 {{-- onchange="this.form.submit()" --}}
+                                                 >
+                                                <option value="">Default</option>
+                                                <option value="low_price" @selected(request('sort') == 'low_price')> Lower Price</option>
+                                                <option value="high_price" @selected(request('sort') == 'high_price')> higher Price</option>
+                                                <option value="rating" @selected(request('sort') == 'rating')>Average Rating</option>
+                                                <option value="newest" @selected(request('sort') == 'newest')>Newest</option>
+                                                <option value="oldest" @selected(request('sort') == 'oldest')></option>
+                                            </select>
+                                            <h3 class="total-show-product">Showing: 
+                                                <span>{{ $products->firstItem() }} to {{ $products->lastItem() }}
+                                                of {{ $products->total() }} items
+                                                </span></h3>
+                                        </form>
+
+                                       
+                                    </div>
+                                </div>
+                                <div class="col-lg-5 col-md-4 col-12">
+                                    <nav>
+                                        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                            <button class="nav-link active" id="nav-grid-tab" data-bs-toggle="tab"
+                                                data-bs-target="#nav-grid" type="button" role="tab"
+                                                aria-controls="nav-grid" aria-selected="true"><i
+                                                    class="lni lni-grid-alt"></i></button>
+                                            <button class="nav-link" id="nav-list-tab" data-bs-toggle="tab"
+                                                data-bs-target="#nav-list" type="button" role="tab"
+                                                aria-controls="nav-list" aria-selected="false"><i
+                                                    class="lni lni-list"></i></button>
+                                        </div>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-content" id="nav-tabContent">
+                            <div class="tab-pane fade show active" id="nav-grid" role="tabpanel"
+                                aria-labelledby="nav-grid-tab">
+                                {{-- <div class="row"> --}}
+
+                                    <div id="products-container">
+                                        @include('front.products._list')
+                                    </div>
+
+                                    {{-- @forelse ($products as $product)
+                                        <div class="col-lg-4 col-md-6 col-12">
+                                            <!-- Start Single Product -->
+                                            <x-product-card :product="$product" />
+                                            <!-- End Single Product -->
+                                        </div>
+                                    @empty
+                                             <p>No Products! </p>
+                                    @endforelse --}}
+
+                                    {{-- <div class="col-lg-4 col-md-6 col-12">
+                                        <!-- Start Single Product -->
+                                        <div class="single-product">
+                                            <div class="product-image">
+                                                <img src="https://via.placeholder.com/335x335" alt="#">
+                                                <span class="sale-tag">-25%</span>
+                                                <div class="button">
+                                                    <a href="product-details.html" class="btn"><i
+                                                            class="lni lni-cart"></i> Add to Cart</a>
+                                                </div>
+                                            </div>
+                                            <div class="product-info">
+                                                <span class="category">Speaker</span>
+                                                <h4 class="title">
+                                                    <a href="product-grids.html">Bluetooth Speaker</a>
+                                                </h4>
+                                                <ul class="review">
+                                                    <li><i class="lni lni-star-filled"></i></li>
+                                                    <li><i class="lni lni-star-filled"></i></li>
+                                                    <li><i class="lni lni-star-filled"></i></li>
+                                                    <li><i class="lni lni-star-filled"></i></li>
+                                                    <li><i class="lni lni-star-filled"></i></li>
+                                                    <li><span>5.0 Review(s)</span></li>
+                                                </ul>
+                                                <div class="price">
+                                                    <span>$275.00</span>
+                                                    <span class="discount-price">$300.00</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- End Single Product -->
+                                    </div>
+                                    
+                                </div>
+                                
+                            </div>
+                            {{-- <div class="tab-pane fade" id="nav-list" role="tabpanel" aria-labelledby="nav-list-tab">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-12">
+                                        <!-- Start Single Product -->
+                                        <div class="single-product">
+                                            <div class="row align-items-center">
+                                                <div class="col-lg-4 col-md-4 col-12">
+                                                    <div class="product-image">
+                                                        <img src="https://via.placeholder.com/335x335" alt="#">
+                                                        <div class="button">
+                                                            <a href="product-details.html" class="btn"><i
+                                                                    class="lni lni-cart"></i> Add to
+                                                                Cart</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-8 col-md-8 col-12">
+                                                    <div class="product-info">
+                                                        <span class="category">Watches</span>
+                                                        <h4 class="title">
+                                                            <a href="product-grids.html">Xiaomi Mi Band 5</a>
+                                                        </h4>
+                                                        <ul class="review">
+                                                            <li><i class="lni lni-star-filled"></i></li>
+                                                            <li><i class="lni lni-star-filled"></i></li>
+                                                            <li><i class="lni lni-star-filled"></i></li>
+                                                            <li><i class="lni lni-star-filled"></i></li>
+                                                            <li><i class="lni lni-star"></i></li>
+                                                            <li><span>4.0 Review(s)</span></li>
+                                                        </ul>
+                                                        <div class="price">
+                                                            <span>$199.00</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- End Single Product -->
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <!-- Pagination -->
+                                        <div class="pagination left">
+                                            <ul class="pagination-list">
+                                                <li><a href="javascript:void(0)">1</a></li>
+                                                <li class="active"><a href="javascript:void(0)">2</a></li>
+                                                <li><a href="javascript:void(0)">3</a></li>
+                                                <li><a href="javascript:void(0)">4</a></li>
+                                                <li><a href="javascript:void(0)"><i
+                                                            class="lni lni-chevron-right"></i></a></li>
+                                            </ul>
+                                        </div>
+                                        <!--/ End Pagination -->
+                                    </div>
+                                </div>
+                            </div> --}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- End Product Grids -->
+
+   
+
+    <!-- ========================= scroll-top ========================= -->
+    <a href="#" class="scroll-top">
+        <i class="lni lni-chevron-up"></i>
+    </a>
+
+    
+    @push('style')
+<style>
+.pagination {
+    display: flex !important;
+    justify-content: center;
+}
+</style>
+@endpush
+
+
+
+@push('script')
+<script>
+    function fetchProducts(url = null) {
+        let categories = [];
+        $('input[name="category_id[]"]:checked').each(function() {
+            categories.push($(this).val());
+        });
+
+        let data = {
+            category_id: categories,
+            sort_by: $('select[name="sort_by"]').val(),
+            min_price: $('input[name="min_price"]').val(),
+            max_price: $('input[name="max_price"]').val(),
+        };
+
+        let fetchUrl = url ? url : "{{ route('products.index') }}";
+
+        $.ajax({
+            url: fetchUrl,
+            data: data,
+            beforeSend: function() {
+                $('#products-container').css('opacity', '0.5'); // تأثير بصري أثناء التحميل
+            },
+            success: function(response) {
+                $('#products-container').html(response);
+                $('#products-container').css('opacity', '1');
+                
+                // تحديث الرابط في المتصفح
+                window.history.pushState({}, '', fetchUrl + (fetchUrl.includes('?') ? '&' : '?') + $.param(data));
+                
+                // العودة للأعلى بسلاسة عند الانتقال لصفحة جديدة
+                if(url) {
+                    $('html, body').animate({scrollTop: $(".product-grids").offset().top - 50}, 500);
+                }
+            }
+        });
+    }
+
+    // مراقبة التغيير في المدخلات
+    $(document).on('change', '.filter-input', function() {
+        fetchProducts();
+    });
+
+    // إصلاح الضغط على الروابط (تم حذف التكرار)
+    $(document).on('click', '.pagination a', function(e) {
+        e.preventDefault();
+        let url = $(this).attr('href');
+        if (url && url !== '#') {
+            fetchProducts(url);
+        }
+    });
+
+    // مراقبة حقول السعر
+    let timer;
+    $(document).on('keyup', 'input.filter-input', function() {
+        clearTimeout(timer);
+        timer = setTimeout(fetchProducts, 500); 
+    });
+</script>
+@endpush
+
+</x-front-layout>
+

@@ -6,8 +6,8 @@
     <!-- Shopping Items -->
     <div class="shopping-item">
         <div class="dropdown-cart-header">
-            <span>{{ $items->count() }} Items</span>
-            <a href="{{ route('cart.index') }}">View Cart</a>
+            <span>{{ $items->count() }} {{ __('app.products') }}</span>
+            <a href="{{ route('cart.index') }}">{{ __('app.view_cart') }}</a>
         </div>
 
         <ul class="shopping-list">
@@ -28,11 +28,11 @@
 
         <div class="bottom">
             <div class="total">
-                <span>Total</span>
+                <span>{{ __('app.total') }}</span>
                 <span class="total-amount">{{ Currency::format($total) }}</span>
             </div>
             <div class="button">
-                <a href="{{ route('checkout') }}" class="btn animate">Checkout</a>
+                <a href="{{ route('checkout') }}" class="btn animate">{{ __('app.checkout') }}</a>
             </div>
         </div>
     </div>

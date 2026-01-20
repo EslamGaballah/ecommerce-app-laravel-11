@@ -4,13 +4,13 @@
 
 @section('breadcrumb')
     @parent
-    <li class="breadcrumb-item active">users</li>
+    <li class="breadcrumb-item active">{{__('app.users')}}</li>
 @endsection
 
 @section('content')
 
 <div class="mb-5">
-    <a href="{{ route('dashboard.users.create') }}" class="btn btn-sm btn-outline-primary mr-2">Create</a>
+    <a href="{{ route('dashboard.users.create') }}" class="btn btn-sm btn-outline-primary mr-2">{{__('app.create')}}</a>
 </div>
 
 <x-alert type="success" />
@@ -20,11 +20,11 @@
     <thead>
         <tr>
             <th>ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Roles</th>
-            <th>Created At</th>
-            <th colspan="2"></th>
+            <th>{{__('app.name')}}</th>
+            <th>{{__('app.email')}}</th>
+            <th>{{__('app.roles')}}</th>
+            <th>{{__('app.created_at')}}</th>
+            <th colspan="2">{{__('app.action')}}</th>
         </tr>
     </thead>
     <tbody>
@@ -33,11 +33,11 @@
             <td>{{ $user->id }}</td>
             <td><a href="{{ route('dashboard.users.show', $user->id) }}">{{ $user->name }}</a></td>
             <td>{{ $user->email }}</td>
-            <td>{{ $user->roles->first()->name }}</td>
+            <td>{{ $user->roles->first()?->name }}</td>
             <td>{{ $user->created_at }}</td>
             <td>
                 @can('users.update')
-                <a href="{{ route('dashboard.users.edit', $user->id) }}" class="btn btn-sm btn-outline-success">Edit</a>
+                <a href="{{ route('dashboard.users.edit', $user->id) }}" class="btn btn-sm btn-outline-success">{{__('app.edit')}}</a>
                 @endcan
             </td>
             <td>
@@ -47,7 +47,7 @@
                     <!-- Form Method Spoofing -->
                     <input type="hidden" name="_method" value="delete">
                     @method('delete')
-                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                    <button type="submit" class="btn btn-sm btn-outline-danger">{{__('app.delete')}}</button>
                 </form>
                 @endcan
             </td>

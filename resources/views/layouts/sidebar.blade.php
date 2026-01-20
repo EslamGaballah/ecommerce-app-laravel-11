@@ -53,13 +53,34 @@
                   </li>
                 </ul>
               </li> --}}
+
+              <li class="nav-item">
+                  <a href="{{route('home')}}" class="nav-link">
+                    <i class="nav-icon fas fa-th"></i>
+                    <p>
+                      {{ __('app.home') }}
+                      <span class="right badge badge-danger">{{ __('app.new') }}</span>
+                    </p>
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a href="{{route('dashboard.index')}}" class="nav-link">
+                    <i class="nav-icon fas fa-th"></i>
+                    <p>
+                      {{ __('app.dashboard') }}
+                      <span class="right badge badge-danger">{{ __('app.new') }}</span>
+                    </p>
+                  </a>
+                </li>
+
               @can('view-categories')
                 <li class="nav-item">
                   <a href="{{route('dashboard.categories.index')}}" class="nav-link">
                     <i class="nav-icon fas fa-th"></i>
                     <p>
-                    categories
-                      <span class="right badge badge-danger">New</span>
+                    {{ __('app.categories') }}
+                      <span class="right badge badge-danger">{{ __('app.new') }}</span>
                     </p>
                   </a>
                 </li>
@@ -70,8 +91,8 @@
                   <a href="{{route('dashboard.products.index')}}" class="nav-link">
                     <i class="nav-icon fas fa-th"></i>
                     <p>
-                      products
-                      <span class="right badge badge-danger">New</span>
+                      {{ __('app.products') }}
+                      <span class="right badge badge-danger">{{ __('app.new') }}</span>
                     </p>
                   </a>
                 </li>
@@ -82,8 +103,20 @@
                   <a href="{{route('dashboard.orders.index')}}" class="nav-link">
                     <i class="nav-icon fas fa-th"></i>
                     <p>
-                      orders
-                      <span class="right badge badge-danger">New</span>
+                      {{ __('app.orders') }}
+                      <span class="right badge badge-danger">{{ __('app.new') }}</span>
+                    </p>
+                  </a>
+                </li>
+              {{-- @endcan --}}
+
+              {{-- @can('view-product') --}}
+                <li class="nav-item">
+                  <a href="{{route('dashboard.posts.index')}}" class="nav-link">
+                    <i class="nav-icon fas fa-th"></i>
+                    <p>
+                      {{ __('app.blog') }}
+                      <span class="right badge badge-danger">{{ __('app.new') }}</span>
                     </p>
                   </a>
                 </li>
@@ -94,8 +127,8 @@
                   <a href="{{route('dashboard.users.index')}}" class="nav-link">
                     <i class="nav-icon fas fa-th"></i>
                     <p>
-                      users
-                      <span class="right badge badge-danger">New</span>
+                      {{ __('app.users') }}
+                      <span class="right badge badge-danger">{{ __('app.new') }}</span>
                     </p>
                   </a>
                 </li>
@@ -106,8 +139,8 @@
                   <a href="{{route('dashboard.roles.index')}}" class="nav-link">
                     <i class="nav-icon fas fa-th"></i>
                     <p>
-                      roles
-                      <span class="right badge badge-danger">New</span>
+                      {{ __('app.roles') }}
+                      <span class="right badge badge-danger">{{ __('app.new') }}</span>
                     </p>
                   </a>
                 </li>
@@ -118,8 +151,8 @@
                   <a href="{{route('login')}}" class="nav-link">
                     <i class="nav-icon fas fa-th"></i>
                     <p>
-                      login
-                      <span class="right badge badge-danger">New</span>
+                      {{ __('app.login') }}
+                      <span class="right badge badge-danger">{{ __('app.new') }}</span>
                     </p>
                   </a>
                 </li>
@@ -131,8 +164,8 @@
                   <a href="{{route('register')}}" class="nav-link">
                     <i class="nav-icon fas fa-th"></i>
                     <p>
-                      register
-                      <span class="right badge badge-danger">New</span>
+                      {{ __('app.register') }}
+                      <span class="right badge badge-danger">{{ __('app.new') }}</span>
                     </p>
                   </a>
                 </li>
@@ -142,7 +175,7 @@
                 <li class="nav-item">
                   <form method="POST" action="{{ route('logout') }}" class="nav-link">
                     @csrf
-                    <button type="submit">logout</button>
+                    <button type="submit">{{ __('app.logout') }}</button>
                   </form>
                 </li>
               

@@ -31,13 +31,13 @@ class CartRepository implements CartRepositoryInterface
         $item =  Cart::where('product_id', '=', $product->id)->first();
         
         if (!$item) {
-            $cart = Cart::create([
+            $item = Cart::create([
                 'user_id' => Auth::id(),
                 'product_id' => $product->id,
                 'quantity' => $quantity,
             ]);
-            $this->get()->push($cart); // add product to collection ($this=> collection)
-            return $cart;
+            $this->items->push($item); // add product to collection ($this=> collection)
+            return $item;
         }
 
         return $item->increment('quantity', $quantity);
@@ -45,27 +45,36 @@ class CartRepository implements CartRepositoryInterface
 
     public function update($id, $quantity)
     {
-        Cart::where('id', '=', $id)
-            ->update([
-                'quantity' => $quantity,
-            ]);
+        $item = Cart::with('product')->findOrFail($id);
+
+        $item->update([
+            'quantity' => $quantity,
+        ]);
+
+        $this->items = collect(); // reset cache
+        
+        return $item;
     }
 
     public function delete($id)
     {
         Cart::where('id', '=', $id)
             ->delete();
+
+        $this->items = collect(); // reset cache
     }
 
     public function empty()
     {
         Cart::query()->delete();
+        $this->items = collect();
     }
 
     public function total() : float
     {   
             // using collection
         return $this->get()->sum(function($item) {
+
             return $item->quantity * $item->product->price;
         });
     }

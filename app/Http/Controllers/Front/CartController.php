@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Front;
 
+use App\Helpers\Currency;
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\Product;
@@ -36,22 +37,23 @@ class CartController extends Controller
    
     public function store(Request $request)
     {
-        
        $validated= $request->validate([
             'product_id' => ['required', 'int', 'exists:products,id'],
             'quantity' => ['nullable', 'int', 'min:1'] // quentity default(1)
         ]);
 
-        $product = Product::findOrFail($request->post('product_id'));
-        $this->cart->add($product, $request->post('quantity'));
+        $product = Product::findOrFail($validated['product_id']);
+        $this->cart->add($product, $validated['quantity'] ?? 1);
 
         if ($request->expectsJson()) {
             return response()->json([
+                'success' => true,
                 'message' => 'Item added to cart!',
             ], 201);
         }
         
-        return redirect()->route('cart.index')
+        return redirect()
+            ->route('cart.index')
             ->with('success', 'Product added to cart!');
     }
 
@@ -60,9 +62,7 @@ class CartController extends Controller
      */
     public function show( Cart $cart)
     {
-        return view('front.cart', [
-            'cart' => $this->cart,
-        ]);
+        // 
     }
 
     /**
@@ -82,7 +82,13 @@ class CartController extends Controller
             'quantity' => ['required', 'int', 'min:1'],
         ]);
 
-         $this->cart->update($id, $request->post('quantity'));
+         $item = $this->cart->update($id, $request->quantity);
+
+         return response()->json([
+        'success' => true,
+        'item_total' => Currency::format($item->quantity * $item->product->price),
+        'cart_total' => Currency::format($this->cart->total()),
+    ]);
     }
 
     /**
@@ -92,8 +98,9 @@ class CartController extends Controller
     {
          $this->cart->delete($id);
         
-        return [
-            'message' => 'Item deleted!',
-        ];
+        return response()->json([
+        'success' => true,
+        'cart_total' => Currency::format($this->cart->total()),
+    ]);
     }
 }

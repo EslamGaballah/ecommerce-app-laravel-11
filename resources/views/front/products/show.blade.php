@@ -11,8 +11,8 @@
                     </div>
                     <div class="col-lg-6 col-md-6 col-12">
                         <ul class="breadcrumb-nav">
-                            {{-- <li><a href="{{ route('home') }}"><i class="lni lni-home"></i> Home</a></li> --}}
-                            <li><a href="{{ route('products.index') }}">Shop</a></li>
+                            <li><a href="{{ route('home') }}"><i class="lni lni-home"></i> {{ __('app.home') }}</a></li>
+                            <li><a href="{{ route('products.index') }}">{{ __('app.shop') }}</a></li>
                             <li>{{ $product->name }}</li>
                         </ul>
                     </div>
@@ -43,8 +43,20 @@
                     <div class="col-lg-6 col-md-12 col-12">
                         <div class="product-info">
                             <h2 class="title">{{ $product->name }}</h2>
-                            <p class="category"><i class="lni lni-tag"></i> Category:<a href="javascript:void(0)">{{ $product->category->name }}</a></p>
-                            <h3 class="price">{{ Currency::format($product->price) }}@if($product->compare_price)<span>{{ Currency::format($product->compare_price) }}</span>@endif</h3>
+                            <p class="category">
+                                <i class="lni lni-tag"></i>
+                                    {{ __('app.category') }}:<a href="javascript:void(0)"></a>
+                                    {{-- {{ $product->category?->name }} --}}
+                                    {{ $product->category->name ?? 'Uncategorized' }}
+                            </p>
+                            <h3 class="price">
+                                {{ Currency::format($product->price) }}
+                                    @if($product->compare_price)
+                                        <span>
+                                            {{ Currency::format($product->compare_price) }}
+                                        </span>
+                                    @endif
+                            </h3>
                             <p class="info-text">{{ $product->description }}</p>
 
                             {{--start add to cart --}}
@@ -85,7 +97,7 @@
                                     </div>
                                     <div class="col-lg-4 col-md-4 col-12">
                                         <div class="form-group quantity">
-                                            <label for="color">Quantity</label>
+                                            <label for="color">{{ __('app.quantity') }}</label>
                                             <select class="form-control" name="quantity">
                                                 <option>1</option>
                                                 <option>2</option>
@@ -100,9 +112,11 @@
                                     <div class="row align-items-end">
                                         <div class="col-lg-4 col-md-4 col-12">
                                             <div class="button cart-button">
-                                                <button class="btn" type="submit" style="width: 100%;">Add to Cart</button>
+                                                <button class="btn" type="submit" style="width: 100%;">{{ __('app.add_to_cart') }}</button>
                                             </div>
                                         </div>
+                            </form>
+
                                         <div class="col-lg-4 col-md-4 col-12">
                                             <div class="wish-button">
                                                 <button class="btn"><i class="lni lni-reload"></i> Compare</button>
@@ -110,33 +124,58 @@
                                         </div>
                                         <div class="col-lg-4 col-md-4 col-12">
                                             <div class="wish-button">
-                                                @if(auth()->user()->favorites->contains($product->id))
-                                                    <form method="POST" action="{{ route('favorites.destroy', $product) }}">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button class="btn"><i class="lni lni-heart">Remove from Favorites</button>
-                                                    </form>
+                                                {{-- @auth
+                                                    @if($product->is_favorited)
+                                                        <form method="POST" action="{{ route('favorites.destroy', $product) }}">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button class="btn"><i class="lni lni-heart"></i>
+                                                                {{ __('app.remove_from_favorites') }}</i>
+                                                            </button>
+                                                        </form>
+                                                    @else
+                                                        <form method="POST" action="{{ route('favorites.store', $product) }}">
+                                                            @csrf
+                                                            <button class="btn"><i class="lni lni-heart"></i>
+                                                               {{ __('app.add_to_favorites') }}
+                                                            </button>
+                                                        </form>
+                                                    @endif
+                                                @else        
+                                                    <a href="{{ route('login') }}" class="btn"><i class="lni lni-heart"></i> 
+                                                       {{ __('app.add_to_favorites') }}
+                                                    </a>
+                                                @endauth --}}
+                                                @auth
+                                                <form action="{{ route('favorites.toggle', $product->id) }}" method="POST">
+                                                    @csrf
+                                                    <button type="submit" class="btn"><i class="lni lni-heart"></i>
+                                                        @if(auth()->user()->favorites->contains($product->id))
+                                                            {{ __('app.remove_from_favorites') }}
+                                                        @else
+                                                            {{ __('app.add_to_favorites') }}
+                                                        @endif
+                                                    </button>
+                                                </form>
                                                 @else
-                                                    <form method="POST" action="{{ route('favorites.store', $product) }}">
-                                                        @csrf
-                                                        <button class="btn"><i class="lni lni-heart">Add to Favorites</button>
-                                                    </form>
-                                                @endif
+                                                <a href="{{ route('login') }}" 
+                                                class="btn"><i class="lni lni-heart"></i> 
+                                                    {{ __('app.add_to_favorites') }}</a>
+                                                @endauth
 
-                                                <button class="btn"><i class="lni lni-heart"></i> To Wishlist</button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             {{--start add to cart --}}
-                            </form>
                             
                         </div>
                     </div>
                 </div>
             </div>
+
             <div class="product-details-info">
-                <div class="single-block">
+                {{-- <div class="single-block">
                     <div class="row">
                         <div class="col-lg-6 col-12">
                             <div class="info-body custom-responsive-margin">
@@ -175,128 +214,11 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-4 col-12">
-                        <div class="single-block give-review">
-                            <h4>4.5 (Overall)</h4>
-                            <ul>
-                                <li>
-                                    <span>5 stars - 38</span>
-                                    <i class="lni lni-star-filled"></i>
-                                    <i class="lni lni-star-filled"></i>
-                                    <i class="lni lni-star-filled"></i>
-                                    <i class="lni lni-star-filled"></i>
-                                    <i class="lni lni-star-filled"></i>
-                                </li>
-                                <li>
-                                    <span>4 stars - 10</span>
-                                    <i class="lni lni-star-filled"></i>
-                                    <i class="lni lni-star-filled"></i>
-                                    <i class="lni lni-star-filled"></i>
-                                    <i class="lni lni-star-filled"></i>
-                                    <i class="lni lni-star"></i>
-                                </li>
-                                <li>
-                                    <span>3 stars - 3</span>
-                                    <i class="lni lni-star-filled"></i>
-                                    <i class="lni lni-star-filled"></i>
-                                    <i class="lni lni-star-filled"></i>
-                                    <i class="lni lni-star"></i>
-                                    <i class="lni lni-star"></i>
-                                </li>
-                                <li>
-                                    <span>2 stars - 1</span>
-                                    <i class="lni lni-star-filled"></i>
-                                    <i class="lni lni-star-filled"></i>
-                                    <i class="lni lni-star"></i>
-                                    <i class="lni lni-star"></i>
-                                    <i class="lni lni-star"></i>
-                                </li>
-                                <li>
-                                    <span>1 star - 0</span>
-                                    <i class="lni lni-star-filled"></i>
-                                    <i class="lni lni-star"></i>
-                                    <i class="lni lni-star"></i>
-                                    <i class="lni lni-star"></i>
-                                    <i class="lni lni-star"></i>
-                                </li>
-                            </ul>
-                            <!-- Button trigger modal -->
-                            <button type="button" class="btn review-btn" data-bs-toggle="modal"
-                                data-bs-target="#exampleModal">
-                                Leave a Review
-                            </button>
-                        </div>
-                    </div>
-                    <div class="col-lg-8 col-12">
-                        <div class="single-block">
-                            <div class="reviews">
-                                <h4 class="title">Latest Reviews</h4>
-                                <!-- Start Single Review -->
-                                <div class="single-review">
-                                    <img src="https://via.placeholder.com/150x150" alt="#">
-                                    <div class="review-info">
-                                        <h4>Awesome quality for the price
-                                            <span>Jacob Hammond
-                                            </span>
-                                        </h4>
-                                        <ul class="stars">
-                                            <li><i class="lni lni-star-filled"></i></li>
-                                            <li><i class="lni lni-star-filled"></i></li>
-                                            <li><i class="lni lni-star-filled"></i></li>
-                                            <li><i class="lni lni-star-filled"></i></li>
-                                            <li><i class="lni lni-star-filled"></i></li>
-                                        </ul>
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                                            tempor...</p>
-                                    </div>
-                                </div>
-                                <!-- End Single Review -->
-                                <!-- Start Single Review -->
-                                <div class="single-review">
-                                    <img src="https://via.placeholder.com/150x150" alt="#">
-                                    <div class="review-info">
-                                        <h4>My husband love his new...
-                                            <span>Alex Jaza
-                                            </span>
-                                        </h4>
-                                        <ul class="stars">
-                                            <li><i class="lni lni-star-filled"></i></li>
-                                            <li><i class="lni lni-star-filled"></i></li>
-                                            <li><i class="lni lni-star-filled"></i></li>
-                                            <li><i class="lni lni-star-filled"></i></li>
-                                            <li><i class="lni lni-star"></i></li>
-                                        </ul>
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                                            tempor...</p>
-                                    </div>
-                                </div>
-                                <!-- End Single Review -->
-                                <!-- Start Single Review -->
-                                <div class="single-review">
-                                    <img src="https://via.placeholder.com/150x150" alt="#">
-                                    <div class="review-info">
-                                        <h4>I love the built quality...
-                                            <span>Jacob Hammond
-                                            </span>
-                                        </h4>
-                                        <ul class="stars">
-                                            <li><i class="lni lni-star-filled"></i></li>
-                                            <li><i class="lni lni-star-filled"></i></li>
-                                            <li><i class="lni lni-star-filled"></i></li>
-                                            <li><i class="lni lni-star-filled"></i></li>
-                                            <li><i class="lni lni-star-filled"></i></li>
-                                        </ul>
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                                            tempor...</p>
-                                    </div>
-                                </div>
-                                <!-- End Single Review -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                </div> --}}
+
+                @include('front.review.review');
+
+           
             </div>
         </div>
     </section>
@@ -308,7 +230,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Leave a Review</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">{{ __('app.leave_review') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">

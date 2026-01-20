@@ -4,7 +4,7 @@
 
 @section('breadcrumb')
 @parent
-<li class="breadcrumb-item active">Tags</li>
+<li class="breadcrumb-item active">{{ __('app.tags') }}</li>
 <li class="breadcrumb-item active">{{ $tag->name }}</li>
 @endsection
 
@@ -13,11 +13,11 @@
 <table class="table">
     <thead>
         <tr>
-            <th></th>
-            <th>Name</th>
-            <th>Store</th>
-            <th>Status</th>
-            <th>Created At</th>
+            <th>#</th>
+            <th>{{ __('app.name') }}</th>
+            
+            <th>{{ __('app.status') }}</th>
+            <th>{{ __('app.created_at') }}</th>
         </tr>
     </thead>
     <tbody>
@@ -37,6 +37,5 @@
     </tbody>
 </table>
 
-{{ $products->links() }}
 
 @endsection

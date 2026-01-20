@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\Post;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -17,7 +18,12 @@ class HomeController extends Controller
             ->latest()
             ->limit(8)
             ->get();
+
+        $posts = Post::where('status', '=', 'published')
+                ->latest()
+                ->limit(8)
+                ->get();    
         
-        return view('front.home', compact('products'));
+        return view('front.home', compact('products', 'posts'));
     }
 }

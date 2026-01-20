@@ -24,6 +24,31 @@
     <section class="checkout-wrapper section">
         <div class="container">
             <div id="map" style="height: 50vh;"></div>
+            
+            <h5>Status History</h5>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Changed By</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($order->statusHistories as $history)
+                        <tr>
+                            <td>{{ ucfirst($history->old_status) }}</td>
+                            <td>{{ ucfirst($history->new_status) }}</td>
+                            <td>{{ $history->user?->name ?? '—' }}</td>
+                            <td>{{ $history->created_at }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+
+
+
         </div>
     </section>
     <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
