@@ -2,7 +2,7 @@
 
 namespace App\Models;
 use App\Enums\ProductStatus;
-
+use App\Enums\ProductType;
 use App\Models\Category;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder; 
@@ -16,19 +16,41 @@ class Product extends Model
     
     protected $fillable = [
         'user_id',
+        'category_id',
+        'brand_id',
         'name',
         'slug',
+        'sku',
         'description',
-        'category_id',
+        'status',
         'price', 
         'compare_price',
-        'quantity',
-        'status',
+        'stock',
+        'product_type',
+        
+        
     ];
 
     protected $casts = [
         'status' => ProductStatus::class,
+        'product_type' => ProductType::class,
+
     ];
+
+    protected static function booted()
+    {
+        static::saving(function ($product) {
+
+        if (
+            $product->product_type === ProductType::SIMPLE &&
+            empty($product->sku)
+        ) {
+            $product->sku = app(\App\Services\SkuGenerator::class)
+                ->generateForSimple($product);
+            }
+        });
+    }
+
 
     public static function scopeFilter (Builder $builder, $filters)
     {
@@ -47,15 +69,13 @@ class Product extends Model
         $q->whereIn('category_id', (array)$categoryIds);
     });
     }
-
     
-    // public function scopeByBrand($query, $brandId)
-    // {
-    //     return $query->when($brandId, function ($q) use ($brandId) {
-    //         $q->where('brand_id', $brandId);
-    //     });
-    // }
-
+    public function scopeByBrand($query, $brandId)
+    {
+        return $query->when($brandId, function ($q) use ($brandId) {
+            $q->where('brand_id', $brandId);
+        });
+    }
    
     public function scopeByPriceRange($query, $min_price, $max_price)
     {
@@ -96,19 +116,46 @@ class Product extends Model
         return $this->belongsTo(Category::class, 'category_id', 'id');
     }
 
+    public function brand() 
+    {
+        return $this->belongsTo(Category::class, 'brand_id', 'id');
+    }
+
     public function images() 
     {
-        // return $this->hasMany(ProductImage::class);
-
         return $this->morphMany(Image::class, 'imageable');
-        
     }
 
     public function tags()
     {
-        // return $this->belongsToMany(Tag::class);
-
          return $this->morphToMany(Tag::class, 'taggable');
+    }
+
+     public function variations()
+    {
+        return $this->hasMany(ProductVariation::class);
+    }
+
+    public function primaryVariation()
+    {
+        return $this->hasOne(ProductVariation::class)
+                    ->where('is_primary', true);
+    }
+
+    public function getDefaultVariationAttribute()
+    {
+        return $this->primaryVariation
+            ?? $this->variations->first();
+    }
+
+    public function getTotalQuantityAttribute()
+    {
+        return $this->variations->sum('quantity');
+    }
+
+    public function stockMovements()
+    {
+        return $this->morphMany(StockMovement::class, 'stockable');
     }
 
     public function reviews()
@@ -120,6 +167,8 @@ class Product extends Model
     {
         return round($this->ratings()->avg('rating'), 1);
     }
+
+    
 
 
 }

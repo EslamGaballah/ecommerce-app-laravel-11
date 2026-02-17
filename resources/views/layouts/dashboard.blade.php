@@ -18,7 +18,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <title>{{config('app.name')}}</title>
 
   <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="{{asset('plugins/fontawesome-free/css/all.min.css') }}">
+
 
   <!-- Theme style -->
   @if(app()->getLocale() == 'ar')

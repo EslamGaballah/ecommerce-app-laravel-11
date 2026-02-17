@@ -13,22 +13,28 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('category_id')->nullable()->constrained('categories')->nullOnDelete();
-
-
             $table->string('name');
             $table->text('description')->nullable();
             $table->string('slug')->unique();
-            $table->decimal('price', 8, 2)->default(0);
-            $table->decimal('compare_price', 8, 2)->nullable();
-            $table->unsignedSmallInteger('quantity')->default(0);
-            $table->json('options')->nullable();
+            $table->string('status')->default('draft');
+            $table->string('product_type')->default('simple');
+
+
             $table->decimal('rating_avg', 3, 2)->default(0);
-            $table->unsignedInteger('rating_count')->default(0);
+            $table->unsignedSmallInteger('rating_count')->default(0);
+
+            // Single Product Only
+            $table->decimal('price', 8, 2)->nullable();
+            $table->decimal('compare_price', 8, 2)->nullable();
+            $table->unsignedSmallInteger('stock')->nullable();
+            $table->string('sku')->nullable();
+
+            
             $table->boolean('featured')->default(0);
-            // $table->enum('status',['active', 'draft', 'archived'])->default('active');
-            $table->string('status')->default('active');
+
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('brand_id')->nullable()->constrained('brands')->nullOnDelete();
+            $table->foreignId('category_id')->nullable()->constrained('categories')->nullOnDelete();
 
             $table->timestamps();
 

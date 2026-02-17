@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests\Product;
 
+use App\Enums\ProductStatus;
 use App\Models\Product;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class UpdateProductRequest extends FormRequest
 {
@@ -25,13 +27,22 @@ class UpdateProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
+             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
-            'status' => 'in:active,archived,draft',
+            'status' => ['required', new Enum(ProductStatus::class)],
             'category_id' => 'required|exists:categories,id',
-            'price' => 'required|numeric|min:0',
-            'compare_price' => 'nullable|numeric|gt:price',
-            'image.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+            
+            'variations' => 'required|array|min:1',
+
+            'variations.*.price' => 'required|numeric|min:0',
+            'variations.*.compare_price' => 'nullable|numeric',
+            'variations.*.quantity' => 'required|integer|min:0',
+            'variations.*.sku' => 'required|string',
+
+            'variations.*.attributes' => 'required|array|min:1',
+            'variations.*.attributes.*' => 'exists:attribute_values,id',
+
+            'variations.*.image.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
         ];
     }
 }

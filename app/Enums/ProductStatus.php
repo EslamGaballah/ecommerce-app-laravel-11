@@ -4,9 +4,9 @@ namespace App\Enums;
 
 enum ProductStatus: string
 {
-    case Active   = 'pending';
-    case Archived = 'processing';
-    case Draft = 'delivering';
+    case Active     = 'active';
+    case Archived   = 'archived';
+    case Draft      = 'draft';
     
 
     // اسم الحالة للعرض
@@ -17,7 +17,7 @@ enum ProductStatus: string
         //     self::Archived => 'قيد التنفيذ',
         //     self::Draft => 'قيد الشحن',
        
-        return __('product.status.' . $this->value);
+        return __('app.' . $this->value);
     }
 
     // لون الحالة (مفيد في Blade)
@@ -32,5 +32,14 @@ enum ProductStatus: string
             // self::refunded   => 'danger',
 
         };
+    }
+
+    public static function options(): array
+    {
+        return collect(self::cases())
+            ->mapWithKeys(fn ($case) => [
+                $case->value => $case->label()
+            ])
+            ->toArray();
     }
 }

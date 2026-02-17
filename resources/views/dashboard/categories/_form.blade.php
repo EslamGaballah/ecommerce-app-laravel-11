@@ -10,6 +10,7 @@
 </div>
 @endif
 
+    {{-- start filter --}}
     <div class="form-group">
         <x-form.input label="{{ __('app.name') }}" class="form-control-lg" role="input" name="name" :value="$category->name" />
     </div>
@@ -26,6 +27,7 @@
         <label for="">{{ __('app.description') }}</label>
         <x-form.textarea name="description" :value="$category->description" />
     </div>
+    
     {{-- <div class="form-group">
         <x-form.label id="image">Image</x-form.label>
         <x-form.input type="file" name="image" accept="image/*" />

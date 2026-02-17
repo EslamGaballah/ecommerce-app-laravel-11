@@ -19,12 +19,21 @@ class DashboardController extends Controller
 
         // 1. إجمالي عدد المنتجات
         $totalProducts = Product::count();
+
         // 2. المنتجات النشطة فقط (المعروضة للبيع)
         $activeProducts = Product::where('status', 'active')->count();
+
         // 3. المنتجات التي نفدت من المخزن (Quantity = 0)
-        $outOfStock = Product::where('quantity', '<=', 0)->count();
+        $outOfStock = Product::whereHas('variations', function ($q) {
+                $q->where('stock', '<=', 0);
+            })->count();
+        // $outOfStock = Product::whereDoesntHave('variations', function ($q) {
+        //     $q->where('quantity', '>', 0);
+        // })->count();
+
 
         $totalOrders = Order::count();
+        
         $todayOrders = Order::whereDate('created_at', now()->today())->count();
 
         // 1. إجمالي المبيعات التاريخي (All-time Revenue)

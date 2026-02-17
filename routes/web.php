@@ -36,6 +36,8 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/front/products', [ProductsController::class, 'index'])->name('products.index');
 // Route::get('/front/product/{id}', [ProductsController::class, 'show'])->name('front.products.show');
 Route::get('/front/product/{product:slug}', [ProductsController::class, 'show'])->name('products.show');
+Route::post('/front/product/{product}/variation', [ProductsController::class, 'match'])
+    ->name('variations.match');
 // Route::get('/front/product/{product}', [ProductsController::class, 'show'])->name('products.show');
 
 Route::resource('cart', CartController::class);

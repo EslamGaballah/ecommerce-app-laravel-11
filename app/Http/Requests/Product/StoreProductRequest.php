@@ -6,6 +6,7 @@ use App\Models\Product;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\ProductStatus;
+use App\Enums\ProductType;
 
 class StoreProductRequest extends FormRequest
 {
@@ -17,6 +18,38 @@ class StoreProductRequest extends FormRequest
     return $this->user()->can('create', Product::class);
     }
 
+    protected function prepareForValidation()
+    {
+        $variations = collect($this->variations ?? [])
+            ->filter(function ($variation) {
+                return  !empty($variation['price']) ||
+                        !empty($variation['compare_price']) ||
+                        !empty($variation['stock']) ||
+                        !empty($variation['sku']);
+            })
+            ->values()
+            ->toArray();
+
+        if (!empty($variations)) {
+            $this->merge([
+                'variations' => $variations
+            ]);
+        } else {
+            $this->request->remove('variations'); // 🔥 امسحها خالص
+        }
+
+
+        if (empty($variations)) {
+            $this->merge([
+                'price' => $this->price !== '' ? $this->price : null,
+                'compare_price' => $this->compare_price !== '' ? $this->compare_price : null,
+                'stock' => $this->stock !== '' ? $this->stock : null,
+                'sku' => $this->sku !== '' ? $this->sku : null,
+            ]);
+        }
+    }
+
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -24,17 +57,75 @@ class StoreProductRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        
+        $rules = [
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
             'status' => ['required', new Enum(ProductStatus::class)],
             'category_id' => 'required|exists:categories,id',
-            'price' => 'required|numeric|min:0',
-            'compare_price' => 'nullable|numeric|gt:price',
-            'quantity' => 'required|numeric|min:0',
-            'image.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+            'image' => 'nullable|array',
+            'image.*' => 'image|mimes:jpg,jpeg,png,webp|max:2048',
+            'product_type' => ['required', new Enum(\App\Enums\ProductType::class)],
 
         ];
+
+        if ($this->product_type === ProductType::SIMPLE->value) {
+
+            $rules['price'] = 'required|numeric|min:0';
+            $rules['compare_price'] = 'nullable|numeric|gt:price';
+            $rules['stock'] = 'required|integer|min:0';
+
+        } else {
+
+            $rules['variations'] = 'required|array|min:1';
+            $rules['variations.*.price'] = 'required|numeric|min:0';
+            $rules['variations.*.compare_price'] = 'nullable|numeric';
+            $rules['variations.*.stock'] = 'required|integer|min:0';
+            $rules['variations.*.attributes'] = 'required|array|min:1';
+            $rules['variations.*.image'] = 'nullable|array';
+            $rules['variations.*.image.*'] = 'image|mimes:jpg,jpeg,png,webp|max:2048';
+
+        }
+
+        return $rules;
+    }
+
+
+    public function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
+    {
+        dd($validator->errors()->toArray());
+    }
+
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            foreach ($this->variations ?? [] as $index => $variation) {
+
+                if (
+                    isset($variation['compare_price']) &&
+                    $variation['compare_price'] <= $variation['price']
+                ) {
+                    $validator->errors()->add(
+                        "variations.$index.compare_price",
+                        'سعر المقارنة يجب أن يكون أكبر من السعر'
+                    );
+                }
+            }
+        });
+        if ($this->product_type === ProductType::SIMPLE->value) {
+
+            if (
+                $this->compare_price &&
+                $this->compare_price <= $this->price
+            ) {
+                $validator->errors()->add(
+                    "compare_price",
+                    'سعر المقارنة يجب أن يكون أكبر من السعر'
+                );
+            }
+        }
+
     }
 
     public function messages(): array

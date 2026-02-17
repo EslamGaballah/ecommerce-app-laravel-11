@@ -97,6 +97,28 @@
                   </a>
                 </li>
               @endcan
+              @can('view-product')
+                <li class="nav-item">
+                  <a href="{{route('dashboard.attributes.index')}}" class="nav-link">
+                    <i class="nav-icon fas fa-th"></i>
+                    <p>
+                      {{ __('app.attributes') }}
+                      <span class="right badge badge-danger">{{ __('app.new') }}</span>
+                    </p>
+                  </a>
+                </li>
+              @endcan
+              @can('view-product')
+                <li class="nav-item">
+                  <a href="{{route('dashboard.attribute_values.index')}}" class="nav-link">
+                    <i class="nav-icon fas fa-th"></i>
+                    <p>
+                      {{ __('app.attribute_values') }}
+                      <span class="right badge badge-danger">{{ __('app.new') }}</span>
+                    </p>
+                  </a>
+                </li>
+              @endcan
 
               {{-- @can('view-product') --}}
                 <li class="nav-item">

@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Dashboard\AttributesController;
+use App\Http\Controllers\Dashboard\AttributeValueController;
 use App\Http\Controllers\Dashboard\CategoriesController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Dashboard\GovernoratesController;
@@ -35,10 +37,17 @@ Route::middleware(['auth','can:access-dashboard'])
 
     Route::resource('tags', TagsController::class)->names('tags');
 
-    Route::get('products/trash', [ProductsController::class, 'trash'])->name('products.trash');
-    Route::put('products/{id}/restore', [ProductsController::class, 'restore'])->name('products.restore');
-    Route::delete('products/{id}/force-delete', [ProductsController::class, 'forceDelete'])->name('products.forceDelete');
-    Route::resource('products', ProductsController::class)->names('products');
+    Route::prefix('products')->name('products.')->controller(ProductsController::class)->group(function () {
+        Route::get('trash', 'trash')->name('trash');
+        Route::put('{id}/restore', 'restore')->name('restore');
+        Route::delete('{id}/force-delete', 'forceDelete')->name('forceDelete');
+        Route::delete('variations/{variation}', 'deleteVariation')->name('variation.delete');
+    });
+    Route::resource('products', ProductsController::class);
+
+    Route::resource('attributes', AttributesController::class);
+
+    Route::resource('attribute_values', AttributeValueController::class);
 
     Route::resource('orders', OrdersController::class)->only(['index', 'show', 'update', 'destroy']);
     // Route::put('orders/{order}', [OrdersController::class, 'update'])

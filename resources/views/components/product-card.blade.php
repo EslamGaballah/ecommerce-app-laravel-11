@@ -1,7 +1,19 @@
 <!-- Start Single Product -->
 <div class="single-product">
     <div class="product-image">
-        <img src="{{ $product->image_url }}" alt="#">
+        {{-- <img src="{{ $product->image_url }}" alt="#">
+         --}}
+         @php
+            $variation = $product->default_variation;
+        @endphp
+
+        {{-- {{ dd($product->default_variation?->image) }} --}}
+
+        <img src="{{ asset('storage/' . ($variation?->image ?? $product->image)) }}" 
+            class="img-fluid rounded border shadow-sm" 
+            alt="{{ $variation?->name ?? $product->name  }}"
+            style="max-height: 250px; width: 100%; object-fit: contain;"
+        >
         @if ($product->sale_percent)
         <span class="sale-tag">-{{ $product->sale_percent }}%</span>
         @endif
@@ -36,9 +48,9 @@
         </li>
 
         <div class="price">
-            <span>{{ Currency::format($product->price) }}</span>
-            @if ($product->compare_price)
-                <span class="discount-price">{{ Currency::format($product->compare_price) }}</span>
+            <span>{{ Currency::format($variation->price) }}</span>
+            @if ($variation->compare_price)
+                <span class="discount-price">{{ Currency::format($variation->compare_price) }}</span>
             @endif
         </div>
         <div class="button">

@@ -38,13 +38,13 @@
 <table class="table">
     <thead>
         <tr>
-            <th>#</th>
+            {{-- <th>#</th> --}}
             <th>ID</th>
             <th>{{ __('app.name') }}</th>
             <th>{{ __('app.category') }}</th>
             <th>{{ __('app.stock') }}</th>
             <th>{{ __('app.price') }}</th>
-            <th>{{ __('app.compare_price') }}</th>
+            {{-- <th>{{ __('app.compare_price') }}</th> --}}
             <th>{{ __('app.status') }}</th>
             <th>{{ __('app.created_at') }}</th>
             <th colspan="2">{{ __('app.actions') }}</th>
@@ -53,26 +53,41 @@
     <tbody>
         @forelse($products as $product)
         <tr>
-            <td>
+            {{-- <td>
                 @if ($product->images->isNotEmpty())
                     <img src="{{ asset('storage/' . $product->images->first()->image) }}" 
                         alt="" height="50">
                 @else
                     <span>No Image</span>
                 @endif
-            </td>
+            </td> --}}
             <td>{{ $product->id }}</td>
             <td> <a href="{{ route('dashboard.products.show', $product->id) }}">{{ $product->name }}</td>
             <td>{{ $product->category->name }}</td>
-            <td>{{ $product->quantity }}</td>
-            <td>{{ $product->price }}</td>
-            <td>{{ $product->compare_price }}</td>
+            <td>{{ $product->total_quantity }}</td>
+
+            <td>
+                @if($product->primaryVariation && $product->primaryVariation->compare_price > $product->price)
+                    <span class="fw-bold">
+                        {{ $product->primaryVariation->price }}
+                    </span>
+                    <span class="text-muted text-decoration-line-through">
+                        {{ $product->primaryVariation->compare_price }}
+                    </span>
+                @endif
+                
+                
+            </td>
+
             <td>
                 <span class="badge bg-{{ $product->status->color() }} badge-{{ $product->id }}">
                     {{ $product->status->label() }}
                 </span>
             </td>
             <td>{{ $product->created_at }}</td>
+            <td>
+                <a href="{{ route('dashboard.products.show', $product->id) }}" class="btn btn-sm btn-outline-success">{{ __('app.show') }}</a>
+            </td>
             <td>
                 <a href="{{ route('dashboard.products.edit', $product->id) }}" class="btn btn-sm btn-outline-success">{{ __('app.edit') }}</a>
             </td>

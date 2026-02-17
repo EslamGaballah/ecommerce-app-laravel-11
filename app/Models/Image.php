@@ -7,8 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Image extends Model
 {
     protected $fillable = [
-        'image',
-        'alt'
+        'image', // path
+        'alt',
+        'is_primary'
     ];
 
 public function imageable()
