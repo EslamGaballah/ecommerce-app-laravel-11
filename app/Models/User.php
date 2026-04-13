@@ -96,4 +96,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Review::class);
     }
+
+    public function avatar() 
+    {
+        return $this->morphOne(Image::class, 'imageable')->where('type', 'avatar');
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
 }

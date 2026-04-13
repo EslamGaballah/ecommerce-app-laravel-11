@@ -14,53 +14,41 @@ class OrdersController extends Controller
      */
     public function index()
     {
-        $orders = Order::where('user_id',Auth::user())
+
+        $orders = auth()->user()
+            ->orders()
             ->latest()
-            ->paginate();
+            ->paginate(10);
+        // $orders = Order::where('user_id', Auth::id())
+        //     ->latest()
+        //     ->paginate();
 
         return view('front.orders.index', compact('orders'));
     
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-       
-    }
-
-    /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Order $order)
     {
-        //
+        if ($order->user_id !== auth()->id()) {
+        abort(403);
+    }
+
+    $order->load('items.product', 'address');
+
+    return view('front.orders.show', compact('order'));
+    }
+
+    public function success(Order $order)
+    {
+        return view('front.orders.success', compact('order'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
 
     /**
      * Remove the specified resource from storage.

@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Models\Order;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\BroadcastMessage;
@@ -16,7 +17,7 @@ class OrderCreatedNotification extends Notification implements ShouldBroadcast, 
 {
     use Queueable;
 
-    protected $order;
+    protected Order $order;
     /**
      * Create a new notification instance.
      */
@@ -49,12 +50,15 @@ class OrderCreatedNotification extends Notification implements ShouldBroadcast, 
         // return $channels;
     }
 
-    
+    private function message()
+{
+    return 'طلب جديد رقم # ' . $this->order->number;
+}
 
     public function toDatabase(object $notifiable): array
     {
         return [
-            'message'  => '  طلب جديد رقم # ' . $this->order->id,
+            'message' => $this->message(),
             'order_id' => $this->order->id,
         ];
     }
@@ -63,7 +67,7 @@ class OrderCreatedNotification extends Notification implements ShouldBroadcast, 
     {
             // info(kj);
         return new BroadcastMessage([
-            'message'  => '  طلب جديد رقم # ' . $this->order->id,
+            'message' => $this->message(),
             'order_id' => $this->order->id,
            
         ]);
@@ -79,7 +83,7 @@ class OrderCreatedNotification extends Notification implements ShouldBroadcast, 
     {
          return [
             'order_id' => $this->order->id,
-            'message' => 'تم اكتمال الطلب رقم #' . $this->order->id,
+            'message' => $this->message(),
         ];
     }
 }

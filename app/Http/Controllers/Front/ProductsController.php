@@ -19,7 +19,7 @@ class ProductsController extends Controller
         // $products = Product::paginate();
         $products = Product::query()
         ->byCategory($request->category_id)
-        // ->byBrand($request->brand_id)
+        ->byBrand($request->brand_id)
         ->byPriceRange($request->min_price, $request->max_price)
         ->sortBy($request->sort_by)
         ->with([
@@ -46,6 +46,9 @@ class ProductsController extends Controller
 
     public function show( Product $product)
     {
+        // refresh data to get latest ratings
+        $product->refresh();
+
         $product->load([
             'category', 
             'variations.values.attribute', 
@@ -106,10 +109,31 @@ class ProductsController extends Controller
             'exists'    => true,
             'id'        => $variation->id,
             'price'     => Currency::format($variation->price),
-            'quantity'  => $variation->quantity,
+            'compare_price' => $variation->compare_price
+                ? Currency::format($variation->compare_price)
+                : null,
+            'quantity'  => $variation->stock,
             'images'    => $variation->images->pluck('image')->values(),
-            'available' => $variation->quantity > 0,
+            'available' => $variation->stock > 0,
         ]);
+    }
+
+    public function search(Request $request)
+    {
+        $categories = Category::withCount('products')->get();
+        $query = Product::query();
+
+        if ($request->filled('q')) {
+            $query->where('name', 'like', '%' . $request->q . '%');
+        }
+
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        $products = $query->latest()->paginate(12);
+
+       return view('front.products.index', compact('products' , 'categories'));
     }
 
 

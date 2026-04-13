@@ -20,33 +20,36 @@
             <th>{{ __('app.products') }}</th>
             <th>{{ __('app.categories') }}</th>
             <th>{{ __('app.description') }} </th>
-            <th>{{ __('app.stock') }}</th>
             <th colspan="2">{{ __('app.actions') }}</th>
         </tr>
     </thead>
     <tbody>
         @forelse($favorites as $favorite)
         <tr>
-            <td><img src="{{ asset('storage/' . $favorite->image) }}" alt="" height="50"></td>
+            <td>
+                @php
+                    // نجيب الصورة حسب الحالة
+                    $image = optional($favorite->default_variation)->image   // صورة الفارييشن الافتراضي لو موجود
+                            ?? $favorite->image                              // صورة المنتج الأساسية
+                            ?? $favorite->images->first()?->image           // أول صورة في gallery
+                            ?? 'default.png';                               // صورة افتراضية لو مفيش أي صورة
+                @endphp
+
+                <img src="{{ asset('storage/' . $image) }}" alt="{{ $favorite->name }}" height="50">
+            </td>
             <td>{{ $favorite->id }}</td>
             <td><a href="{{ route('dashboard.products.show', $favorite->id) }}">{{ $favorite->name }}</a></td>
             <td>
                 {{ $favorite->category?->name ?? '-' }}
             </td>
             <td>{{ $favorite->description }}</td>
+
             <td>
-                @if ($favorite->products_number > 0)
-                   {{ __('app.in_stock') }}
-                @else
-                    <span class="text-danger">{{ __('app.out_of_stock') }}</span>
-                @endif
-            </td>
-            <td> 
                 <form method="POST" action="{{ route('favorites.toggle', $favorite->id) }}">
                     @csrf
-                        <input type="hidden" name="_method" value="delete">
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-sm btn-outline-danger">{{__('app.remove_from_favorites')}}</button>
+                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                        {{ __('app.remove_from_favorites') }}
+                    </button>
                 </form>
             </td>
         </tr>

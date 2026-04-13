@@ -9,6 +9,7 @@ use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Models\Attribute;
 use App\Models\AttributeValue;
+use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Image;
 use App\Models\Product;
@@ -47,103 +48,130 @@ class ProductsController extends Controller
     {
 
         $product = new Product();
-        $category = Category::all();
+        $categories = Category::all();
+        $brands = Brand::all();
         $attributes = Attribute::with('attributeValues')->get();
 
-        return view('dashboard.products.create',compact('product', 'category', 'attributes'));
+        // $oldVariations = [];
+        $oldVariations = collect();
+
+        return view('dashboard.products.create',compact('product', 'categories','brands', 'attributes', 'oldVariations'));
     }
 
-    /**
+     /**
      * Store a newly created resource in storage.
      */
     public function store(StoreProductRequest $request, Product $product)
     {
-
+// dd($request->all());
         $data = $request->validated();
         $data['user_id'] = auth()->id();
-        $data['slug'] = str::slug($request->post('name'));
+        $data['slug'] = str::slug($request->post('name_en'));
         $data['status'] =  $request->status;
          DB::beginTransaction();
 
-        try 
-        { 
-
+        try
+        {
             $product = Product::create($data);
-            
-                // create simple and main Product images
-            if ($request->hasFile('image')) {
-                foreach ($request->file('image') as $index => $imageFile) {
+
+            if ($request->hasFile('thumbnail')) {
+                $thumbnailFile = $request->file('thumbnail');
+                $path = $this->uploadImage($thumbnailFile, 'products');
+                    $product->images()->create([ // image table with morph
+                    'image' => $path,
+                    'type' => 'thumbnail',
+                    'alt' => $product->name ?? 'product'
+                ]);
+            }
+
+                // create simple product gallery 
+            if ($request->hasFile('gallery')) {
+                foreach ($request->file('gallery') as $index => $imageFile) {
                     $path = $this->uploadImage($imageFile, 'products');
-                    // product_images 
+                    // product_images
                         $product->images()->create([ // image table with morph
                         'image' => $path,
-                        'alt' => $request->image_alt[$index] ?? $product->name
+                        'type' => 'gallery',
+
+                        'alt' => $product->name  ?? 'product'
                     ]);
                 }
             }
 
             //  simple Product Stock
             if ($request->product_type  === ProductType::SIMPLE->value) {
-                StockMovement::create([
-                    'stockable_id'      => $product->id,
-                    'stockable_type'    => Product::class,
-                    'stock'             => $data['stock'],
-                    'type'              => 'in',
-                    'reason'            => 'Initial stock',
-                    'user_id'           => auth()->id()
-                ]);
-            } elseif ($request->product_type === ProductType::VARIABLE->value) {
-                //  Variable Product
-                foreach ($request->variations as $index => $varData) {
-                    $sku = blank($varData['sku'])
-                        ? SkuGenerator::generateForVariation($product, $varData['attributes'])
-                        : $varData['sku'];
-                    $variation = $product->variations()->create([
-                        // 'product_id'    => $product->id,
-                        'price'         => $varData['price'],
-                        'compare_price' => $varData['compare_price'] ?? null,
-                        'stock'         => $varData['stock'],
-                        'sku'           => $sku , 
-                        'is_primary'    => $request->primary == $index,
-                    ]);
-
-                // attach attribute values
-                $variation->values()->sync($varData['attributes']);
-
-                StockMovement::create([
-                    'stockable_id'      => $variation->id,
-                    'stockable_type'    => ProductVariation::class,
-                    'stock'             => $varData['stock'],
-                    'type'              => 'in',
-                    'reason'            => 'Initial stock',
-                    'user_id'           => auth()->id()
-                ]);
-
-                // create variation images
-                if ($request->hasFile("variations.$index.images")) {
-                    foreach ($request->file("variations.$index.images") as $imageFile) {
-
-                        $path = $this->uploadImage($imageFile, 'products');
-
-                        // VARIATION images 
-                            $variation->images()->create([ // image table with morph
-                            'image' => $path,
-                            'alt' => $request->image_alt[$index] ?? $product->name
-                        ]);
-                    }
-                }
-
+                $this->trackStockMovement($product, $data['stock']);
             }
-        }
+
+            if ($request->product_type === ProductType::VARIABLE->value) {
+                // dd($product);
+                $this->storeProductWithVariations($request, $product);
+            }
+
+            // dd($product);
+
+// dd('ghbgfn');
 
         DB::commit();
         return Redirect::route('dashboard.products.index')->with('success', 'product created');
 
         } catch (Throwable $e) {
                 DB::rollBack();
+                // dd($e->getMessage());
                 // Log::error("Product Store Error: " . $e->getMessage());
                 return back()->with('error', 'Failed to create product'. $e->getMessage())->withInput();
         }
+    }
+
+    public function storeProductWithVariations(StoreProductRequest $request, Product $product)
+    {
+        //  Variable Product
+        foreach ($request->variations as $index => $varData) {
+            $sku = blank($varData['sku'])
+                ? SkuGenerator::generateForVariation($product, $varData['attribute_value_ids'])
+                : $varData['sku'];
+            $variation = $product->variations()->create([
+                // 'product_id'    => $product->id,
+                'price' => $varData['price'],
+                'compare_price' => $varData['compare_price'] ?? null,
+                'stock' => $varData['stock'],
+                'sku' => $sku,
+                'is_primary' => $request->primary == $index,
+            ]);
+
+            // attach attribute values
+            $variation->values()->sync($varData['attribute_value_ids']);
+
+            $this->trackStockMovement($variation, $varData['stock'] ?? 0 );
+
+            // create variation images
+           $files = $request->file("variations.$index.images");
+
+            if ($files) {
+                foreach ($files as $imageFile) {
+                    $path = $this->uploadImage($imageFile, 'products');
+                        // VARIATION images
+                    $variation->images()->create([ // image table with morph
+                        'image' => $path,
+                        'type' => 'variation',
+                        'alt' => ($product->name ??  'product') . ' - ' . $sku
+                    ]);
+                }
+            }
+        }
+    }
+
+    public function trackStockMovement($model, $stock, $reason = 'Initial stock'){
+
+        StockMovement::create([
+            'stockable_id' => $model->id,
+            'stockable_type' => $model->getMorphClass(), // ProductVariation::class,
+            'stock' => $stock,
+            'type' => 'in',
+            'reason' => $reason,
+            'user_id' => auth()->id()
+        ]);
+
     }
 
     /**
@@ -164,131 +192,250 @@ class ProductsController extends Controller
     {
          $this->authorize('update', $product);
 
-        $attributes = Attribute::with('attributeValues')->get();
+         $product->load(['variations.values.attribute', 'variations.images', 'images', 'gallery', 'thumbnail' ]);
 
-        return view('dashboard.products.edit', compact('product', 'attributes'));
+        $attributes = Attribute::with('attributeValues')->get();
+        $categories = Category::all();
+        $brands = Brand::all();
+        $oldVariations = $product->variations;
+        
+        // $thumbnailPath = $images->where('type', 'thumbnail')->first()?->image;
+        if ($product->product_type === 'simple') {
+            $existingGallery = $product->images
+                ->where('type', 'gallery')
+                ->map(fn($img) => [
+                    'id' => $img->id,
+                    'path' => asset('storage/' . $img->image),
+                ]);
+        } else {
+            // variable product → مفيش gallery للمنتج نفسه
+            $existingGallery = collect();
+        }
+        //     ->with(['values', 'images'])
+        //     ->get()
+        //     ->map(function ($variation) {
+        //         return [
+        //             'id' => $variation->id,
+        //             'sku' => $variation->sku,
+        //             'price' => $variation->price,
+        //             'compare_price' => $variation->compare_price,
+        //             'stock' => $variation->stock,
+        //             'values' => $variation->values,
+        //             'images' => $variation->images,
+        //         ];
+        // });
+        // dd($product->thumbnail);
+// dd($product->images);
+        return view('dashboard.products.edit', compact('product', 'attributes', 'categories', 'brands',
+        'oldVariations',
+        'existingGallery'
+        ));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    // public function update(UpdateProductRequest $request,  Product $product)
-    // {
-    //     $data = $request->validated();
-    //     $data['user_id'] = auth()->id();
-    //     $data['slug'] = str::slug($request->post('name'));
-
-    //     DB::beginTransaction();
-
-    //         try { 
-    //             $product->update($data);
-
-    //             // update Image_alt
-    //             if ($request->filled('existing_image_alt')) {
-    //                 foreach ($request->existing_image_alt as $imageId => $alt) {
-    //                     Image::where('id', $imageId)->update([
-    //                         'alt' => $alt
-    //                     ]);
-    //                 }
-    //             }
-
-    //             // add images without deleting old images
-    //              if ($request->hasFile('image')) {
-
-    //                 foreach ($request->file('image') as $index => $imageFile) {
-
-    //                     $path = $this->uploadImage($imageFile, 'products');
-
-    //                     $product->images()->create([
-    //                         'image' => $path,
-    //                         'alt'   => $request->image_alt[$index] ?? null,
-    //                     ]);
-    //                 }
-    //             }
-
-    //              DB::commit();
-
-    //          } catch (Throwable $e) {
-    //                 DB::rollBack();
-    //                 throw $e;
-    //                 return back()->with('error', 'Failed to update product');
-    //         }
-
-    //     return Redirect::route('dashboard.products.index')->with('success', 'product updated successfully!');
-    // }
-
-    public function update(Request $request, Product $product)
+    public function update(StoreProductRequest $request, Product $product)
     {
-        // ابدأ المعاملة المالية (Transaction)
+        $data = $request->validated();
+        $data['user_id'] = auth()->id();
+        $data['slug'] = Str::slug($request->post('name_en'));
+        $data['status'] = $request->status;
+
         DB::beginTransaction();
 
         try {
-            // 1. تحديث بيانات المنتج الأساسية
-            $product->update([
-                'name'        => $request->name,
-                'category_id' => $request->category_id,
-                'description' => $request->description,
-                'status'      => $request->status,
-                'slug'        => Str::slug($request->name),
+
+            // update product
+            $product->update($data);
+
+            /*
+            |--------------------------------------------------------------------------
+            | Product Images
+            |--------------------------------------------------------------------------
+            */
+            if ($request->hasFile('thumbnail')) {
+            // حذف الصورة القديمة
+            if ($oldThumbnail = $product->images()->where('type', 'thumbnail')->first()) {
+                $this->deleteImage($oldThumbnail->image);
+                $oldThumbnail->delete();
+            }
+            
+            // رفع الصورة الجديدة
+            $thumbnailFile = $request->file('thumbnail');
+            $path = $this->uploadImage($thumbnailFile, 'products');
+            $product->images()->create([
+                'image' => $path,
+                'type' => 'thumbnail',
+                'alt' => $product->name
             ]);
+        }
 
-            $keepVariationIds = [];
+            if ($request->filled('deleted_images')) {
+                $deletedIds = is_array($request->deleted_images) ? $request->deleted_images : explode(',', $request->deleted_images);
+                $images = Image::whereIn('id', $deletedIds)->get();
+                foreach ($images as $img) {
+                    $img->delete();
+                }
+            }
+            if ($request->hasFile('gallery')) {
 
-            // 2. معالجة التنوعات (Variations)
-            if ($request->has('variations')) {
-                foreach ($request->variations as $index => $varData) {
-                    
-                    // استخدام updateOrCreate لضمان تحديث الموجود أو إنشاء الجديد
-                    $variation = $product->variations()->updateOrCreate(
-                        ['id' => $varData['id'] ?? null], 
-                        [
-                            'price'         => $varData['price'],
-                            'compare_price' => $varData['compare_price'],
-                            'quantity'      => $varData['quantity'],
-                            'sku'           => $varData['sku'] ?? $product->id . '-' . $index,
-                            'is_primary'    => $request->primary == $index,
-                        ]
-                    );
+                foreach ($request->file('gallery') as $index => $imageFile) {
 
-                    $keepVariationIds[] = $variation->id;
+                    $path = $this->uploadImage($imageFile, 'products');
 
-                    // تحديث السمات (Attributes)
-                    $variation->values()->sync($varData['attributes'] ?? []);
-
-                    // معالجة الصور الجديدة
-                    if ($request->hasFile("variations.$index.images")) {
-                        foreach ($request->file("variations.$index.images") as $imageFile) {
-                            $path = $this->uploadImage($imageFile, 'products');
-                            $variation->images()->create([
-                                'image' => $path,
-                                'alt'   => $product->name
-                            ]);
-                        }
-                    }
+                    $product->images()->create([
+                        'image' => $path,
+                        'type' => 'gallery',
+                        'alt' => $product->name ?? 'product'
+                    ]);
                 }
             }
 
-            // 3. حذف التنوعات التي أزالها المستخدم من الواجهة (Data Consistency)
-            $product->variations()->whereNotIn('id', $keepVariationIds)->delete();
+            /*
+            |--------------------------------------------------------------------------
+            | Simple Product Stock
+            |--------------------------------------------------------------------------
+            */
+            if ($request->product_type === ProductType::SIMPLE->value) {
 
-            // تأكيد التغييرات في قاعدة البيانات
+                if ($product->stock != $data['stock']) {
+                    $this->trackStockMovement($product, $data['stock'], 'Stock updated');
+                }
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Variable Product
+            |--------------------------------------------------------------------------
+            */
+            if ($request->product_type === ProductType::VARIABLE->value) {
+
+                $this->updateProductVariations($request, $product);
+            } else {
+                $product->variations()->delete();
+                $this->trackStockMovement($product, $data['stock'], 'Stock updated');
+            }
+
             DB::commit();
 
-            return Redirect::route('dashboard.products.index')->with('success', 'تم تحديث المنتج وكل تنوعاته بنجاح');
+            return Redirect::route('dashboard.products.index')
+                ->with('success', 'Product Updated Successfully');
 
-        } catch (\Throwable $e) {
-            // في حال حدوث أي خطأ، تراجع عن كل شيء
+        } catch (Throwable $e) {
+
             DB::rollBack();
 
-            // تسجيل الخطأ للمطور (Log)
-            \Log::error("Product Update Failed: " . $e->getMessage());
+            return back()
+                ->with('error', 'Failed to update product ' . $e->getMessage())
+                ->withInput();
+        }
+    }
 
-            return back()->with('error', 'فشلت عملية التحديث، تأكد من البيانات المدخلة.')->withInput();
+    public function updateProductVariations(updateProductRequest $request, Product $product)
+    {
+
+        $existingVariationIds = $product->variations()->pluck('id')->toArray();
+
+        $incomingIds = [];
+
+        foreach ($request->variations as $index => $varData) {
+
+            $sku = blank($varData['sku'])
+                ? SkuGenerator::generateForVariation($product, $varData['attribute_value_ids'])
+                : $varData['sku'];
+
+            /*
+            |--------------------------------------------------------------------------
+            | Update Or Create Variation
+            |--------------------------------------------------------------------------
+            */
+            if (!empty($varData['id'])) {
+
+                $variation = $product->variations()->find($varData['id']);
+
+                $variation->update([
+                    'price' => $varData['price'],
+                    'compare_price' => $varData['compare_price'] ?? null,
+                    'stock' => $varData['stock'],
+                    'sku' => $sku,
+                    'is_primary' => $request->primary == $index,
+                ]);
+
+                $incomingIds[] = $variation->id;
+
+            } else {
+
+                $variation = $product->variations()->create([
+                    'price' => $varData['price'],
+                    'compare_price' => $varData['compare_price'] ?? null,
+                    'stock' => $varData['stock'],
+                    'sku' => $sku,
+                    'is_primary' => $request->primary == $index,
+                ]);
+
+                $incomingIds[] = $variation->id;
+
+                $this->trackStockMovement($variation, $varData['stock'] ?? 0);
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Sync Attribute Values
+            |--------------------------------------------------------------------------
+            */
+
+            $variation->values()->sync($varData['attribute_value_ids']);
+
+            /*
+            |--------------------------------------------------------------------------
+            | Variation Images
+            |--------------------------------------------------------------------------
+            */
+            $files = $request->file("variations.$index.images");
+
+            if ($files) {
+                // delete old images
+                /*
+                if ($variation->images->isNotEmpty()) {
+                    foreach ($variation->images as $img) {
+                        $this->deleteImage($img->image);
+                    }
+                    $variation->images()->delete();
+                }
+                */
+
+                foreach ($files as $imageFile) {
+                    $path = $this->uploadImage($imageFile, 'products');
+                    $variation->images()->create([
+                        'image' => $path,
+                        'alt' => $product->name ?? 'product'
+                    ]);
+                }
+            }
         }
 
-        return Redirect::route('dashboard.products.index')->with('success', 'Product updated successfully');
-        
+        /*
+        |--------------------------------------------------------------------------
+        | Delete Removed Variations
+        |--------------------------------------------------------------------------
+        */
+
+       $deletedIds = array_diff($existingVariationIds, $incomingIds);
+    if (!empty($deletedIds)) {
+        $variationsToDelete = ProductVariation::with('images')->whereIn('id', $deletedIds)->get();
+
+        foreach ($variationsToDelete as $vToDelete) {
+            foreach ($vToDelete->images as $img) {
+                $this->deleteImage($img->image);
+            }
+            $vToDelete->images()->delete();
+            $vToDelete->values()->detach();
+            $vToDelete->delete();
+        }
     }
+    }
+   
 
     /**
      * Remove the specified resource from storage.
@@ -339,37 +486,46 @@ class ProductsController extends Controller
      */
     public function forceDelete($id)
     {
+        $product = Product::onlyTrashed()->with(['images', 'variations.images'])->findOrFail($id);
+        $this->authorize('forcedelete', $product);
 
-        $product = Product::onlyTrashed()->findOrFail($id);
-
-         $this->authorize('forcedelete', $product);
-
-          DB::beginTransaction();
+        DB::beginTransaction();
 
         try {
-            // Delete Images
-            if ($product->images->isNotEmpty()) {
-                foreach ($product->images as $image) {
-                    $this->deleteImage($image->image);
-                }
-            // Delete image from database
+            // 1. حذف صور المنتج الأساسي (الـ Thumbnail والـ Gallery)
+            foreach ($product->images as $image) {
+                $this->deleteImage($image->image);
+            }
             $product->images()->delete();
-        }
-        
-        $product->forceDelete();
-        
-        DB::commit();
-        
+
+            // 2. المرور على الـ Variations وحذف صورها
+            foreach ($product->variations as $variation) {
+                foreach ($variation->images as $vImage) {
+                    $this->deleteImage($vImage->image);
+                }
+                // حذف سجلات صور الـ variation
+                $variation->images()->delete();
+                // فصل السمات في الجدول الوسيط
+                $variation->values()->detach();
+            }
+            
+            // حذف الـ variations من قاعدة البيانات
+            $product->variations()->delete();
+
+            // 3. الحذف النهائي للمنتج
+            $product->forceDelete();
+
+            DB::commit();
+
         } catch (Throwable $e) {
             DB::rollBack();
-            return Redirect::route('products.index')
-                ->with('error', 'Failed to delete product');
+            return Redirect::route('dashboard.products.trash') // تم تعديل الراوت هنا ليكون أدق
+                ->with('error', 'Failed to delete product: ' . $e->getMessage());
         }
 
-        return Redirect::route('dashboard.products.trash' )
-        ->with('success', 'Product deleted');
+        return Redirect::route('dashboard.products.trash')
+            ->with('success', 'Product and all its assets deleted permanently');
     }
-
     /**
      * Remove variation.
      */
@@ -423,7 +579,7 @@ class ProductsController extends Controller
 
             DB::commit();
 
-            return back()->with('success', 'تم حذف الـ Variation بنجاح');
+            // return back()->with('success', 'تم حذف الـ Variation بنجاح');
 
         } catch (\Throwable $e) {
             DB::rollBack();

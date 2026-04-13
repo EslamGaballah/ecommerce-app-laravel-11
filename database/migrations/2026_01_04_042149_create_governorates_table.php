@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('governorates', function (Blueprint $table) {
             $table->id();
-            $table->string('name'); 
+            $table->string('name_ar'); 
+            $table->string('name_en'); 
             $table->decimal('shipping_price', 8, 2);
             $table->unsignedInteger('delivery_days');
             $table->boolean('is_active')->default(true);

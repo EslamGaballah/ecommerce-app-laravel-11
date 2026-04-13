@@ -24,9 +24,9 @@
     <x-form.input name="name" placeholder="Name" class="mx-2" :value="request('name')" />
     <select name="is_active" class="form-control mx-2">
         <option value="">All</option>
-       
-        @foreach(['1' => __('app.avilable'),
-                '0' => __('app.unAvilable')] as $value => $label)
+
+        @foreach(['1' => __('app.available'),
+                '0' => __('app.unAvailable')] as $value => $label)
             <option value="{{ $value }}" @selected(request('is_active') === $value)>
                 {{ $label }}
             </option>
@@ -51,14 +51,14 @@
     <tbody>
         @forelse($governorates as $governorate)
         <tr>
-           
+
             <td>{{ $governorate->id }}</td>
             <td><a href="#">{{ $governorate->name }}</a></td>
 
-            
+
             <td>{{ $governorate->shipping_price }}</td>
 
-                
+
             <td>{{ $governorate->delivery_days }}</td>
             <td>
                 <span class="badge bg-{{ $governorate->status_color }}">
@@ -70,7 +70,7 @@
                 {{-- @can('categories.update') --}}
                 <a href="{{ route('dashboard.governorates.edit', $governorate->id) }}" class="btn btn-sm btn-outline-success">{{__('app.edit')}}</a>
                 {{-- @endcan --}}
-            </td> 
+            </td>
         </tr>
         @empty
         <tr>

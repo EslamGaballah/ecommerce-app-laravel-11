@@ -15,10 +15,11 @@ class Product extends Model
     use SoftDeletes, HasFactory;
     
     protected $fillable = [
+        'name_ar',
+        'name_en',
         'user_id',
         'category_id',
         'brand_id',
-        'name',
         'slug',
         'sku',
         'description',
@@ -27,6 +28,9 @@ class Product extends Model
         'compare_price',
         'stock',
         'product_type',
+
+        'rating_avg',
+        'rating_count',
         
         
     ];
@@ -36,6 +40,13 @@ class Product extends Model
         'product_type' => ProductType::class,
 
     ];
+
+     public function getNameAttribute()
+    {
+         return app()->getLocale() == 'ar'
+        ? ($this->name_ar ?? $this->name_en ?? 'product')
+        : ($this->name_en ?? $this->name_ar ?? 'product');
+    }
 
     protected static function booted()
     {
@@ -118,12 +129,22 @@ class Product extends Model
 
     public function brand() 
     {
-        return $this->belongsTo(Category::class, 'brand_id', 'id');
+        return $this->belongsTo(Brand::class, 'brand_id', 'id');
     }
 
     public function images() 
     {
         return $this->morphMany(Image::class, 'imageable');
+    }
+
+    public function thumbnail() 
+    {
+        return $this->morphOne(Image::class, 'imageable')->where('type', 'thumbnail');
+    }
+
+     public function gallery() 
+    {
+        return $this->morphMany(Image::class, 'imageable')->where('type', 'gallery');
     }
 
     public function tags()
@@ -148,9 +169,19 @@ class Product extends Model
             ?? $this->variations->first();
     }
 
+    public function getFinalPriceAttribute()
+    {
+        return $this->defaultVariation?->price ?? $this->price;
+    }
+
+    public function getFinalComparePriceAttribute()
+    {
+        return $this->defaultVariation?->compare_price ?? $this->compare_price;
+    }
+
     public function getTotalQuantityAttribute()
     {
-        return $this->variations->sum('quantity');
+        return $this->variations->sum('stock');
     }
 
     public function stockMovements()

@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('images', function (Blueprint $table) {
             $table->id();
             $table->string('image'); // path
+            // $table->string('type')->default('gallery');
+            $table->string('type')->nullable();
             $table->morphs('imageable'); // create( imageable_id و imageable_type )
             $table->string('alt')->nullable();
             $table->boolean('is_primary')->default(false);

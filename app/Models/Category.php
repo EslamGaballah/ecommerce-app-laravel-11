@@ -12,13 +12,21 @@ class Category extends Model
     use HasFactory;
     
     protected $fillable = [
-        'name',
+        'name_en',
+        'name_ar',
         'description',
         'parent_id',
         'slug',
         'status'
 
     ];
+
+    public function getNameAttribute()
+    {
+        return app()->getLocale() == 'ar'
+            ? $this->name_ar
+            : $this->name_en;
+    }
 
     // glopale scope
     public function scopeFilter(Builder $builder, $filters)

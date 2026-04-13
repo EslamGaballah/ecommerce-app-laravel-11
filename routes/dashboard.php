@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Dashboard\AttributesController;
 use App\Http\Controllers\Dashboard\AttributeValueController;
+use App\Http\Controllers\Dashboard\BrandsController;
 use App\Http\Controllers\Dashboard\CategoriesController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Dashboard\GovernoratesController;
@@ -20,13 +21,13 @@ use Illuminate\Support\Facades\Route;
     // 'middleware' => ['auth'],
     // 'as' => 'dashboard.',
     // 'prefix' => 'dashboard'
-// ], function () { 
+// ], function () {
 
 Route::middleware(['auth','can:access-dashboard'])
     ->prefix('dashboard')
     ->name('dashboard.')
     ->group(function () {
-        
+
     Route::get('/',[DashboardController::class, 'index'])->name('index');
 
     Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -34,6 +35,8 @@ Route::middleware(['auth','can:access-dashboard'])
 
 
     Route::resource('categories', CategoriesController::class)->names('categories');
+
+    Route::resource('brands', BrandsController::class)->names('brands');
 
     Route::resource('tags', TagsController::class)->names('tags');
 
@@ -48,6 +51,9 @@ Route::middleware(['auth','can:access-dashboard'])
     Route::resource('attributes', AttributesController::class);
 
     Route::resource('attribute_values', AttributeValueController::class);
+
+    Route::resource('coupons', \App\Http\Controllers\Dashboard\CouponController::class);
+
 
     Route::resource('orders', OrdersController::class)->only(['index', 'show', 'update', 'destroy']);
     // Route::put('orders/{order}', [OrdersController::class, 'update'])

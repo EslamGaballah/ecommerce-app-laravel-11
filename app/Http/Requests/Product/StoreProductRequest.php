@@ -59,12 +59,16 @@ class StoreProductRequest extends FormRequest
     {
         
         $rules = [
-            'name' => 'required|string|max:255',
+            'name_ar' => 'required|string|max:255',
+            'name_en' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
             'status' => ['required', new Enum(ProductStatus::class)],
             'category_id' => 'required|exists:categories,id',
-            'image' => 'nullable|array',
-            'image.*' => 'image|mimes:jpg,jpeg,png,webp|max:2048',
+            'brand_id' => 'nullable|exists:brands,id',
+            'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+
+            'gallery' => 'nullable|array',
+            'gallery.*' => 'image|mimes:jpg,jpeg,png,webp|max:2048',
             'product_type' => ['required', new Enum(\App\Enums\ProductType::class)],
 
         ];
@@ -81,7 +85,7 @@ class StoreProductRequest extends FormRequest
             $rules['variations.*.price'] = 'required|numeric|min:0';
             $rules['variations.*.compare_price'] = 'nullable|numeric';
             $rules['variations.*.stock'] = 'required|integer|min:0';
-            $rules['variations.*.attributes'] = 'required|array|min:1';
+            $rules['variations.*.attribute_value_ids'] = 'required|array|min:1';
             $rules['variations.*.image'] = 'nullable|array';
             $rules['variations.*.image.*'] = 'image|mimes:jpg,jpeg,png,webp|max:2048';
 

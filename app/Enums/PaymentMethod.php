@@ -4,16 +4,16 @@ namespace App\Enums;
 
 enum PaymentMethod: string
 {
-    case Cash   = 'cash';
-    case Stripe = 'stripe';
+    case CASH   = 'cash';
+    case VISA = 'visa';
     // 
 
     
     public function label(): string
     {
         return match ($this) {
-            self::Cash    => 'نقدى',
-            self::Stripe  => 'مكتمل',
+            self::CASH    => 'نقدى',
+            self::VISA  => 'فيزا',
            
         };
     }
@@ -22,8 +22,8 @@ enum PaymentMethod: string
     public function color(): string
     {
         return match ($this) {
-            self::Cash    => 'primary',
-            self::Stripe  => 'success',
+            self::CASH    => 'primary',
+            self::VISA  => 'success',
            
 
         };

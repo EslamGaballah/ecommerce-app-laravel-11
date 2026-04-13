@@ -11,23 +11,25 @@ use Illuminate\Support\Str;
 class Cart extends Model
 {
 
-    public $incrementing = false;
     protected $fillable = [
 
         'cookie_id',
         'user_id',
         'product_id',
+        'variation_id',
         'quantity',
         'options',
     ];
-    
+    public $incrementing = false;
+    protected $keyType = 'string';
+
     Protected static function booted()
     {
         static::observe(CartObserver::class);
 
-        static::addGlobalScope('cookie_id', function(builder $builder) {
-            $builder->where('cookie_id', '=', Cart::cartCookieId());
-        });
+        // static::addGlobalScope('cookie_id', function(builder $builder) {
+        //     $builder->where('cookie_id', '=', Cart::cartCookieId());
+        // });
     }
 
     public static function cartCookieId()
@@ -36,6 +38,8 @@ class Cart extends Model
         if (!$cookie_id) {
             $cookie_id = Str::uuid();
             Cookie::queue('cart_id', $cookie_id, 30*24*60 );
+
+             request()->cookies->set('cart_id', $cookie_id);
         }
         return $cookie_id;
     }
@@ -50,6 +54,11 @@ class Cart extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function variation()
+    {
+        return $this->belongsTo(ProductVariation::class, 'variation_id');
     }
 
 }

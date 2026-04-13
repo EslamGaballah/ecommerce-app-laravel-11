@@ -1,102 +1,107 @@
 <x-front-layout title="Order Details">
 
-    <x-slot:breadcrumb>
-        <div class="breadcrumbs">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-lg-6 col-md-6 col-12">
-                        <div class="breadcrumbs-content">
-                            <h1 class="page-title">Order # {{ $order->number }}</h1>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-6 col-12">
-                        <ul class="breadcrumb-nav">
-                            <li><a href="{{ route('home') }}"><i class="lni lni-home"></i> Home</a></li>
-                            <li><a href="#">Orders</a></li>
-                            <li>Order # {{ $order->number }}</li>
-                        </ul>
-                    </div>
+<x-slot:breadcrumb>
+    <div class="breadcrumbs">
+        <div class="container">
+            <ul class="breadcrumb-nav">
+                <li><a href="{{ route('home') }}">الرئيسية</a></li>
+                <li><a href="{{ route('front.orders.index') }}">طلباتي</a></li>
+                <li>تفاصيل الطلب</li>
+            </ul>
+        </div>
+    </div>
+</x-slot:breadcrumb>
+
+<div class="shopping-cart section">
+    <div class="container">
+
+        {{-- HEADER --}}
+        <div class="mb-4 d-flex justify-content-between align-items-center">
+            <h4>طلب #{{ $order->id }}</h4>
+
+            <span class="badge bg-{{ $order->status->color() }}">
+                {{ $order->status->label() }}
+            </span>
+        </div>
+
+        {{-- PRODUCTS --}}
+        <div class="cart-list-head">
+
+            <div class="cart-list-title">
+                <div class="row">
+                    <div class="col-lg-2">الصورة</div>
+                    <div class="col-lg-3">المنتج</div>
+                    <div class="col-lg-2">السعر</div>
+                    <div class="col-lg-2">الكمية</div>
+                    <div class="col-lg-2">الإجمالي</div>
                 </div>
             </div>
+
+            @foreach($order->items as $item)
+                <div class="cart-single-list">
+                    <div class="row align-items-center">
+
+                        <div class="col-lg-2">
+                            <img src="{{ asset('storage/' . ($item->product->images->first()?->image)) }}">
+                        </div>
+
+                        <div class="col-lg-3">
+                            <h6>{{ $item->product_name }}</h6>
+
+                            
+                        </div>
+
+                        <div class="col-lg-2">
+                            {{ Currency::format($item->price) }}
+                        </div>
+
+                        <div class="col-lg-2">
+                            {{ $item->quantity }}
+                        </div>
+
+                        <div class="col-lg-2">
+                            {{ Currency::format($item->price * $item->quantity) }}
+                        </div>
+
+                    </div>
+                </div>
+            @endforeach
+
         </div>
-    </x-slot:breadcrumb>
 
-    <section class="checkout-wrapper section">
-        <div class="container">
-            <div id="map" style="height: 50vh;"></div>
-            
-            <h5>Status History</h5>
-            <table class="table table-sm">
-                <thead>
-                    <tr>
-                        <th>From</th>
-                        <th>To</th>
-                        <th>Changed By</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($order->statusHistories as $history)
-                        <tr>
-                            <td>{{ ucfirst($history->old_status) }}</td>
-                            <td>{{ ucfirst($history->new_status) }}</td>
-                            <td>{{ $history->user?->name ?? '—' }}</td>
-                            <td>{{ $history->created_at }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-
-
-
+        {{-- TOTAL --}}
+        <div class="total-amount mt-4">
+            <div class="right">
+                <ul>
+                    <li>Subtotal
+                        <span>{{ Currency::format($order->total - $order->shipping - $order->tax + $order->discount) }}</span>
+                    </li>
+                    <li>Discount
+                        <span>- {{ Currency::format($order->discount) }}</span>
+                    </li>
+                    <li>Shipping
+                        <span>{{ Currency::format($order->shipping) }}</span>
+                    </li>
+                    <li>Tax
+                        <span>{{ Currency::format($order->tax) }}</span>
+                    </li>
+                    <li class="last">Total
+                        <span>{{ Currency::format($order->total) }}</span>
+                    </li>
+                </ul>
+            </div>
         </div>
-    </section>
-    <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
-    <script>
-        var map, marker;
 
-        // Enable pusher logging - don't include this in production
-        Pusher.logToConsole = true;
+        {{-- ADDRESS --}}
+        <div class="mt-4">
+            <h6>عنوان الشحن</h6>
+            <p>{{ $order->address->first_name }} {{ $order->address->last_name }}</p>
+            <p>{{ $order->address->phone_number }}</p>
+            <p>{{ $order->address->street_address }}<br>
+            {{ $order->address->city }}, {{ $order->address->country }}</p>
+        </div>
 
-        var pusher = new Pusher('9bbd1071bbb820b9aef1', {
-            cluster: 'ap2',
-            channelAuthorization: {
-                endpoint: "/broadcasting/auth",
-                headers: { 
-                    "X-CSRF-Token": "{{ csrf_token() }}"
-                }
-            }
-        });
+    </div>
+</div>
 
-        var channel = pusher.subscribe('private-deliveries.{{ $order->id }}');
-        channel.bind('location-updated', function(data) {
-            marker.setPosition({
-                lat: Number(data.lat),
-                lng: Number(data.lng)
-            });
-        });
-    </script>
-    <script>
-        // Initialize and add the map
-        function initMap() {
-            // The location of Delivery
-            const location = {
-                lat: Number("{{ $delivery->lat }}"),
-                lng: Number("{{ $delivery->lng }}")
-            };
-            // The map, centered at Uluru
-            map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 15,
-                center: location,
-            });
-            // The marker, positioned at Uluru
-            marker = new google.maps.Marker({
-                position: location,
-                map: map,
-            });
-        }
-
-        window.initMap = initMap;
-    </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.api_key') }}&callback=initMap&v=weekly" defer></script>
 </x-front-layout>

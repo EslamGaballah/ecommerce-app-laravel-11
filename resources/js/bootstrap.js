@@ -1,40 +1,39 @@
 import axios from 'axios';
+import Pusher from 'pusher-js';
+
 window.axios = axios;
+window.Pusher = Pusher;
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-// pusher code
-// import Echo from 'laravel-echo';
-// import Pusher from 'pusher-js';
+// Enable logging (للتجربة فقط)
+Pusher.logToConsole = true;
 
-// window.Pusher = Pusher;
+// إنشاء Pusher instance
+const pusher = new Pusher(import.meta.env.VITE_PUSHER_APP_KEY, {
+    cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
+    forceTLS: true,
 
-// window.Echo = new Echo({
-//     broadcaster: 'pusher',
-//     key: import.meta.env.VITE_PUSHER_APP_KEY,
-//     cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
-//     forceTLS: true,
-// });
+    authEndpoint: "/broadcasting/auth",
 
-import Echo from 'laravel-echo'
-
-window.Echo = new Echo({
-  broadcaster: 'pusher',
-  key: '833b9593418dfdb26f5a',
-  cluster: 'eu',
-  forceTLS: true
+    auth: {
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    }
 });
 
-var channel = Echo.private(`App.Models.User.${userID}`);
-channel.notification( function(data) {
-  console.log(data);
-  alert(data.body);
-  alert(JSON.stringify(data));
-});
-/**
- * Echo exposes an expressive API for subscribing to channels and listening
- * for events that are broadcast by Laravel. Echo and event broadcasting
- * allow your team to quickly build robust real-time web applications.
- */
+// user id من Laravel
+const userID = window.userID ?? null;
 
-import './echo';
+if (userID) {
+    const channel = pusher.subscribe(`private-App.Models.User.${userID}`);
+
+    channel.bind('Illuminate\\Notifications\\Events\\BroadcastNotificationCreated', function (data) {
+        console.log('Notification:', data);
+
+        if (typeof window.addNotification === 'function') {
+            window.addNotification(data);
+        }
+    });
+}

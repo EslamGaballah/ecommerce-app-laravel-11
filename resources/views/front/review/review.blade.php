@@ -49,7 +49,7 @@
 
                         <div class="review-info">
                             <h4>
-                                {{ Str::limit($review->review, 40) }}
+                                {{ \Illuminate\Support\Str::limit($review->review, 40) }}
                                 <span>{{ $review->user->name }}</span>
                             </h4>
 
@@ -79,6 +79,9 @@
     <div class="modal-dialog">
         <form action="{{ route('products.review', $product) }}" method="POST">
             @csrf
+
+            <input type="hidden" name="product_id" value="{{ $product->id }}">
+
 
             <div class="modal-content">
                 <div class="modal-header">

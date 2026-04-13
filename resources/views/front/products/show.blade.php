@@ -1,14 +1,16 @@
-
 <x-front-layout :title="$product->name">
+
     <x-slot:breadcrumb>
         <div class="breadcrumbs">
             <div class="container">
                 <div class="row align-items-center">
+
                     <div class="col-lg-6 col-md-6 col-12">
                         <div class="breadcrumbs-content">
                             <h1 class="page-title">{{ $product->name }}</h1>
                         </div>
                     </div>
+
                     <div class="col-lg-6 col-md-6 col-12">
                         <ul class="breadcrumb-nav">
                             <li><a href="{{ route('home') }}"><i class="lni lni-home"></i> {{ __('app.home') }}</a></li>
@@ -16,499 +18,471 @@
                             <li>{{ $product->name }}</li>
                         </ul>
                     </div>
+
                 </div>
             </div>
         </div>
     </x-slot:breadcrumb>
 
-    <!-- Start Item Details -->
+
     <section class="item-details section">
+
         <div class="container">
+
             <div class="top-area">
+
                 <div class="row align-items-center">
+
+                    {{-- الصور --}}
                     <div class="col-lg-6 col-md-12 col-12">
+
                         <div class="product-images">
+
                             <main id="gallery">
 
                                 <div class="main-img">
-                                    <img 
-                                        id="current" 
-                                        src="{{ asset('storage/' . ( $defaultVariation?->image ?? $product->image)) }}" 
-                                        alt="{{ $product->name }}"
-                                    >
+                                    <img id="current"
+                                         src="{{ asset('storage/' . (
+                                            optional($defaultVariation)->image
+                                            ?? $product->image
+                                            ?? $product->images->first()?->image
+                                        )) }}"
+                                         alt="{{ $product->name }}">
                                 </div>
+
                                 <div class="images">
+
+                                    {{-- صور الفارييشن --}}
                                     @if($defaultVariation && $defaultVariation->images->count())
+
                                         @foreach($defaultVariation->images as $image)
 
                                             <img
-                                                src="{{ asset('storage/' . $image->path) }}"
+                                                src="{{ asset('storage/'.$image->image) }}"
                                                 class="img"
-                                                onclick="document.getElementById('current').src=this.src"
-                                            >
+                                                onclick="document.getElementById('current').src=this.src">
+
                                         @endforeach
+
+                                        {{-- صور المنتج البسيط --}}
+                                    @elseif($product->images && $product->images->count())
+
+                                        @foreach($product->images as $image)
+
+                                            <img
+                                                src="{{ asset('storage/'.$image->image) }}"
+                                                class="img"
+                                                onclick="document.getElementById('current').src=this.src">
+
+                                        @endforeach
+
                                     @endif
+
                                 </div>
 
                             </main>
+
                         </div>
+
                     </div>
+
+
+                    {{-- معلومات المنتج --}}
                     <div class="col-lg-6 col-md-12 col-12">
+
                         <div class="product-info">
+
                             <h2 class="title">{{ $product->name }}</h2>
+
                             <p class="category">
                                 <i class="lni lni-tag"></i>
-                                    {{ __('app.category') }}:<a href="javascript:void(0)"></a>
-                                    {{-- {{ $product->category?->name }} --}}
-                                    {{ $product->category->name ?? 'Uncategorized' }}
+                                {{ __('app.category') }} :
+                                {{ $product->category->name ?? 'Uncategorized' }}
                             </p>
-                            <h3 class="price"
-                                 id="product-price">
-                                    {{ Currency::format($defaultVariation->price) }}
-                                
-                                    @if($defaultVariation->compare_price)
-                                        <spapn class=" discount-price text-muted text-decoration-line-through">
-                                            {{ Currency::format($defaultVariation->compare_price) }}
-                                        </span>
-                                    @endif
+
+
+                            <h3 class="price" id="product-price">
+
+                                {{ Currency::format($product->final_price) }}
+
+                                @if($product->final_compare_price)
+
+                                    <span class="discount-price text-muted text-decoration-line-through">
+                                        {{ Currency::format($product->final_compare_price) }}
+                                    </span>
+
+                                @endif
+
                             </h3>
+
+
+                            @if(!$product->variations->count())
+
+                                <p class="mt-2 {{ $product->stock > 0 ? 'text-success':'text-danger' }}">
+
+                                    {{ $product->stock > 0 ? 'متوفر ('.$product->stock.')':'غير متوفر' }}
+
+                                </p>
+
+                            @endif
+
+
                             <p class="info-text">{{ $product->description }}</p>
-                            <p id="stock-status" class="mt-2 text-muted"></p>
+
+                            <p id="stock-status"></p>
 
 
-                            {{--start add to cart --}}
-                            <form action="{{ route('cart.store') }}" method="post">
+                            <form id="add-to-cart-form" 
+                                action="{{ route('cart.store') }}" 
+                                method="post">
+
                                 @csrf
+
                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                                 <input type="hidden" name="variation_id" id="variation_id">
 
-                                <div class="row ">
-                                 {{-- @foreach($attributes as $attributeName => $values)
-                                    <div class="mb-3">
-                                        <label class="fw-bold">{{ ucfirst($attributeName) }}</label>
 
-                                        <div class="d-flex gap-2 mt-2">
-                                            @foreach($values->unique('value') as $value)
-                                                <label class="variation-radio">
-                                                    <input type="radio"
-                                                            name="{{ $attributeName }}"
-                                                            class="variation-option"
-                                                            data-attribute="{{ $attributeName }}"
-                                                            data-value="{{ $value->value }}">
-                                                    <span>{{ $value->value }}</span>
-                                                </label>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                @endforeach --}}
+                                <div class="row">
 
-                               @foreach($attributes as $attribute)
-                                    <div class="attribute-group" data-attribute="{{ $attribute['id'] }}">
-                                        <h6>{{ $attribute['name'] }}</h6>
 
-                                        @foreach($attribute['values'] as $value)
-                                            <button
-                                                type="button"
-                                                class="attr-btn"
-                                                data-attribute="{{ $attribute['id'] }}"
-                                                data-value="{{ $value->id }}"
-                                            >
-                                                {{ $value->value }}
-                                            </button>
+                                    @if($product->variations->count())
+
+                                        @foreach($attributes as $attribute)
+
+                                            <div class="attribute-group" data-attribute="{{ $attribute['id'] }}">
+
+                                                <h6>{{ $attribute['name'] }}</h6>
+
+                                                @foreach($attribute['values'] as $value)
+
+                                                    <button
+                                                        type="button"
+                                                        class="attr-btn"
+                                                        data-attribute="{{ $attribute['id'] }}"
+                                                        data-value="{{ $value->id }}">
+
+                                                        {{ $value->value }}
+
+                                                    </button>
+
+                                                @endforeach
+
+                                            </div>
+
                                         @endforeach
-                                    </div>
-                                @endforeach
+
+                                    @endif
 
 
                                     <div class="col-lg-4 col-md-4 col-12">
-                                        
 
                                         <div class="form-group quantity">
-                                            <label for="color">{{ __('app.quantity') }}</label>
-                                            {{-- <select class="form-control" name="quantity" id="quantity-select"></select> --}}
+
+                                            <label>{{ __('app.quantity') }}</label>
 
                                             <select class="form-control" name="quantity" id="quantity-select">
-                                                <option>1</option>
-                                                <option>2</option>
-                                                <option>3</option>
-                                                <option>4</option>
-                                                <option>5</option>
+
+                                                @if($product->variations->count())
+
+                                                    <option>1</option>
+
+                                                @else
+
+                                                    @for($i=1;$i<=$product->stock;$i++)
+
+                                                        <option value="{{ $i }}">{{ $i }}</option>
+
+                                                    @endfor
+
+                                                @endif
+
                                             </select>
+
                                         </div>
+
                                     </div>
+
+
                                 </div>
+
+
                                 <div class="bottom-content">
+
                                     <div class="row align-items-end">
+
                                         <div class="col-lg-4 col-md-4 col-12">
+
                                             <div class="button cart-button">
-                                                <button class="btn" 
-                                                id="add-to-cart-btn"
-                                                type="submit"
-                                                disabled
-                                                 style="width: 100%;">{{ __('app.add_to_cart') }}</button>
+
+                                                <button
+                                                    class="btn"
+                                                    id="add-to-cart-btn"
+                                                    type="submit"
+                                                    style="width:100%">
+
+                                                    {{ __('app.add_to_cart') }}
+
+                                                </button>
+
                                             </div>
+
                                         </div>
+
                             </form>
 
-                                        <div class="col-lg-4 col-md-4 col-12">
-                                            <div class="wish-button">
-                                                
-                                                @auth
-                                                <form action="{{ route('favorites.toggle', $product->id) }}" method="POST">
-                                                    @csrf
-                                                    <button type="submit" class="btn"><i class="lni lni-heart"></i>
-                                                        @if(auth()->user()->favorites->contains($product->id))
-                                                            {{ __('app.remove_from_favorites') }}
-                                                        @else
-                                                            {{ __('app.add_to_favorites') }}
-                                                        @endif
-                                                    </button>
-                                                </form>
+
+                            <div class="col-lg-4 col-md-4 col-12">
+
+                                <div class="wish-button">
+
+                                    @auth
+
+                                        <form action="{{ route('favorites.toggle',$product->id) }}" method="POST">
+
+                                            @csrf
+
+                                            <button type="submit" class="btn">
+
+                                                <i class="lni lni-heart"></i>
+
+                                                @if(auth()->user()->favorites->contains($product->id))
+
+                                                    {{ __('app.remove_from_favorites') }}
+
                                                 @else
-                                                <a href="{{ route('login') }}" 
-                                                class="btn"><i class="lni lni-heart"></i> 
-                                                    {{ __('app.add_to_favorites') }}</a>
-                                                @endauth
 
-                                            </div>
-                                        </div>
-                                    </div>
+                                                    {{ __('app.add_to_favorites') }}
+
+                                                @endif
+
+                                            </button>
+
+                                        </form>
+
+                                    @else
+
+                                        <a href="{{ route('login') }}" class="btn">
+
+                                            <i class="lni lni-heart"></i>
+
+                                            {{ __('app.add_to_favorites') }}
+
+                                        </a>
+
+                                    @endauth
+
                                 </div>
-                            {{--start add to cart --}}
-                            
+
+                            </div>
+
                         </div>
+
                     </div>
+
                 </div>
+
             </div>
 
-            <div class="product-details-info">
-                {{-- <div class="single-block">
-                    <div class="row">
-                        <div class="col-lg-6 col-12">
-                            <div class="info-body custom-responsive-margin">
-                                <h4>Details</h4>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                                    incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                                    exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-                                    irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat.</p>
-                                <h4>Features</h4>
-                                <ul class="features">
-                                    <li>Capture 4K30 Video and 12MP Photos</li>
-                                    <li>Game-Style Controller with Touchscreen</li>
-                                    <li>View Live Camera Feed</li>
-                                    <li>Full Control of HERO6 Black</li>
-                                    <li>Use App for Dedicated Camera Operation</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 col-12">
-                            <div class="info-body">
-                                <h4>Specifications</h4>
-                                <ul class="normal-list">
-                                    <li><span>Weight:</span> 35.5oz (1006g)</li>
-                                    <li><span>Maximum Speed:</span> 35 mph (15 m/s)</li>
-                                    <li><span>Maximum Distance:</span> Up to 9,840ft (3,000m)</li>
-                                    <li><span>Operating Frequency:</span> 2.4GHz</li>
-                                    <li><span>Manufacturer:</span> GoPro, USA</li>
-                                </ul>
-                                <h4>Shipping Options:</h4>
-                                <ul class="normal-list">
-                                    <li><span>Courier:</span> 2 - 4 days, $22.50</li>
-                                    <li><span>Local Shipping:</span> up to one week, $10.00</li>
-                                    <li><span>UPS Ground Shipping:</span> 4 - 6 days, $18.00</li>
-                                    <li><span>Unishop Global Export:</span> 3 - 4 days, $25.00</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div> --}}
-
-                @include('front.review.review');
-
-           
-            </div>
         </div>
+
+        </div>
+
+
+        <div class="product-details-info">
+
+            @include('front.review.review')
+
+        </div>
+
+        </div>
+
     </section>
-    <!-- End Item Details -->
-
-    <!-- Review Modal -->
-    <div class="modal fade review-modal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">{{ __('app.leave_review') }}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <label for="review-name">Your Name</label>
-                                <input class="form-control" type="text" id="review-name" required>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <label for="review-email">Your Email</label>
-                                <input class="form-control" type="email" id="review-email" required>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <label for="review-subject">Subject</label>
-                                <input class="form-control" type="text" id="review-subject" required>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <label for="review-rating">Rating</label>
-                                <select class="form-control" id="review-rating">
-                                    <option>5 Stars</option>
-                                    <option>4 Stars</option>
-                                    <option>3 Stars</option>
-                                    <option>2 Stars</option>
-                                    <option>1 Star</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="review-message">Review</label>
-                        <textarea class="form-control" id="review-message" rows="8" required></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer button">
-                    <button type="button" class="btn">Submit Review</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- End Review Modal -->
-
-@push('script')
-
-@php
-
-    $variationsJs = $product->variations->map(function ($v) {
-    return [
-        'id' => $v->id,
-        'attributes_ids' => $v->values->pluck('id')->toArray(),
-    ];
-});
 
 
-@endphp
+    @push('script')
 
-{{-- auto select primary variation --}}
-<script>
-document.addEventListener('DOMContentLoaded', function () {
+        @php
 
-    /* ===============================
-       عناصر الصفحة
-    =============================== */
-    const addBtn      = document.getElementById('add-to-cart-btn');
-    const priceEl     = document.getElementById('product-price');
-    const stockEl     = document.getElementById('stock-status');
-    const qtySelect   = document.getElementById('quantity-select');
-    const variationId = document.getElementById('variation_id');
-    const mainImg     = document.getElementById('current');
+            $variationsJs = $product->variations->map(function ($v) {
 
-    /* ===============================
-       Variations من Laravel
-    =============================== */
+                return [
+
+                    'id'=>$v->id,
+                    'price'=>$v->price,
+                    'compare'=>$v->compare_price,
+                    'qty'=>$v->stock,
+                    'attrs'=>$v->values->pluck('id')->toArray(),
+                    'image'=>$v->image
+
+                ];
+
+            });
+
+        @endphp
+
+
+       <script>
+
     const variations = @json($variationsJs);
     const requiredAttributes = {{ count($attributes) }};
 
-    /* ===============================
-       Auto select primary variation
-    =============================== */
-    const primaryValues = @json(
-        optional($product->defaultVariation)
-            ?->values
-            ->pluck('id')
-    );
+    const priceEl = document.getElementById('product-price');
+    const stockEl = document.getElementById('stock-status');
+    const qty = document.getElementById('quantity-select');
+    const variationInput = document.getElementById('variation_id');
+    const addBtn = document.getElementById('add-to-cart-btn');
+    const img = document.getElementById('current');
+    const form = document.getElementById('add-to-cart-form');
 
-    if (primaryValues) {
-        primaryValues.forEach(valueId => {
-            const btn = document.querySelector(`.attr-btn[data-value="${valueId}"]`);
-            if (btn) btn.classList.add('active');
-        });
-
-        updateVariation();
-    }
-
-    /* ===============================
-       Attribute buttons click
-    =============================== */
+    // =========================
+    // اختيار الخصائص (variation)
+    // =========================
     document.querySelectorAll('.attr-btn').forEach(btn => {
-        btn.addEventListener('click', function (e) {
-            e.preventDefault();
 
-            if (this.classList.contains('disabled')) return;
+        btn.addEventListener('click', () => {
 
-            const group = this.closest('.attribute-group');
+            const group = btn.closest('.attribute-group');
 
-            group.querySelectorAll('.attr-btn')
-                .forEach(b => b.classList.remove('active'));
+            group.querySelectorAll('.attr-btn').forEach(b => b.classList.remove('active'));
 
-            this.classList.add('active');
+            btn.classList.add('active');
 
             updateVariation();
+
         });
+
     });
 
-    /* ===============================
-       Core logic
-    =============================== */
+
     function updateVariation() {
 
-        const selectedValues = getSelectedValues();
+        const selected = [...document.querySelectorAll('.attr-btn.active')]
+            .map(b => parseInt(b.dataset.value));
 
-        disableInvalidButtons(selectedValues);
+        if (selected.length < requiredAttributes) return;
 
-        if (Object.keys(selectedValues).length < requiredAttributes) {
-            resetUI();
+        const v = variations.find(v =>
+            selected.every(val => v.attrs.includes(val))
+        );
+
+        if (!v) {
+
+            stockEl.innerText = 'غير متوفر';
+            addBtn.disabled = true;
+            variationInput.value = '';
+
             return;
         }
 
+        variationInput.value = v.id;
 
-        showLoading();
+        priceEl.innerHTML = v.price +
+            (v.compare ? `<span class="discount-price text-muted text-decoration-line-through">${v.compare}</span>` : '');
 
-        fetch('{{ route("variations.match", $product->id) }}', {
-            method: 'POST',
+        stockEl.innerText = 'متوفر (' + v.qty + ')';
+
+        qty.innerHTML = '';
+
+        for (let i = 1; i <= v.qty; i++) {
+            qty.innerHTML += `<option value="${i}">${i}</option>`;
+        }
+
+        addBtn.disabled = v.qty <= 0;
+
+        if (v.image) {
+            img.src = '/storage/' + v.image;
+        }
+
+    }
+
+
+    // =========================
+    // AJAX ADD TO CART 🔥
+    // =========================
+    form.addEventListener('submit', function (e) {
+
+        e.preventDefault();
+
+        // ✅ منع الإرسال لو مفيش variation
+        if (variations.length > 0 && !variationInput.value) {
+            alert('من فضلك اختر الخصائص أولاً');
+            return;
+        }
+
+        const formData = new FormData(form);
+
+        addBtn.disabled = true;
+        addBtn.innerText = 'جاري الإضافة...';
+
+        fetch(form.action, {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
+                "Accept": "application/json"
             },
-            body: JSON.stringify({
-                attributes: selectedValues
-            })
+            body: formData
         })
         .then(res => res.json())
         .then(data => {
+            if (data.success) {
+                // ✅ إظهار رسالة النجاح
+                showToast(data.message || 'تمت الإضافة بنجاح');
 
-            hideLoading();
+                // ✅ تحديث جميع عدادات الكارت في الصفحة
+                // استخدمنا الكلاس cart-count-display الذي اتفقنا عليه سابقاً
+                document.querySelectorAll('.cart-count-display').forEach(el => {
+                    el.innerText = data.count; // الـ Controller يرسل count
+                });
 
-            if (!data.exists) {
-                addBtn.disabled = true;
-                stockEl.innerText = 'غير متاح';
-                stockEl.className = 'text-danger';
-                return;
+                // ✅ تحديث السلة المصغرة (Dropdown)
+                if (typeof loadCart === "function") {
+                    loadCart();
+                }
+
+            } else {
+                showToast('حدث خطأ أثناء الإضافة', 'error');
             }
-
-            variationId.value = data.id;
-            addBtn.disabled = false;
-
-            updatePrice(data.price, data.compare_price);
-            updateStock(data.quantity);
-            updateQuantity(data.quantity);
-            updateImages(data.images);
         })
-        .catch(() => {
-            hideLoading();
-            addBtn.disabled = true;
+        .catch(err => {
+            console.error(err);
+            showToast('خطأ في الاتصال', 'error');
+        })
+        .finally(() => {
+            addBtn.disabled = false;
+            addBtn.innerText = "{{ __('app.add_to_cart') }}";
         });
+
+    });
+
+
+    // =========================
+    // Toast بسيط 👌
+    // =========================
+    function showToast(message, type = 'success') {
+
+        let toast = document.createElement('div');
+
+        toast.innerText = message;
+
+        toast.style.position = 'fixed';
+        toast.style.bottom = '20px';
+        toast.style.right = '20px';
+        toast.style.padding = '12px 20px';
+        toast.style.background = type === 'success' ? '#28a745' : '#dc3545';
+        toast.style.color = '#fff';
+        toast.style.borderRadius = '8px';
+        toast.style.zIndex = '9999';
+
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
     }
 
-    /* ===============================
-       Helpers
-    =============================== */
-    function getSelectedValues() {
-        const obj = {};
-        document.querySelectorAll('.attr-btn.active').forEach(btn => {
-            obj[btn.dataset.attribute] = btn.dataset.value;
-        });
-        return obj;
-    }
-
-
-    function disableInvalidButtons(selected) {
-
-        document.querySelectorAll('.attr-btn').forEach(btn => {
-
-            const attrId  = btn.dataset.attribute;
-            const valueId = parseInt(btn.dataset.value);
-
-            const test = { ...selected, [attrId]: valueId };
-
-            const valid = variations.some(v =>
-                Object.values(test).every(val =>
-                    v.attributes_ids.includes(parseInt(val))
-                )
-            );
-
-            btn.disabled = !valid;
-            btn.classList.toggle('disabled', !valid);
-        });
-    }
-
-
-    function updatePrice(price, compare = null) {
-        priceEl.innerHTML = price +
-            (compare ? ` <span class="discount-price">${compare}</span>` : '');
-    }
-
-    function updateStock(quantity) {
-        if (quantity > 0) {
-            stockEl.innerText = `متوفر (${quantity})`;
-            stockEl.className = 'text-success';
-        } else {
-            stockEl.innerText = 'غير متوفر';
-            stockEl.className = 'text-danger';
-            addBtn.disabled = true;
-        }
-    }
-
-    function updateQuantity(quantity) {
-        qtySelect.innerHTML = '';
-        for (let i = 1; i <= quantity; i++) {
-            qtySelect.innerHTML += `<option value="${i}">${i}</option>`;
-        }
-    }
-
-    function updateImages(images) {
-        if (!images || !images.length) return;
-
-        const normalize = p => p.replace(/^storage\//, '').replace(/^\//, '');
-
-        mainImg.src = `{{ asset('storage') }}/${normalize(images[0])}`;
-
-        const container = document.querySelector('.images');
-        if (!container) return;
-
-        container.innerHTML = '';
-
-        images.forEach(img => {
-            const el = document.createElement('img');
-            el.src = `{{ asset('storage') }}/${normalize(img)}`;
-            el.classList.add('img');
-            el.onclick = () => mainImg.src = el.src;
-            container.appendChild(el);
-        });
-    }
-
-    function resetUI() {
-        addBtn.disabled = true;
-        stockEl.innerText = '';
-    }
-
-    /* ===============================
-       UX Loading
-    =============================== */
-    function showLoading() {
-        priceEl.classList.add('opacity-50');
-    }
-
-    function hideLoading() {
-        priceEl.classList.remove('opacity-50');
-    }
-
-});
 </script>
 
-@endpush
+    @endpush
+
 
 </x-front-layout>

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html class="no-js" 
-        lang="{{ str_replace('_', '-', app()->getLocale()) }}" 
+    <html class="no-js"
+        lang="{{ str_replace('_', '-', app()->getLocale()) }}"
          dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 
 <head>
@@ -9,6 +9,8 @@
     <title>{{ $title }}</title>
     <meta name="description" content="" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/images/favicon.svg') }}" />
 
     <!-- ========================= CSS here ========================= -->
@@ -28,68 +30,39 @@
         <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}" />
     @endif
 
-    
-
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <script>
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-    </script>
     <!--  ============= pushar ===================  -->
-    <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
+{{-- <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script> --}}
+
    <script>
-        // Enable pusher logging - don't include this in production
-        Pusher.logToConsole = true;
+        window.userID = {{ auth()->id() ?? 'null' }};
+    </script>
+    <script>
+        window.addNotification = function(data) {
 
-        var pusher = new Pusher('833b9593418dfdb26f5a', {
-          cluster: 'eu',
-          authEndpoint: "/broadcasting/auth",
-          auth: {
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            let payload = data.notification;
+
+            let count = document.getElementById('notification-count');
+
+            if (count) {
+                count.innerText = parseInt(count.innerText || 0) + 1;
             }
-        }
-        });
 
-        var userId = {{ auth()->id() }};
+            let list = document.getElementById('notification-list');
 
-        var channel = pusher.subscribe(
-            'private-App.Models.User.' + userId
-        );
+            if (!list) return;
 
-        channel.bind('Illuminate\\Notifications\\Events\\BroadcastNotificationCreated',
-         function(data) {
-            // alert(JSON.stringify(data));
-            addNotification(data);
-            
-        });
+            let li = document.createElement('li');
 
-        function addNotification(data) {
+            li.innerHTML = `
+                <a href="/dashboard/orders/${payload.order_id}">
+                    🔔 ${payload.message}
+                </a>
+            `;
 
-        let payload = data.notification;
+            list.prepend(li);
+        };
+    </script>
 
-        let count = document.getElementById('notification-count');
-
-        count.innerText = parseInt(count.innerText) + 1;
-
-        let li = document.createElement('li');
-
-        li.innerHTML = `
-            <a href="/dashboard/orders/${payload.order_id}">
-                🔔 ${payload.message}
-            </a>
-        `;
-
-        document.getElementById('notification-list').prepend(li);
-    }
-            // console.log('بيانات التنبيه:', data);
-        // الوصول للبيانات التي أرسلتها في toBroadcast
-        // console.log('رقم الطلب:', data.order_id);
-
-  </script>
       <!--  ============= End  pushar ===================  -->
 
 </head>
@@ -126,7 +99,7 @@
 
     <!-- Start Footer Area -->
     @include('layouts.front-footer')
-   
+
     <!--/ End Footer Area -->
 
     <!-- ========================= scroll-top ========================= -->
@@ -142,16 +115,25 @@
     </a>
 
     <!-- ========================= JS here ========================= -->
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+    </script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('assets/js/tiny-slider.js') }}"></script>
     <script src="{{ asset('assets/js/glightbox.min.js') }}"></script>
     <script src="{{ asset('assets/js/main.js') }}"></script>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    @vite(['resources/js/app.js'])
+
     @stack('script')
-    
     @stack('scripts')
-    
 </body>
 
 </html>

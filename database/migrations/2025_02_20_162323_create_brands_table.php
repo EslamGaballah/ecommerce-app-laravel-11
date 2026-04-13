@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('brands', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name_ar')->unique();
+            $table->string('name_en')->unique();
             $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->enum('status',['active', 'archived']);

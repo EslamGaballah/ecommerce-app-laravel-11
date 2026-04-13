@@ -11,7 +11,6 @@
                         </div>
                         <div class="col-lg-6 col-md-6 col-12">
                             <ul class="breadcrumb-nav">
-                                {{-- <li><a href="{{ route('home') }}"><i class="lni lni-home"></i> Home</a></li> --}}
                                 <li><a href="{{ route('products.index') }}">Shop</a></li>
                                 <li>checkout</li>
                             </ul>
@@ -20,17 +19,16 @@
                 </div>
             </div>
         </x-slot:breadcrumb>
-    
+
         <!--====== Checkout Form Steps Part Start ======-->
-    
+
         <section class="checkout-wrapper section">
              <form action="{{ route('checkout.store') }}" method="post" >
-                        {{-- <form action="{{ route('checkout.store') }}" method="post" id="payment-form"> --}}
                             @csrf
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-lg-8">
-                       
+
                             <div class="checkout-steps-form-style-1">
                                 <ul id="accordionExample">
                                     <li>
@@ -76,31 +74,25 @@
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="single-form form-default">
-                                                        <label>City</label>
-                                                        <div class="form-input form">
-                                                            <x-form.input name="city" placeholder="City" />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                {{-- <div class="col-md-6">
-                                                    <div class="single-form form-default">
-                                                        <label>Post Code</label>
-                                                        <div class="form-input form">
-                                                            <x-form.input name="addr[billing][postal_code]" placeholder="Post Code" />
-                                                        </div>
-                                                    </div>
-                                                </div> --}}
-                                                <div class="col-md-6">
-                                                    <div class="single-form form-default">
                                                         <label>{{__('app.governorate')}}</label>
-                                                        <div class="select-items">
-                                                           <option value="">اختر المحافظة</option>
+                                                        <select name="governorate_id" id="governorate_id" class="form-control">
+                                                            <option value="" >اختر المحافظة</option>
                                                             @foreach($governorates as $gov)
-                                                                <option value="{{ $gov->id }}">
+                                                                <option
+                                                                    value="{{ $gov->id }}"
+                                                                    data-price="{{ $gov->shipping_price }}">
                                                                     {{ $gov->name }} - شحن {{ $gov->shipping_price }} جنيه
                                                                     ({{ $gov->delivery_days }} أيام)
                                                                 </option>
                                                             @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="single-form form-default">
+                                                        <label>City</label>
+                                                        <div class="form-input form">
+                                                            <x-form.input name="city" placeholder="City" />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -113,234 +105,186 @@
                                                         </div>
                                                     </div>
                                                 </div>
-
-                                                {{-- <div class="col-md-6">
-                                                    <div class="single-form form-default">
-                                                        <label>Country</label>
-                                                        <div class="form-input form">
-                                                            <x-form.select name="addr[billing][country]" :options="$countries" />
-                                                        </div>
-                                                    </div>
-                                                </div> --}}
-                                                {{-- <div class="col-md-12">
-                                                    <div class="single-checkbox checkbox-style-3">
-                                                        <input type="checkbox" id="checkbox-3">
-                                                        <label for="checkbox-3"><span></span></label>
-                                                        <p>My delivery and mailing addresses are the same.</p>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <div class="single-form button">
-                                                        <button class="btn" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">next
-                                                            step</button>
-                                                    </div>
-                                                </div>
                                             </div>
                                         </section>
                                     </li>
-                                    <li>
-                                        <h6 class="title collapsed" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">Shipping Address</h6>
-
-
-                                        <section class="checkout-steps-form-content collapse" id="collapseFour" aria-labelledby="headingFour" data-bs-parent="#accordionExample">
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="single-form form-default">
-                                                        <label>User Name</label>
-                                                        <div class="row">
-                                                            <div class="col-md-6 form-input form">
-                                                                <x-form.input name="addr[shipping][first_name]" placeholder="First Name" />
-                                                            </div>
-                                                            <div class="col-md-6 form-input form">
-                                                                <x-form.input name="addr[shipping][last_name]" placeholder="Last Name" />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="single-form form-default">
-                                                        <label>Email Address</label>
-                                                        <div class="form-input form">
-                                                            <x-form.input name="addr[shipping][email]" placeholder="Email Address" />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="single-form form-default">
-                                                        <label>Phone Number</label>
-                                                        <div class="form-input form">
-                                                            <x-form.input name="addr[shipping][phone_number]" placeholder="Phone Number" />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <div class="single-form form-default">
-                                                        <label>Mailing Address</label>
-                                                        <div class="form-input form">
-                                                            <x-form.input name="addr[shipping][street_address]" placeholder="Mailing Address" />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="single-form form-default">
-                                                        <label>City</label>
-                                                        <div class="form-input form">
-                                                            <x-form.input name="addr[shipping][city]" placeholder="City" />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="single-form form-default">
-                                                        <label>Post Code</label>
-                                                        <div class="form-input form">
-                                                            <x-form.input name="addr[shipping][postal_code]" placeholder="Post Code" />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="single-form form-default">
-                                                        <label>Region/State</label>
-                                                        <div class="select-items">
-                                                            <x-form.input name="addr[shipping][state]" placeholder="State" />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="single-form form-default">
-                                                        <label>Country</label>
-                                                        <div class="form-input form">
-                                                            <x-form.select name="addr[shipping][country]" :options="$countries" />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <div class="checkout-payment-option">
-                                                        <h6 class="heading-6 font-weight-400 payment-title">Select Delivery
-                                                            Option</h6>
-                                                        <div class="payment-option-wrapper">
-                                                            <div class="single-payment-option">
-                                                                <input type="radio" name="shipping" checked id="shipping-1">
-                                                                <label for="shipping-1">
-                                                                    <img src="https://via.placeholder.com/60x32" alt="Sipping">
-                                                                    <p>Standerd Shipping</p>
-                                                                    <span class="price">$10.50</span>
-                                                                </label>
-                                                            </div>
-                                                            <div class="single-payment-option">
-                                                                <input type="radio" name="shipping" id="shipping-2">
-                                                                <label for="shipping-2">
-                                                                    <img src="https://via.placeholder.com/60x32" alt="Sipping">
-                                                                    <p>Standerd Shipping</p>
-                                                                    <span class="price">$10.50</span>
-                                                                </label>
-                                                            </div>
-                                                            <div class="single-payment-option">
-                                                                <input type="radio" name="shipping" id="shipping-3">
-                                                                <label for="shipping-3">
-                                                                    <img src="https://via.placeholder.com/60x32" alt="Sipping">
-                                                                    <p>Standerd Shipping</p>
-                                                                    <span class="price">$10.50</span>
-                                                                </label>
-                                                            </div>
-                                                            <div class="single-payment-option">
-                                                                <input type="radio" name="shipping" id="shipping-4">
-                                                                <label for="shipping-4">
-                                                                    <img src="https://via.placeholder.com/60x32" alt="Sipping">
-                                                                    <p>Standerd Shipping</p>
-                                                                    <span class="price">$10.50</span>
-                                                                </label>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <div class="steps-form-btn button">
-                                                        <button class="btn" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">previous</button>
-                                                        <a href="javascript:void(0)" class="btn btn-alt">Save & Continue</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </section> --}}
-
-
-
-                                    </li>
-                                    {{-- <li>
-                                        <h6 class="title collapsed" data-bs-toggle="collapse" data-bs-target="#collapsefive" aria-expanded="false" aria-controls="collapsefive">Payment Info</h6>
-                                        <section class="checkout-steps-form-content collapse" id="collapsefive" aria-labelledby="headingFive" data-bs-parent="#accordionExample">
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <div class="checkout-payment-form">
-                                                        <div class="single-form form-default button">
-                                                            <button type="submit" id="submit" class="btn">pay now</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </section>
-                                    </li> --}}
                                 </ul>
                             </div>
-                        {{-- </form> --}}
                     </div>
                     <div class="col-lg-4">
                         <div class="checkout-sidebar">
-                            <div class="checkout-sidebar-coupon">
-                                <p>Appy Coupon to get discount!</p>
-                                {{-- <form action="#"> --}}
-                                    <div class="single-form form-default">
-                                        <div class="form-input form">
-                                            <input type="text" placeholder="Coupon Code">
-                                        </div>
-                                        <div class="button">
-                                            <button class="btn btn-primary">apply</button>
-                                        </div>
+
+                           <div class="checkout-sidebar-coupon">
+                                <p>Apply Coupon to get discount!</p>
+
+                                <div class="single-form form-default">
+
+                                    <div class="form-input form">
+                                        <input type="text" id="coupon_code" placeholder="Enter Coupon Code">
                                     </div>
-                                {{-- </form> --}}
+
+                                    <div class="button">
+                                        <button type="button" id="applyCouponBtn" class="btn btn-primary">
+                                            Apply Coupon
+                                        </button>
+                                    </div>
+
+                                    <p id="coupon-message" class="mt-2"></p>
+
+                                </div>
                             </div>
+
                             <div class="checkout-sidebar-price-table mt-30">
-                                <h5 class="title">Pricing Table</h5>
-                                <div class="sub-total-price">
-                                    <div class="total-price">
-                                        <p class="value">Subotal Price:</p>
-                                        <p class="price">{{ Currency::format($total)}}</p>
-                                        {{-- {{ Currency::format($total) }} --}}
-                                        {{-- <p class="price">{{ $total }}</p> --}}
+                                    <h5 class="title">Pricing Table</h5>
+
+                                    <div class="sub-total-price">
+
+                                        <div class="total-price">
+                                            <p class="value">Subtotal Price:</p>
+                                            <p class="price" id="subtotal">
+                                                {{ Currency::format($totals['original']) }}
+                                            </p>
+                                        </div>
+
+                                        <div class="total-price discount">
+                                            <p class="value">Discount:</p>
+                                            <p class="price" id="discount">
+                                                {{ Currency::format($totals['discount']) }}
+                                            </p>
+                                        </div>
+
+                                        <div class="total-price">
+                                            <p class="value">Tax:</p>
+                                            <p class="price" id="tax">
+                                                {{ Currency::format($totals['tax'] ?? 0) }}
+                                            </p>
+                                        </div>
+
+                                        <div class="total-price">
+                                            <p class="value">Shipping Price:</p>
+                                            <p class="price" id="shipping">
+                                                {{ Currency::format($totals['shipping'] ?? 0) }}
+                                            </p>
+                                        </div>
+
                                     </div>
-                                    <div class="total-price shipping">
-                                        <p class="value">shipping Price:</p>
-                                        <p class="price">$10.50</p>
-                                    </div>
-                                    <div class="total-price discount">
-                                        <p class="value">Subotal discount:</p>
-                                        <p class="price">$10.00</p>
+
+                                    <div class="total-payable">
+                                        <div class="payable-price">
+                                            <p class="value">Total Payable:</p>
+                                            <p class="price" id="total">
+                                                {{ Currency::format($totals['total']) }}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
-    
-                                <div class="total-payable">
-                                    <div class="payable-price">
-                                        <p class="value">Subotal Price:</p>
-                                        <p class="price">{{ Currency::format($total) }}</p>
-                                    </div>
-                                </div>
-                                {{-- <div class="price-table-btn button">
-                                    <a href="javascript:void(0)" class="btn btn-alt">Checkout</a>
-                                </div> --}}
                                 <div>
                                     <button type="submit" class="btn btn-primary">checkout</button>
                                 </div>
-       
+
 
                             </div>
-                            <div class="checkout-sidebar-banner mt-30">
+                            {{-- <div class="checkout-sidebar-banner mt-30">
                                 <a href="product-grids.html">
                                     <img src="https://via.placeholder.com/400x330" alt="#">
                                 </a>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                 </div>
             </div>
              </form>
         </section>
-    </x-front-layout>
+@push('script')
+<script>
+    // 1. دالة موحدة لتحديث جدول الأسعار في الواجهة
+    function updatePricingTable(totals) {
+        if (!totals) return;
+        
+        document.getElementById('subtotal').innerText = totals.original;
+        document.getElementById('discount').innerText = totals.discount;
+        document.getElementById('tax').innerText = totals.tax;
+        document.getElementById('shipping').innerText = totals.shipping;
+        document.getElementById('total').innerText = totals.total;
+    }
+
+    // 2. دالة إرسال البيانات للسيرفر (AJAX)
+    async function applyCheckoutUpdates(code, governorateId, triggerBtn = null) {
+        // حالة التحميل
+        if (triggerBtn) {
+            triggerBtn.disabled = true;
+            triggerBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Applying...';
+        }
+
+        try {
+            const response = await fetch('/checkout/apply-coupon', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    code: code,
+                    governorate_id: governorateId
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                const msgElement = document.getElementById('coupon-message');
+                if (msgElement && code) { // أظهر الخطأ فقط لو كان المستخدم يحاول إدخال كوبون
+                    msgElement.innerText = data.error;
+                    msgElement.style.color = 'red';
+                }
+            } else {
+                // نجاح العملية
+                const msgElement = document.getElementById('coupon-message');
+                if (msgElement && code) {
+                    msgElement.innerText = "Coupon applied successfully!";
+                    msgElement.style.color = 'green';
+                }
+                // تحديث الأرقام
+                updatePricingTable(data.totals);
+            }
+
+        } catch (error) {
+            console.error('Error:', error);
+        } finally {
+            // إنهاء حالة التحميل
+            if (triggerBtn) {
+                triggerBtn.disabled = false;
+                triggerBtn.innerText = 'Apply Coupon';
+            }
+        }
+    }
+
+    // 3. مستمع الحدث لزر الكوبون
+    document.getElementById('applyCouponBtn').addEventListener('click', function() {
+        let code = document.getElementById('coupon_code').value || null;
+        let governorate = document.getElementById('governorate_id').value;
+
+        if (!code) {
+            document.getElementById('coupon-message').innerText = "Please enter coupon code";
+            document.getElementById('coupon-message').style.color = 'orange';
+            return;
+        }
+
+        applyCheckoutUpdates(code, governorate, this);
+    });
+
+    // 4. مستمع الحدث لتغيير المحافظة (تحديث الشحن)
+    document.getElementById('governorate_id').addEventListener('change', function() {
+        let code = document.getElementById('coupon_code').value;
+        let governorateId = this.value;
+
+        if (governorateId) {
+            // نقوم بالتحديث حتى لو الكوبون فارغ لتحديث سعر الشحن فقط
+            applyCheckoutUpdates(code, governorateId);
+        }
+    });
+</script>
+
+@endpush
+
+</x-front-layout>

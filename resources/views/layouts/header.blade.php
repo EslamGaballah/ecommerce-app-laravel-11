@@ -14,7 +14,7 @@
                                         @csrf
                                         <select name="currency_code" onchange="this.form.submit()">
                                             <option value="USD" @selected('USD' == session('currency_code'))>$ USD</option>
-                                            <option value="EUR" @selected('EUR' == session('currency_code'))>€ EURO</option>
+                                            {{-- <option value="EUR" @selected('EUR' == session('currency_code'))>€ EURO</option> --}}
                                         </select>
                                     </form>
                                 </div>
@@ -45,40 +45,33 @@
                     </div>
                 </div>
                 {{-- start user --}}
-                <div class="col-lg-4 col-md-4 col-12">
+               <div class="col-lg-4 col-md-4 col-12">
                     <div class="top-end">
                         @auth
-                            <div class="user">
-                                <i class="lni lni-user"></i>
-                                {{-- {{ Auth::user()->name }} --}}
-                                {{ \Illuminate\Support\Facades\Auth::user()->name }}
+                            <div class="dropdown">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="color: #ffffff">
+                                    <i class="lni lni-user me-2"></i>
+                                    <span>{{ auth()->user()->name }}</span>
+                                </a>
+                                
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                    {{-- <li><a class="dropdown-item" href="{{ route('profile.edit') }}">الملف الشخصي</a></li> --}}
+                                    <li><a class="dropdown-item" href="{{ route('front.orders.index') }}"> {{ __('app.orders') }}</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form method="POST" action="{{ route('logout') }}">
+                                            @csrf
+                                            <button type="submit" class="dropdown-item text-danger">تسجيل الخروج</button>
+                                        </form>
+                                    </li>
+                                </ul>
                             </div>
-                            <ul class="user-login">
-                                <li>
-                                    <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout').submit()">{{ __('app.logout') }}</a>
-                                </li>
-                                <form action="{{ route('logout') }}" id="logout" method="post" style="display:none">
-                                    @csrf
-                                </form>
-                            </ul>
                         @else
-                            <div class="user">
-                                <i class="lni lni-user"></i>
-                                {{ __('Hello')}}
+                            <div class="user-login">
+                                <a href="{{ route('login') }}"><i class="lni lni-user"></i> تسجيل الدخول</a>
                             </div>
-                            <ul class="user-login">
-                                <li>
-                                    {{-- <a href="{{ route('login') }}">{{ Lang::get('Sign In') }}</a> --}}
-                                    <a href="{{ route('login') }}">{{ __('app.login') }}</a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('register') }}">{{ __('app.register') }}</a>
-                                </li>
-                            </ul>
                         @endauth
-
                     </div>
-                {{-- end user --}}
                 </div>
             </div>
         </div>
@@ -101,25 +94,30 @@
                     <!-- Start Main Menu Search -->
                     <div class="main-menu-search">
                         <!-- navbar search start -->
-                        <div class="navbar-search search-style-5">
+                        <form action="{{ route('products.search') }}" method="GET" 
+                            class="navbar-search search-style-5">
                             <div class="search-select">
-                                <div class="select-position">
-                                    <select id="select1">
-                                        <option selected>{{__('app.all')}}</option>
-                                        <option value="1">option 01</option>
-                                        <option value="2">option 02</option>
-                                        <option value="3">option 03</option>
+                                {{-- <div class="select-position">
+                                    <select name="category_id" id="select1">
+                                        <option value "">{{__('app.all')}}</option>
+                                        
+                                        @foreach($categories as $category)
+                                            <option value="{{ $category->id }}"
+                                                {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                                                {{ $category->name }}
+                                            </option>
+                                        @endforeach
                                     </select>
-                                </div>
+                                </div> --}}
                             </div>
                             <div class="search-input">
-                                <input type="text" placeholder="Search (header.blade header middle)">
+                                <input type="text" name="q" value="{{ request('q') }}" placeholder="Search">
                             </div>
                             <div class="search-btn">
                                 <button><i class="lni lni-search-alt"></i></button>
                             </div>
                             <!-- navbar search Ends -->
-                        </div>
+                        </form>
                         <!-- End Main Menu Search -->
                     </div>
                 </div>
@@ -189,28 +187,20 @@
                             <x-cart-menu />
                             {{-- end cart menu --}}
 
-                            <div class="cart-items">
+                            {{-- <div class="cart-items">
                                 <a href="javascript:void(0)" class="main-btn">
                                     <i class="lni lni-user"></i>
                                 </a>
                                 <!-- Shopping Items -->
-                                <ul class="shopping-list">
                                 <div class="shopping-item">
-                                    {{-- <div class="dropdown-cart-header"> --}}
-                                        <li class="nav-item">
-                                            <a href="{{ route('home') }}">
-                                                my profile
-                                            </a>
-                                        </li>
-                                    {{-- </div> --}}
 
-                                        {{-- <div class="dropdown-cart-header"> --}}
+                                <ul class="shopping-list">
+                                    
                                         <li class="nav-item">
-                                            <a href="{{ route('home') }}">
+                                            <a href="{{ route('front.orders.index') }}">
                                                 {{ __('app.orders') }}
                                             </a>
                                         </li>
-                                    {{-- </div> --}}
                                     
                                         @if (!auth()->check())
                                             <li class="nav-item active"><a href="{{route('login')}}">{{ __('app.login') }}</a></li>
@@ -229,7 +219,7 @@
 
                                 </div>
                                 <!--/ End Shopping Items -->
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                 </div>

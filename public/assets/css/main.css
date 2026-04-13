@@ -1493,7 +1493,7 @@ ol {
 
 .header .topbar {
   background-color: #081828;
-  padding: 18px 0;
+  padding: 0px 20px ;
 }
 
 @media (max-width: 767px) {

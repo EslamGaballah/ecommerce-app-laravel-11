@@ -11,13 +11,16 @@
 @endif
 
     <div class="form-group">
-        <x-form.input label="{{ __('app.name') }}" class="form-control-lg" role="input" name="name" :value="$governorate->name" />
+        <x-form.input label="الاسم بالعربية" class="form-control-lg" role="input" name="name_ar" :value="old('name_ar', $governorate->name_ar)" />
     </div>
     <div class="form-group">
-    <x-form.input label="{{ __ ('app.shipping_price')}}" name="shipping_price" :value="$governorate->shipping_price" />
+        <x-form.input label="NAME_EN" class="form-control-lg" role="input" name="name_en" :value="old('name_en', $governorate->name_en)" />
     </div>
     <div class="form-group">
-        <label class="form-label">مدة التوصيل (بالأيام)</label>
+    <x-form.input label="{{ __ ('app.shipping_price')}}" name="shipping_price" :value="old('shipping_price',$governorate->shipping_price)" />
+    </div>
+    <div class="form-group">
+        <label class="form-label">{{ __ ('app.delivery_days')}}</label>
         <input type="number" 
             name="delivery_days"
             class="form-control"

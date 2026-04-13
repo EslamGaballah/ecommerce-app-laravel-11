@@ -11,9 +11,13 @@
 @endif
 
     <div class="form-group">
-        <x-form.input label="{{ __('app.name') }}" class="form-control-lg" role="input" name="name" :value="$attribute->name" />
+        <x-form.input label="الاسم بالعربية" class="form-control-lg" role="input" name="name_ar" 
+            :value="old('name_ar', $attribute->name_ar)" /> 
     </div>
-    
+    <div class="form-group">
+        <x-form.input label="NAME_EN" class="form-control-lg" role="input" name="name_en" 
+             :value="old('name_en', $attribute->name_en)" />
+    </div>
     
     <div class="form-group">
         <button type="submit" class="btn btn-primary">{{ __( $button_label ?? 'app.save') }}</button>

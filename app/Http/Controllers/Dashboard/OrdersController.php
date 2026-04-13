@@ -19,7 +19,7 @@ class OrdersController extends Controller
         $orders = Order::with(['user','updatedBy', 'address'])
             ->filter($request->query())
             ->latest()
-            ->paginate();
+            ->paginate(10);
 
         return view('dashboard.orders.index', compact('orders'));
     }
@@ -50,25 +50,21 @@ class OrdersController extends Controller
             }
 
         DB::transaction(function () use ($request, $order) {
-
             $oldStatus = $order->status->value;
-            $newStatus = $request->status->value;
+            $newStatus = $request->status;
 
             // create order history status
             $order->statusHistories()->create([
-            'old_status' => $oldStatus,
-            'new_status' => $newStatus,
-            'updated_by' => auth()->id(),
-        ]);
+                'old_status' => $oldStatus,
+                'new_status' => $newStatus,
+                'updated_by' => auth()->id(),
+            ]);
             
             // update status
             $order->update([
                 'status' => $newStatus,
                 'updated_by' => auth()->id(),
             ]);
-
-            
-
 
             // if order cancelled or refunded
             if (
@@ -80,20 +76,26 @@ class OrdersController extends Controller
                 foreach ($order->items as $item) {
                     $item->product->increment('quantity', $item->quantity);
                 }
-                }
-            });
+            }
+            if ($newStatus === OrderStatus::COMPLETED) {
+            $order->update([
+                'payment_status' => 'paid'
+            ]);
+        }
+        }); 
 
+        $order->refresh();
+        
+        if ($request->expectsJson()) {
                 return response()->json([
-                    'success' => true,
-                    'status'  =>  $order->status->value,
-                    'label'  => $order->status->label(),
-                    'color'  => $order->status->color(),
-                    'updated_by' => auth()->user()->name,
+                    'success'    => true,
+                    'status'     => $order->status->value,
+                    'label'      => $order->status->label(),
+                    'color'      => $order->status->color(),
+                    'updated_by' => auth()->user()->name ?? 'N/A',
                     'updated_at' => $order->updated_at->format('Y-m-d H:i'),
                 ]);
-            
-
-        
+            }
 
         return back()->with('success', 'Order Status Updated successfully');
     }

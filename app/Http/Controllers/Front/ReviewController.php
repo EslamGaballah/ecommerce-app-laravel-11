@@ -16,7 +16,7 @@ class ReviewController extends Controller
             'rating' => 'required|integer|min:1|max:5',
             'review' => 'nullable|string',
         ]);
-
+// dd($request);
         Review::updateOrCreate(
             [
                 'user_id' => auth()->id(),
@@ -33,10 +33,7 @@ class ReviewController extends Controller
             'rating_count' => $product->reviews()->count(),
         ]);
 
-
-        // return response()->json([
-        //     'message' => 'تم إضافة التقييم بنجاح',
-        // ]);
+        $product->refresh();
 
         return back()->with('success', 'تم إضافة التقييم بنجاح ⭐');
     }

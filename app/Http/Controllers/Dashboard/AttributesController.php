@@ -24,7 +24,8 @@ class AttributesController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name' => ['required', 'string' , 'max:10'],
+            'name_ar' => ['required', 'string' , 'max:10'],
+            'name_en' => ['required', 'string' , 'max:10'],
         ]);
 
         Attribute::create($data);
@@ -43,8 +44,9 @@ class AttributesController extends Controller
 
     public function update (Attribute $attribute, Request $request)
     {
-        $data = $request->validate([
-            'name' => ['required', 'string' , 'max:10'],
+       $data = $request->validate([
+            'name_ar' => ['required', 'string' , 'max:10'],
+            'name_en' => ['required', 'string' , 'max:10'],
         ]);
       
             $attribute->update($data);

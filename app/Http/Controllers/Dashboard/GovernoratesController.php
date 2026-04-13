@@ -34,14 +34,16 @@ class GovernoratesController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'           => 'required|string|max:255',
+            'name_en'         => 'required|string|max:255',
+            'name_ar'         => 'required|string|max:255',
             'shipping_price' => 'required|numeric|min:0',
             'delivery_days'  => 'required|integer|min:1',
             'is_active'      => 'nullable|boolean',
         ]);
 
         Governorate::create([
-            'name'           => $request->name,
+            'name_en'           => $request->name_en,
+            'name_ar'           => $request->name_ar,
             'shipping_price' => $request->shipping_price,
             'delivery_days'  => $request->delivery_days,
             'is_active'      => $request->boolean('is_active'),
@@ -68,14 +70,16 @@ class GovernoratesController extends Controller
     public function update(Request $request, Governorate $governorate)
     {
           $request->validate([
-            'name'           => 'required|string|max:255',
+            'name_en'         => 'required|string|max:255',
+            'name_ar'         => 'required|string|max:255',
             'shipping_price' => 'required|numeric|min:0',
             'delivery_days'  => 'required|integer|min:1',
             'is_active'      => 'nullable|boolean',
         ]);
 
         $governorate->update([
-            'name'           => $request->name,
+            'name_en'           => $request->name_en,
+            'name_ar'           => $request->name_ar,
             'shipping_price' => $request->shipping_price,
             'delivery_days'  => $request->delivery_days,
             'is_active'      => $request->boolean('is_active'),

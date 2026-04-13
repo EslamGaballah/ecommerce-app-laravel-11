@@ -15,68 +15,78 @@ class CategorySeeder extends Seeder
     {
         // Parent Categories
         $electronics = Category::create([
-            'name' => 'Electronics',
+            'name_en' => 'Electronics',
+            'name_ar' => 'الكترونيات',
              'slug' => 'electronics'
              ]);
 
         // Child Categories
         $mobiles = Category::create([
-            'name' => 'Mobiles',
+            'name_en' => 'Mobiles',
+            'name_ar' => 'موبايلات',
             'parent_id' => $electronics->id,
             'slug' => 'Mobiles'
         ]);
 
         // Grandchild
         Category::create([
-            'name' => 'android',
+            'name_en' => 'android',
+            'name_ar' => 'اندرويد',
             'parent_id' => $mobiles->id,
             'slug' => 'android'
         ]);
 
         // Grandchild
         Category::create([
-            'name' => 'iPhone',
+            'name_en' => 'iPhone',
+            'name_ar' => 'ايفون',
             'parent_id' => $mobiles->id,
             'slug' => 'iPhone'
         ]);
 
         // Parent Categories
         $fashion = Category::create([
-            'name' => 'Fashion' ,
+            'name_en' => 'Fashion' ,
+            'name_ar' => 'الموضة' ,
             'slug' => 'fashion'
         ]);
 
         // Child Categories
         $men = Category::create([
-            'name' => 'Men ',
+            'name_en' => 'Men ',
+            'name_ar' => 'الرجال ',
             'parent_id' => $fashion->id,
             'slug' => 'Men'
         ]);
 
         // Grandchild
         Category::create([
-            'name' => 'men-clothes ',
+            'name_en' => 'men clothes ',
+            'name_ar' => 'ملابس رجالى ',
             'parent_id' => $men->id,
-            'slug' => 'mwn-clothes'
+            'slug' => 'men-clothes'
         ]);
 
         // Grandchild
         Category::create([
-            'name' => 'shoes ',
+            'name_en' => 'shoes ',
+            'name_ar' => 'احذية ',
             'parent_id' => $men->id,
             'slug' => 'shoes'
         ]);
 
         // Child Categories
         $women = Category::create([
-            'name' => 'Women ',
+            'name_en' => 'Women ',
+            'name_ar' => 'النساء ',
             'parent_id' => $fashion->id,
             'slug' => 'Women'
         ]);
 
         // Grandchild
         Category::create([
-            'name' => 'women-clothes ',
+            'name_en' => 'women-clothes ',
+            'name_ar' => 'ملابس المرأه',
             'parent_id' => $women->id,
             'slug' => 'women-clothes'
         ]);

@@ -10,40 +10,6 @@
 
 @section('content')
 
-{{-- <table class="table">
-    <thead>
-        <tr>
-            <th></th>
-            <th>{{ __('app.name') }}</th>
-            <th>{{ __('app.description') }}</th>
-            <th>{{ __('app.category') }}</th>
-            <th>{{ __('app.variations') }}</th>
-            <th>{{ __('app.quantity') }}</th>
-            <th>{{ __('app.price') }}</th>
-            <th>{{ __('app.status') }}</th>
-            <th> {{ __('app.created_at') }}</th>
-        </tr>
-    </thead>
-    <tbody>
-        @php
-        @endphp
-        <tr>
-            <td><img src="{{ asset('storage/' . $product->image) }}" alt="" height="50"></td>
-            <td>{{ $product->name }}</td>
-            <td>{{ $product->description }}</td>
-            <td>{{ $product->category->name }}</td>
-            <td>
-                
-            </td>
-            <td>{{ $product->quantity }}</td>
-            <td>{{ $product->price }}</td>
-            <td>{{ $product->status }}</td>
-            <td>{{ $product->created_at }}</td>
-        </tr>
-       
-    </tbody>
-</table> --}}
-
 <div class="card mb-4">
     <div class="card-header bg-primary text-white">
         <h5>{{ __('app.product_details') }}: {{ $product->name }}</h5>
@@ -54,7 +20,8 @@
             <div class="col-md-3">
                 @php
                     // استخراج المسار من العلاقة المحملة
-                    $currentPrimaryImage = $product->primaryVariation?->images?->first()?->image;
+                    $currentPrimaryImage = $product->primaryVariation?->images?->first()?->image
+                    ?? $product->images?->first()?->image;
                 @endphp
 
                 <img src="{{ asset('storage/' . ($currentPrimaryImage ?? $product->image)) }}" 
@@ -80,7 +47,7 @@
                     </tr>
                     <tr>
                         <th>{{ __('app.total_quantity') }}:</th>
-                        <td><strong>{{ $product->total_quantity }}</strong></td> {{-- الـ Accessor الذي برمجناه سابقاً --}}
+                        <td><strong>{{$product->stock ?? $product->total_quantity }}</strong></td> {{-- الـ Accessor الذي برمجناه سابقاً --}}
                     </tr>
                 </table>
                 <p><strong>{{ __('app.description') }}:</strong><br>{{ $product->description }}</p>
@@ -88,6 +55,70 @@
         </div>
     </div>
 </div>
+
+@if($product->product_type->value === 'simple')
+
+<div class="card">
+    <div class="card-header bg-secondary text-white">
+        <h5>{{ __('app.product_info') }}</h5>
+    </div>
+
+    <div class="card-body">
+
+        <div class="row">
+
+            <div class="col-md-4">
+                <strong>{{ __('app.price') }}</strong><br>
+
+                {{ Currency::format($product->price) }}
+            </div>
+
+            <div class="col-md-4">
+                <strong>{{ __('app.compare_price') }}</strong><br>
+
+                @if($product->compare_price)
+                    <del class="text-danger">
+                        {{ Currency::format($product->compare_price) }}
+                    </del>
+                @else
+                    -
+                @endif
+            </div>
+
+            <div class="col-md-4">
+                <strong>{{ __('app.quantity') }}</strong><br>
+
+                {{ $product->stock }}
+            </div>
+
+        </div>
+
+        <hr>
+
+        <div class="row">
+
+            @foreach($product->images as $image)
+
+            <div class="col-md-2 mb-2">
+
+                <img
+                    src="{{ asset('storage/'.$image->image) }}"
+                    class="img-fluid rounded border"
+                    style="height:120px;object-fit:cover"
+                >
+
+            </div>
+
+            @endforeach
+
+        </div>
+
+    </div>
+</div>
+
+@endif
+
+@if($product->product_type->value === 'variable')
 
 <div class="card">
     <div class="card-header bg-secondary text-white">
@@ -143,10 +174,10 @@
                         @endif
                     </td>
                     <td>
-                        @if($variation->quantity <= 5)
-                            <span class="text-danger fw-bold"><i class="fas fa-exclamation-triangle"></i> {{ $variation->quantity }}</span>
+                        @if($variation->stock <= 5)
+                            <span class="text-danger fw-bold"><i class="fas fa-exclamation-triangle"></i> {{ $variation->stock }}</span>
                         @else
-                            {{ $variation->quantity }}
+                            {{ $variation->stock }}
                         @endif
                     </td>
                     <td>
@@ -186,6 +217,7 @@
         </table>
     </div>
 </div>
+@endif
 @endsection
 
 @push('script')

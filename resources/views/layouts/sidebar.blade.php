@@ -7,7 +7,7 @@
                style="opacity: .8">
           <span class="brand-text font-weight-light">AdminLTE 3</span>
         </a>
-    
+
         <!-- Sidebar -->
         <div class="sidebar">
           <!-- Sidebar user panel (optional) -->
@@ -23,43 +23,19 @@
                 @endif
             </div>
           </div>
-    
+
           <!-- Sidebar Menu -->
           <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
               <!-- Add icons to the links using the .nav-icon class
                    with font-awesome or any other icon font library -->
-                   
-              {{-- <li class="nav-item has-treeview menu-open">
-                <a href="#" class="nav-link active">
-                  <i class="nav-icon fas fa-tachometer-alt"></i>
-                  <p>
-                    Starter Pages
-                    <i class="right fas fa-angle-left"></i>
-                  </p>
-                </a>
-                <ul class="nav nav-treeview">
-                  <li class="nav-item">
-                    <a href="#" class="nav-link active">
-                      <i class="far fa-circle nav-icon"></i>
-                      <p>Active Page</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#" class="nav-link">
-                      <i class="far fa-circle nav-icon"></i>
-                      <p>Inactive Page</p>
-                    </a>
-                  </li>
-                </ul>
-              </li> --}}
 
               <li class="nav-item">
                   <a href="{{route('home')}}" class="nav-link">
                     <i class="nav-icon fas fa-th"></i>
                     <p>
                       {{ __('app.home') }}
-                      <span class="right badge badge-danger">{{ __('app.new') }}</span>
+                      {{-- <span class="right badge badge-danger">{{ __('app.new') }}</span> --}}
                     </p>
                   </a>
                 </li>
@@ -69,7 +45,7 @@
                     <i class="nav-icon fas fa-th"></i>
                     <p>
                       {{ __('app.dashboard') }}
-                      <span class="right badge badge-danger">{{ __('app.new') }}</span>
+                      {{-- <span class="right badge badge-danger">{{ __('app.new') }}</span> --}}
                     </p>
                   </a>
                 </li>
@@ -80,6 +56,17 @@
                     <i class="nav-icon fas fa-th"></i>
                     <p>
                     {{ __('app.categories') }}
+                      {{-- <span class="right badge badge-danger">{{ __('app.new') }}</span> --}}
+                    </p>
+                  </a>
+                </li>
+               @endcan
+               @can('view-categories')
+                <li class="nav-item">
+                  <a href="{{route('dashboard.brands.index')}}" class="nav-link">
+                    <i class="nav-icon fas fa-th"></i>
+                    <p>
+                    {{ __('app.brands') }}
                       <span class="right badge badge-danger">{{ __('app.new') }}</span>
                     </p>
                   </a>
@@ -92,18 +79,29 @@
                     <i class="nav-icon fas fa-th"></i>
                     <p>
                       {{ __('app.products') }}
-                      <span class="right badge badge-danger">{{ __('app.new') }}</span>
+                      {{-- <span class="right badge badge-danger">{{ __('app.new') }}</span> --}}
                     </p>
                   </a>
                 </li>
               @endcan
+                @can('view-product')
+                    <li class="nav-item">
+                        <a href="{{route('dashboard.coupons.index')}}" class="nav-link">
+                            <i class="nav-icon fas fa-th"></i>
+                            <p>
+                                {{ __('app.coupons') }}
+                                <span class="right badge badge-danger">{{ __('app.new') }}</span>
+                            </p>
+                        </a>
+                    </li>
+                @endcan
               @can('view-product')
                 <li class="nav-item">
                   <a href="{{route('dashboard.attributes.index')}}" class="nav-link">
                     <i class="nav-icon fas fa-th"></i>
                     <p>
                       {{ __('app.attributes') }}
-                      <span class="right badge badge-danger">{{ __('app.new') }}</span>
+                      {{-- <span class="right badge badge-danger">{{ __('app.new') }}</span> --}}
                     </p>
                   </a>
                 </li>
@@ -114,7 +112,7 @@
                     <i class="nav-icon fas fa-th"></i>
                     <p>
                       {{ __('app.attribute_values') }}
-                      <span class="right badge badge-danger">{{ __('app.new') }}</span>
+                      {{-- <span class="right badge badge-danger">{{ __('app.new') }}</span> --}}
                     </p>
                   </a>
                 </li>
@@ -162,7 +160,7 @@
                     <i class="nav-icon fas fa-th"></i>
                     <p>
                       {{ __('app.users') }}
-                      <span class="right badge badge-danger">{{ __('app.new') }}</span>
+                      {{-- <span class="right badge badge-danger">{{ __('app.new') }}</span> --}}
                     </p>
                   </a>
                 </li>
@@ -174,7 +172,7 @@
                     <i class="nav-icon fas fa-th"></i>
                     <p>
                       {{ __('app.roles') }}
-                      <span class="right badge badge-danger">{{ __('app.new') }}</span>
+                      {{-- <span class="right badge badge-danger">{{ __('app.new') }}</span> --}}
                     </p>
                   </a>
                 </li>
@@ -190,9 +188,9 @@
                     </p>
                   </a>
                 </li>
-              
+
               @endif
-              
+
               @if (!auth()->check())
                 <li class="nav-item">
                   <a href="{{route('register')}}" class="nav-link">
@@ -204,17 +202,17 @@
                   </a>
                 </li>
               @endif
-              
-              @if (auth()->check()) 
+
+              @if (auth()->check())
                 <li class="nav-item">
                   <form method="POST" action="{{ route('logout') }}" class="nav-link">
                     @csrf
                     <button type="submit">{{ __('app.logout') }}</button>
                   </form>
                 </li>
-              
+
               @endif
-             
+
             </ul>
           </nav>
           <!-- /.sidebar-menu -->

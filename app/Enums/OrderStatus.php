@@ -4,37 +4,39 @@ namespace App\Enums;
 
 enum OrderStatus: string
 {
-    case Pending   = 'pending';
-    case Processing = 'processing';
-    case delivering = 'delivering';
-    case Completed = 'completed';
-    case Canceled  = 'canceled';
-    case refunded  = 'refunded';
+    case PENDING        = 'pending';
+    case PROCESSING     = 'processing';
+    case SHIPPED        = 'shipped';
+    case DELIVERED      = 'delivered';
+    case COMPLETED      = 'completed';
+    case CANCELED       = 'canceled';
+    case REFUNDED       = 'refunded';
 
     // اسم الحالة للعرض
     public function label(): string
     {
         // return match ($this) {
         //     self::Pending    => 'قيد الانتظار',
-        //     self::Processing => 'قيد التنفيذ',
+        //     self::Processing => 'جارى التنفيذ',
         //     self::delivering => 'قيد الشحن',
         //     self::Completed  => 'مكتمل',
         //     self::Canceled   => 'ملغي',
         //     self::refunded   => 'تم ارجاعة',
         // };
-        return __('orders.status.' . $this->value);
+        return __('app.' . $this->value);
     }
 
     // لون الحالة (مفيد في Blade)
     public function color(): string
     {
         return match ($this) {
-            self::Pending    => 'warning',
-            self::Processing => 'info',
-            self::delivering => 'primary',
-            self::Completed  => 'success',
-            self::Canceled   => 'danger',
-            self::refunded   => 'danger',
+            self::PENDING       => 'warning',
+            self::PROCESSING    => 'info',
+            self::SHIPPED       => 'primary',
+            self::DELIVERED     => 'success',
+            self::COMPLETED     => 'success',
+            self::CANCELED      => 'danger',
+            self::REFUNDED      => 'danger',
 
         };
     }

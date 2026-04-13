@@ -17,7 +17,8 @@ return new class extends Migration
                 ->nullable()
                 ->constrained('categories','id')
                 ->nullOnDelete();
-            $table->string('name');
+            $table->string('name_ar');
+            $table->string('name_en');
             $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->enum('status',['active', 'archived']);

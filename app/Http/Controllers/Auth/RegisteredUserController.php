@@ -36,20 +36,24 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        $user = DB::transaction(function () use ($request) {
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
 
-        $userRole = Role::where('name', 'user')->first();
+        $userRole = Role::firstOrCreate(['name' => 'user']);
 
         $user->roles()->attach($userRole->id);
+        return $user;
+    });
         
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect(route('home', absolute: false));
     }
 }

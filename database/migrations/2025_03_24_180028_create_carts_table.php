@@ -22,12 +22,16 @@ return new class extends Migration
             $table->foreignId('product_id')
             ->constrained('products')
             ->cascadeOnDelete();
+            $table->foreignId('variation_id')
+                ->nullable()
+                ->constrained('product_variations')
+                ->nullOnDelete();
 
             $table->unsignedSmallInteger('quantity')->default(1);
             $table->json('options')->nullable();
             $table->timestamps();
-            
-            $table->unique(['cookie_id', 'product_id']);
+
+            $table->unique(['cookie_id', 'product_id', 'variation_id']);
         });
     }
 

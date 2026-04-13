@@ -97,7 +97,7 @@
     </tbody>
 </table>
 
-{{ $categories->appends(request()->query())->links('pagination::bootstrap-5') }}
+{{-- {{ $categories->appends(request()->query())->links('pagination::bootstrap-5') }} --}}
 {{-- {{ $categories->links('pagination::bootstrap-5') }} --}}
 
 {{ $categories->withQueryString()->appends(['search' => 1])->links('pagination::bootstrap-5') }}

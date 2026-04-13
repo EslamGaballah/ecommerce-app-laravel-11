@@ -14,16 +14,11 @@ class GovernorateSeeder extends Seeder
      */
     public function run(): void
     {
-        // Governorate::create([
-        //     ['name' => 'القاهرة', 'shipping_price' => 50],
-        //     ['name' => 'الجيزة', 'shipping_price' => 55],
-        //     ['name' => 'الإسكندرية', 'shipping_price' => 65],
-        // ]);
 
         DB::table('governorates')->insert([
-            ['name' => 'القاهرة', 'shipping_price' => 50, 'delivery_days' => '3' ],
-            ['name' => 'الجيزة', 'shipping_price' => 55, 'delivery_days' => '4'],
-            ['name' => 'الإسكندرية', 'shipping_price' => 65, 'delivery_days' => '6'],
+            ['name_ar' => 'القاهرة','name_en' => 'cairo' , 'shipping_price' => 50, 'delivery_days' => '3' ],
+            ['name_ar' => 'الجيزة','name_en' => 'Giza', 'shipping_price' => 55, 'delivery_days' => '4'],
+            ['name_ar' => 'الإسكندرية','name_en' => 'alex', 'shipping_price' => 65, 'delivery_days' => '6'],
 
         ]);
 

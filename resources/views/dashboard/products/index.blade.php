@@ -64,10 +64,24 @@
             <td>{{ $product->id }}</td>
             <td> <a href="{{ route('dashboard.products.show', $product->id) }}">{{ $product->name }}</td>
             <td>{{ $product->category->name }}</td>
-            <td>{{ $product->total_quantity }}</td>
+            <td>@if($product->stock)
+                    {{ $product->stock}}
+                @else
+                    {{ $product->total_quantity }}
+                @endif
+
+            </td>
 
             <td>
-                @if($product->primaryVariation && $product->primaryVariation->compare_price > $product->price)
+                @if ($product->price && $product->compare_price)
+                     <span class="fw-bold">
+                        {{ $product->price }}
+                    </span>
+                    <span class="text-muted text-decoration-line-through">
+                        {{ $product->compare_price }}
+                    </span>
+                    
+                @elseif($product->primaryVariation && $product->primaryVariation->compare_price > $product->price)
                     <span class="fw-bold">
                         {{ $product->primaryVariation->price }}
                     </span>

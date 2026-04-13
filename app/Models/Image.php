@@ -9,6 +9,7 @@ class Image extends Model
     protected $fillable = [
         'image', // path
         'alt',
+        'type',
         'is_primary'
     ];
 

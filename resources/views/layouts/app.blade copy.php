@@ -15,54 +15,38 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
 
-          <!-- pusher Scripts -->
-         <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
-        <script>
-        // Enable pusher logging - don't include this in production
-        Pusher.logToConsole = true;
+          <!--  ============= pushar ===================  -->
+{{-- <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script> --}}
 
-        var pusher = new Pusher('833b9593418dfdb26f5a', {
-          cluster: 'eu',
-          authEndpoint: "/broadcasting/auth",
-          auth: {
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
-        }
-        });
+   <script>
+    window.userID = {{ auth()->id() ?? 'null' }};
+</script>
+    <script>
+   window.addNotification = function(data) {
 
-        var userId = {{ auth()->id() }};
+    let payload = data.notification;
 
-        var channel = pusher.subscribe(
-            'private-App.Models.User.' + userId
-        );
+    let count = document.getElementById('notification-count');
 
-        channel.bind('Illuminate\\Notifications\\Events\\BroadcastNotificationCreated',
-         function(data) {
-            // alert(JSON.stringify(data));
-            addNotification(data);
-            
-        });
+    if (count) {
+        count.innerText = parseInt(count.innerText || 0) + 1;
+    }
 
-        function addNotification(data) {
+    let list = document.getElementById('notification-list');
 
-        let payload = data.notification;
+    if (!list) return;
 
-        let count = document.getElementById('notification-count');
+    let li = document.createElement('li');
 
-        count.innerText = parseInt(count.innerText) + 1;
+    li.innerHTML = `
+        <a href="/dashboard/orders/${payload.order_id}">
+            🔔 ${payload.message}
+        </a>
+    `;
 
-        let li = document.createElement('li');
-
-        li.innerHTML = `
-            <a href="/dashboard/orders/${payload.order_id}">
-                🔔 ${payload.message}
-            </a>
-        `;
-
-        document.getElementById('notification-list').prepend(li);
-        }
-        </script>
+    list.prepend(li);
+};
+</script>
 
     </head>
     <body class="font-sans antialiased">

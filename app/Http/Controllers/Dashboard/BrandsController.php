@@ -13,7 +13,8 @@ class BrandsController extends Controller
      */
     public function index()
     {
-        //
+        $brands = Brand::withCount('products')->paginate();
+        return view('dashboard.brands.index', compact('brands'));
     }
 
     /**
@@ -21,7 +22,9 @@ class BrandsController extends Controller
      */
     public function create()
     {
-        //
+        $brand = new Brand();
+
+        return view('dashboard.brands.create', compact('brand'));
     }
 
     /**
@@ -29,7 +32,19 @@ class BrandsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name_ar' => 'required|string|max:255',
+            'name_en' => 'required|string|max:255'
+        ]);
+        // dd($request->all());
+        Brand::create([
+            'name_ar' => $request->name_ar,
+            'name_en' => $request->name_en,
+            'description' => $request->description,
+        ]);
+
+        return redirect()->route('dashboard.brands.index')
+            ->with('success', 'Brand created successfully');
     }
 
     /**
@@ -37,7 +52,9 @@ class BrandsController extends Controller
      */
     public function show(Brand $brand)
     {
-        //
+        $brand = Brand::with(['products.category'])->get();
+
+        return view('dashboard.brands.show', compact('brand'));
     }
 
     /**
@@ -45,7 +62,8 @@ class BrandsController extends Controller
      */
     public function edit(Brand $brand)
     {
-        //
+        // $brand->load('products.category');
+        return view('dashboard.brands.edit', compact('brand'));
     }
 
     /**
@@ -53,7 +71,21 @@ class BrandsController extends Controller
      */
     public function update(Request $request, Brand $brand)
     {
-        //
+        // $brand = Brand::findOrFail($id);
+
+        $request->validate([
+            'name_ar' => 'required|string|max:255',
+            'name_en' => 'required|string|max:255'
+        ]);
+
+        $brand->update([
+            'name_ar' => $request->name_ar,
+            'name_en' => $request->name_en,
+            'description' => $request->description,
+        ]);
+
+        return redirect()->route('dashboard.brands.index')
+            ->with('success', 'Brand updated successfully');
     }
 
     /**
@@ -61,6 +93,9 @@ class BrandsController extends Controller
      */
     public function destroy(Brand $brand)
     {
-        //
+        $brand->delete();
+
+        return redirect()->route('brands.index')
+            ->with('success', 'Brand deleted successfully');
     }
 }

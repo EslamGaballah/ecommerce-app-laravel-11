@@ -17,13 +17,17 @@ return new class extends Migration
             $table->foreignId('product_id')->nullable()
                 ->constrained('products')
                 ->nullOnDelete();
+            $table->foreignId('variation_id')
+                ->nullable()
+                ->constrained('product_variations')
+                ->nullOnDelete();
             $table->string('product_name');
             $table->decimal('price',8, 2);
             $table->unsignedSmallInteger('quantity')->default(1);
-            // $table->json('options')->nullable();
+             $table->json('options')->nullable();
 
-            $table->unique(['order_id', 'product_id']);
-           
+            $table->unique(['order_id', 'product_id', 'variation_id']);
+
         });
     }
 

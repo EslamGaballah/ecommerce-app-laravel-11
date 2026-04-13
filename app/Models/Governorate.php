@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Governorate extends Model
 {
    protected $fillable = [
-        'name',
+        'name_en',
+        'name_ar',
         'shipping_price',
         'delivery_days',
         'is_active'
@@ -16,7 +17,14 @@ class Governorate extends Model
 
     protected $casts = [
     'is_active' => 'boolean',
-];
+    ];
+
+    public function getNameAttribute()
+    {
+        return app()->getLocale() == 'ar'
+            ? $this->name_ar
+            : $this->name_en;
+    }
 
     public function getStatusLabelAttribute()
     {

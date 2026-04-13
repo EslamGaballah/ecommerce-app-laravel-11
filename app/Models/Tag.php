@@ -20,6 +20,12 @@ class Tag extends Model
         });
     }
 
+     public function getNameAttribute()
+    {
+        return app()->getLocale() == 'ar'
+            ? $this->name_ar
+            : $this->name_en;
+    }
     public function products()
     {
         // return $this->belongsToMany(Product::class);
