@@ -113,7 +113,7 @@
                                 <div class="right">
                                     <ul>
                                         
-                                        <li>{{ __('app.cart_subtotal') }}
+                                        <li>{{ __('app.subtotal') }}
                                             <span class="cart-subtotal">{{ Currency::format($cart->total()) }}</span>
                                             {{-- <span class="cart-subtotal">{{ Currency::format($totals['original']) }}</span> --}}
                                         </li>
@@ -121,7 +121,7 @@
                                         <li>You Save
                                             <span class="cart-save">{{ Currency::format($totals['discount']) }}</span>
                                         </li> --}}
-                                        <li class="last">You Pay
+                                        <li class="last">{{ __('app.cart_total')  }}
                                             <span class="cart-pay">{{ Currency::format($cart->total()) }}</span>
                                         </li>
                                     </ul>

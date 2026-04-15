@@ -6,13 +6,13 @@
                     <div class="row align-items-center">
                         <div class="col-lg-6 col-md-6 col-12">
                             <div class="breadcrumbs-content">
-                                <h1 class="page-title">checkout</h1>
+                                <h1 class="page-title">{{ __('app.checkout') }}</h1>
                             </div>
                         </div>
                         <div class="col-lg-6 col-md-6 col-12">
                             <ul class="breadcrumb-nav">
-                                <li><a href="{{ route('products.index') }}">Shop</a></li>
-                                <li>checkout</li>
+                                <li><a href="{{ route('products.index') }}">{{ __('app.shop') }}</a></li>
+                                <li>{{ __('app.checkout') }}</li>
                             </ul>
                         </div>
                     </div>
@@ -32,43 +32,43 @@
                             <div class="checkout-steps-form-style-1">
                                 <ul id="accordionExample">
                                     <li>
-                                        <h6 class="title" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">Your Personal Details </h6>
+                                        <h6 class="title" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">{{ __('app.shipping_address') }} </h6>
                                         <section class="checkout-steps-form-content collapse show" id="collapseThree" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="single-form form-default">
-                                                        <label>User Name</label>
+                                                        <label>{{ __('app.user_name') }}</label>
                                                         <div class="row">
                                                             <div class="col-md-6 form-input form">
-                                                                <x-form.input name="first_name" placeholder="First Name" />
+                                                                <x-form.input name="first_name" placeholder="{{ __('app.first_name') }} " />
                                                             </div>
                                                             <div class="col-md-6 form-input form">
-                                                                <x-form.input name="last_name" placeholder="Last Name" />
+                                                                <x-form.input name="last_name" placeholder=" {{ __('app.last_name') }}" />
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="single-form form-default">
-                                                        <label>Email Address</label>
+                                                        <label>{{ __('app.email_address') }}</label>
                                                         <div class="form-input form">
-                                                            <x-form.input name="email" placeholder="Email Address" />
+                                                            <x-form.input name="email" placeholder="{{ __('app.checkout') }} " />
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="single-form form-default">
-                                                        <label>Phone Number</label>
+                                                        <label>{{ __('app.phone_number') }}</label>
                                                         <div class="form-input form">
-                                                            <x-form.input name="phone_number" placeholder="Phone Number" />
+                                                            <x-form.input name="phone_number" placeholder=" {{ __('app.phone_number') }}" />
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <div class="single-form form-default">
-                                                        <label>street Address</label>
+                                                        <label> {{ __('app.street_address') }}</label>
                                                         <div class="form-input form">
-                                                            <x-form.input name="street_address" placeholder="street Address" />
+                                                            <x-form.input name="street_address" placeholder=" {{ __('app.street_address') }}" />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -76,7 +76,7 @@
                                                     <div class="single-form form-default">
                                                         <label>{{__('app.governorate')}}</label>
                                                         <select name="governorate_id" id="governorate_id" class="form-control">
-                                                            <option value="" >اختر المحافظة</option>
+                                                            <option value="" >  {{ __('app.choose_governorate') }}</option>
                                                             @foreach($governorates as $gov)
                                                                 <option
                                                                     value="{{ $gov->id }}"
@@ -90,18 +90,18 @@
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="single-form form-default">
-                                                        <label>City</label>
+                                                        <label>{{__('app.city')}}</label>
                                                         <div class="form-input form">
-                                                            <x-form.input name="city" placeholder="City" />
+                                                            <x-form.input name="city" placeholder="{{__('app.city')}}" />
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                  <div class="col-md-6">
                                                     <div class="single-form form-default">
-                                                        <label>country</label>
+                                                        <label>{{__('app.country')}}</label>
                                                         <div class="select-items">
-                                                            <x-form.input name="country" placeholder="country" />
+                                                            <x-form.input name="country" placeholder="{{__('app.country')}}" />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -115,7 +115,7 @@
                         <div class="checkout-sidebar">
 
                            <div class="checkout-sidebar-coupon">
-                                <p>Apply Coupon to get discount!</p>
+                                <p>{{__('app.apply_coupon')}}</p>
 
                                 <div class="single-form form-default">
 
@@ -125,7 +125,7 @@
 
                                     <div class="button">
                                         <button type="button" id="applyCouponBtn" class="btn btn-primary">
-                                            Apply Coupon
+                                            {{__('app.apply_coupon')}}
                                         </button>
                                     </div>
 
@@ -135,33 +135,33 @@
                             </div>
 
                             <div class="checkout-sidebar-price-table mt-30">
-                                    <h5 class="title">Pricing Table</h5>
+                                    <h5 class="title">{{__('app.pricing_table')}}</h5>
 
                                     <div class="sub-total-price">
 
                                         <div class="total-price">
-                                            <p class="value">Subtotal Price:</p>
+                                            <p class="value">{{__('app.subtotal_price')}}:</p>
                                             <p class="price" id="subtotal">
                                                 {{ Currency::format($totals['original']) }}
                                             </p>
                                         </div>
 
                                         <div class="total-price discount">
-                                            <p class="value">Discount:</p>
+                                            <p class="value">{{__('app.discount')}}:</p>
                                             <p class="price" id="discount">
                                                 {{ Currency::format($totals['discount']) }}
                                             </p>
                                         </div>
 
                                         <div class="total-price">
-                                            <p class="value">Tax:</p>
+                                            <p class="value">{{__('app.tax')}}:</p>
                                             <p class="price" id="tax">
                                                 {{ Currency::format($totals['tax'] ?? 0) }}
                                             </p>
                                         </div>
 
                                         <div class="total-price">
-                                            <p class="value">Shipping Price:</p>
+                                            <p class="value">{{__('app.shipping_price')}}:</p>
                                             <p class="price" id="shipping">
                                                 {{ Currency::format($totals['shipping'] ?? 0) }}
                                             </p>
@@ -171,7 +171,7 @@
 
                                     <div class="total-payable">
                                         <div class="payable-price">
-                                            <p class="value">Total Payable:</p>
+                                            <p class="value"> {{__('app.total_payable')}}:</p>
                                             <p class="price" id="total">
                                                 {{ Currency::format($totals['total']) }}
                                             </p>
@@ -179,7 +179,7 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <button type="submit" class="btn btn-primary">checkout</button>
+                                    <button type="submit" class="btn btn-primary">{{__('app.checkout')}}</button>
                                 </div>
 
 

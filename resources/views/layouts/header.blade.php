@@ -168,7 +168,7 @@
                                         </ul>
                                     {{-- <div class="dropdown-divider"></div> --}}
                                     <a href="{{ route('notifications.index') }}" class="dropdown-item dropdown-footer">
-                                        See All Notifications
+                                       {{__('app.see_all_notifications')}}
                                     </a>
                                     </div>
                                 @endauth
