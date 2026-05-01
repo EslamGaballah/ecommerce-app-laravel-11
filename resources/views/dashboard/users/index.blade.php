@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', 'users')
+@section('title', __('app.users'))
 
 @section('breadcrumb')
     @parent

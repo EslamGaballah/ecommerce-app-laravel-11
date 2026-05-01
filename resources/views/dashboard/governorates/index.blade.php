@@ -25,12 +25,13 @@
     <select name="is_active" class="form-control mx-2">
         <option value="">All</option>
 
-        @foreach(['1' => __('app.available'),
-                '0' => __('app.unAvailable')] as $value => $label)
+         @foreach(['1' => __('app.available'),
+                '0' => __('app.unavailable')] as $value => $label)
             <option value="{{ $value }}" @selected(request('is_active') === $value)>
-                {{ $label }}
-            </option>
-        @endforeach
+                {{ $label }} 
+            </option> 
+        @endforeach 
+        
     </select>
     <button class="btn btn-dark mx-2">{{__('app.filter')}}</button>
 </form>

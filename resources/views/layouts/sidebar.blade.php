@@ -108,7 +108,7 @@
               @endcan
               @can('view-product')
                 <li class="nav-item">
-                  <a href="{{route('dashboard.attribute_values.index')}}" class="nav-link">
+                  <a href="{{route('dashboard.attribute-values.index')}}" class="nav-link">
                     <i class="nav-icon fas fa-th"></i>
                     <p>
                       {{ __('app.attribute_values') }}

@@ -1,4 +1,12 @@
-
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 <div class="form-group">
     <label for="">{{__('app.name')}}</label>
     <x-form.input 
@@ -49,17 +57,22 @@
     @foreach ($roles as $role)
     <div class="form-check">
         <input 
-            {{-- class="form-check-input"  --}}
+            class="form-check-input" 
             type="radio" 
+            id="role-{{ $role->id }}"
             name="role_id" 
             value="{{ $role->id }}" 
             {{-- @checked(in_array($role->id, old('roles', $user)))> --}}
                    @checked(old('role_id', $user->role_id) == $role->id)
                    >
 
-        <label class="form-check-label">
+        <label class="form-check-label" for="role-{{ $role->id }}" >
             {{ $role->name }}
         </label>
+{{-- <label class="form-check-label" for="role-{{ $role->id }}">
+    {{ $role->name ?? 'No Name' }} - {{ $role->id }}
+</label> --}}
+
     </div>
     @endforeach
 </fieldset>

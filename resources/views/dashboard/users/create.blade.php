@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Create User')
+@section('title', __('app.create_user') )
 
 @section('breadcrumb')
 @parent
@@ -12,7 +12,9 @@
 <form action="{{ route('dashboard.users.store') }}" method="post" enctype="multipart/form-data">
     @csrf
     
-    @include('dashboard.users._form')
+   @include('dashboard.users._form', [
+        'button_label' => __('app.save')  
+    ])
 </form>
 
 @endsection

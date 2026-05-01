@@ -13,10 +13,10 @@ class Role extends Model
         return $this->belongsToMany(Permission::class);
     }
 
-     public function getNameAttribute()
-    {
-        return app()->getLocale() == 'ar'
-            ? $this->name_ar
-            : $this->name_en;
-    }
+    //  public function getNameAttribute()
+    // {
+    //     return app()->getLocale() == 'ar'
+    //         ? $this->name_ar
+    //         : $this->name_en;
+    // }
 }

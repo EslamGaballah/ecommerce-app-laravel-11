@@ -32,25 +32,24 @@ class CommentController extends Controller
      */
     public function store(StoreCommentRequest $request)
     {
-        $comment = $request->validated();
+        $data = $request->validated();
 
-        $comment['user_id'] = auth()->id();
+        $data['user_id'] = auth()->id();
 
-        Comment::create($comment);
+        $comment= Comment::create($data);
 
-        // return response()->json($data);
+         $comment->load('user', 'replies');
 
-        // return response()->json([
-        //     'id' => $comment->id,
-        //     'body' => $comment->body,
-        //     'parent_id' => $comment->parent_id,
-        //     'user' => $comment->user->name,
-        // ]);
+        if ($request->expectsJson()) {
+            $html = view('partials._comment', compact('comment'))->render();
+            
+            return response()->json([
+                'html' => $html
+                ]);
+        }
 
         return back();
-        // return response()->json([
-        // 'message' => 'Comment created successfully',
-        // ]);
+   
     }
 
     /**
@@ -76,21 +75,33 @@ class CommentController extends Controller
     {
         $data = $request->validated();
         $comment->update([
-        'comment' => $request->comment,
-    ]);
-        return back();
-        // return response()->json([
-        // 'message' => 'Comment updated successfully',
-        // ]);
+            'body' => $data['body']
+        ]);
+
+        return response()->json([
+        'message' => 'Comment updated successfully',
+        'body' => $comment->body,
+        'id' => $comment->id
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(comment $comment)
+   public function destroy(Comment $comment)
     {
-        $comment->delete();
+        try {
+            $comment->delete();
 
-        return back();
+            return response()->json([
+                'message' => 'Deleted',
+                'id' => $comment->id
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

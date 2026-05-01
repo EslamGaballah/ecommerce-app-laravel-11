@@ -41,11 +41,6 @@ class CartRepository implements CartRepositoryInterface
     {
         $cartKey = $this->getCartKey();
 
-        // 🧠 تحديد هل المنتج له variation ولا لا
-        if ($product->variations()->exists() && !$variationId) {
-            throw new \Exception('يجب اختيار الخصائص');
-        }
-
         // 🔍 البحث عن العنصر
         $item = Cart::where($cartKey)
             ->where('product_id', $product->id)
@@ -66,6 +61,8 @@ class CartRepository implements CartRepositoryInterface
         }
 
         $item->increment('quantity', $quantity);
+
+        $this->items = collect();
 
         return $item;
     }

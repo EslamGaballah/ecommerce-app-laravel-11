@@ -1,10 +1,10 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Create Post')
+@section('title', __ ('app.create_post') )
 
 @section('breadcrumb')
 @parent
-<li class="breadcrumb-item active">Create post</li>
+<li class="breadcrumb-item active">{{ __ ('app.create_post')}}</li>
 @endsection
 
 @section('content')
@@ -17,7 +17,7 @@
     
     @include('dashboard.posts._form',[
         'post'=> null,
-        'button_label' => 'Create'
+        'button_label' => __('app.create')
     ])
     
 </form>

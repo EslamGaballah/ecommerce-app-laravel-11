@@ -55,157 +55,15 @@
                         @empty
                             No posts yet!
                         @endforelse
-                        {{-- <div class="col-lg-6 col-md-6 col-12">
-                            <!-- Start Single Blog -->
-                            <div class="single-blog">
-                                <div class="blog-img">
-                                    <a href="{{ route('posts.show', $post->id) }}">
-                                        <img src="{{ asset('storage/' . $post->images->first()?->image) ?? 'https://via.placeholder.com/850x460' }}" 
-                                        alt="{{ $post->title }}">
-                                    </a>
-                                </div>
-                                <div class="blog-content">
-                                     @if($post->category)
-                                    <a class="category" href="{{ route('posts.show', $post->category->id) }}">{{ $post->category->name }}</a>
-                                    <h4>
-                                        <a href="{{ route('posts.show', $post->id) }}">{{$post->title}}</a>
-                                    </h4>
-                                    <p>{{ $post->excerpt }}</p>
-                                    <div class="button">
-                                        <a href="{{ route('posts.show', $post->id) }}" class="btn">Read More</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- End Single Blog -->
-                        </div>
-                        <div class="col-lg-6 col-md-6 col-12">
-                            <!-- Start Single Blog -->
-                            <div class="single-blog">
-                                <div class="blog-img">
-                                    <a href="blog-single-sidebar.html">
-                                        <img src="https://via.placeholder.com/370x215" alt="#">
-                                    </a>
-                                </div>
-                                <div class="blog-content">
-                                    <a class="category" href="javascript:void(0)">Gaming</a>
-                                    <h4>
-                                        <a href="blog-single-sidebar.html">Interesting fact about gaming consoles</a>
-                                    </h4>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                                        incididunt.</p>
-                                    <div class="button">
-                                        <a href="javascript:void(0)" class="btn">Read More</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- End Single Blog -->
-                        </div>
-                        <div class="col-lg-6 col-md-6 col-12">
-                            <!-- Start Single Blog -->
-                            <div class="single-blog">
-                                <div class="blog-img">
-                                    <a href="blog-single-sidebar.html">
-                                        <img src="https://via.placeholder.com/370x215" alt="#">
-                                    </a>
-                                </div>
-                                <div class="blog-content">
-                                    <a class="category" href="javascript:void(0)">Electronic</a>
-                                    <h4>
-                                        <a href="blog-single-sidebar.html">Electronics, instrumentation & control
-                                            engineering
-                                        </a>
-                                    </h4>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                                        incididunt.</p>
-                                    <div class="button">
-                                        <a href="javascript:void(0)" class="btn">Read More</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- End Single Blog -->
-                        </div>
-                        <div class="col-lg-6 col-md-6 col-12">
-                            <!-- Start Single Blog -->
-                            <div class="single-blog">
-                                <div class="blog-img">
-                                    <a href="blog-single-sidebar.html">
-                                        <img src="https://via.placeholder.com/370x215" alt="#">
-                                    </a>
-                                </div>
-                                <div class="blog-content">
-                                    <a class="category" href="javascript:void(0)">eCommerce</a>
-                                    <h4>
-                                        <a href="blog-single-sidebar.html">What information is needed for shipping?</a>
-                                    </h4>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                                        incididunt.</p>
-                                    <div class="button">
-                                        <a href="javascript:void(0)" class="btn">Read More</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- End Single Blog -->
-                        </div>
-                        <div class="col-lg-6 col-md-6 col-12">
-                            <!-- Start Single Blog -->
-                            <div class="single-blog">
-                                <div class="blog-img">
-                                    <a href="blog-single-sidebar.html">
-                                        <img src="https://via.placeholder.com/370x215" alt="#">
-                                    </a>
-                                </div>
-                                <div class="blog-content">
-                                    <a class="category" href="javascript:void(0)">Gaming</a>
-                                    <h4>
-                                        <a href="blog-single-sidebar.html">Interesting fact about gaming consoles</a>
-                                    </h4>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                                        incididunt.</p>
-                                    <div class="button">
-                                        <a href="javascript:void(0)" class="btn">Read More</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- End Single Blog -->
-                        </div>
-                        <div class="col-lg-6 col-md-6 col-12">
-                            <!-- Start Single Blog -->
-                            <div class="single-blog">
-                                <div class="blog-img">
-                                    <a href="blog-single-sidebar.html">
-                                        <img src="https://via.placeholder.com/370x215" alt="#">
-                                    </a>
-                                </div>
-                                <div class="blog-content">
-                                    <a class="category" href="javascript:void(0)">Electronic</a>
-                                    <h4>
-                                        <a href="blog-single-sidebar.html">Electronics, instrumentation & control
-                                            engineering
-                                        </a>
-                                    </h4>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                                        incididunt.</p>
-                                    <div class="button">
-                                        <a href="javascript:void(0)" class="btn">Read More</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- End Single Blog -->
-                        </div> --}}
+                        
                     </div>
                     <!-- Pagination -->
                     <div class="pagination left blog-grid-page">
-                        <ul class="pagination-list">
-                            <li><a href="javascript:void(0)">Prev</a></li>
-                            <li class="active"><a href="javascript:void(0)">2</a></li>
-                            <li><a href="javascript:void(0)">3</a></li>
-                            <li><a href="javascript:void(0)">4</a></li>
-                            <li><a href="javascript:void(0)">Next</a></li>
-                        </ul>
+                        {{ $posts->links() }}
                     </div>
                     <!--/ End Pagination -->
                 </div>
-                <aside class="col-lg-4 col-md-12 col-12">
+                {{-- <aside class="col-lg-4 col-md-12 col-12">
                     <div class="sidebar blog-grid-page">
                         <!-- Start Single Widget -->
                         <div class="widget search-widget">
@@ -288,7 +146,7 @@
                         </div>
                         <!-- End Single Widget -->
                     </div>
-                </aside>
+                </aside> --}}
             </div>
         </div>
     </section>

@@ -25,6 +25,11 @@ class Currency
 
         if ($currency != $baseCurrency) {
             $rate = Cache::get('currency_rate_' . $currency, 1);
+
+        //     if (!$rate) {
+        //     static::updateRates(); 
+        //     $rate = Cache::get('currency_rate_' . $currency, 1);
+        // }
             $amount = $amount * $rate;
         }
 

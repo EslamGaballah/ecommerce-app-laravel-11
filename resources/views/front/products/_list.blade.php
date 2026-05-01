@@ -11,31 +11,6 @@
     @endforelse
 </div>
 
-{{-- <div class="pagination-wrapper">
-    {{ $products->links() }}
-</div> --}}
-
- {{-- <div>  --}}
-    {{ $products->withQueryString()->appends(['search' => 1])->links('pagination::bootstrap-5') }}
- {{-- </div> --}}
-
- {{-- <div class="row">
-    <div class="col-12">
-        <div class="pagination left">
-            {{ $products->links('pagination::bootstrap-5') }}
-        </div>
-    </div>
-</div> --}}
-
-{{-- <div class="row">
-    <div class="col-12">
-        <nav class="d-flex justify-content-center" 
-        style="
-        display: flex !important;
-        justify-content: center;
-        ">
-            {{ $products->links('pagination::bootstrap-5') }}
-        </nav>
-    </div>
-</div> --}}
+{{ $products->withQueryString()->appends(['search' => 1])->links('pagination::bootstrap-5') }}
+ 
 

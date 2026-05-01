@@ -35,7 +35,7 @@
         <thead>
        <tr>
             <th>#</th>
-            <th>{{ __('app.code') }}</th>
+            <th>{{ __('app.coupon_code') }}</th>
             <th>{{ __('app.type') }}</th>
             <th>{{ __('app.value') }}</th>
             <th>{{ __('app.usage_limit') }}</th>
@@ -80,7 +80,7 @@
             </tr>
         @empty
             <tr>
-                <td colspan="12">No coupons defined.</td>
+                <td colspan="12">{{ __('app.no_coupons_defined') }}.</td>
             </tr>
         @endforelse
         </tbody>

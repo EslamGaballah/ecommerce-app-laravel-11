@@ -39,8 +39,8 @@
                     <div class="top-middle">
                         <ul class="useful-links">
                             <li><a href="{{ route('home') }}">{{ trans('app.home') }}</a></li>
-                            <li><a href="about-us.html">@lang('app.about')</a></li>
-                            <li><a href="contact.html">{{ __('app.contact') }}</a></li>
+                            {{-- <li><a href="about-us.html">@lang('app.about')</a></li> --}}
+                            {{-- <li><a href="contact.html">{{ __('app.contact') }}</a></li> --}}
                         </ul>
                     </div>
                 </div>
@@ -94,12 +94,12 @@
                     <!-- Start Main Menu Search -->
                     <div class="main-menu-search">
                         <!-- navbar search start -->
-                        <form action="{{ route('products.search') }}" method="GET" 
+                        <form action="{{ route('products.index') }}" method="GET" 
                             class="navbar-search search-style-5">
                             <div class="search-select">
-                                {{-- <div class="select-position">
-                                    <select name="category_id" id="select1">
-                                        <option value "">{{__('app.all')}}</option>
+                                <div class="select-position">
+                                    <select name="category" id="select1">
+                                        <option value="">{{__('app.all')}}</option>
                                         
                                         @foreach($categories as $category)
                                             <option value="{{ $category->id }}"
@@ -108,10 +108,10 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                </div> --}}
+                                </div>
                             </div>
                             <div class="search-input">
-                                <input type="text" name="q" value="{{ request('q') }}" placeholder="Search">
+                                <input type="text" name="search" value="{{ request('q') }}" placeholder="{{__('app.search')}}">
                             </div>
                             <div class="search-btn">
                                 <button><i class="lni lni-search-alt"></i></button>

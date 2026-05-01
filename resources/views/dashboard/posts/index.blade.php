@@ -1,17 +1,17 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Blog')
+@section('title', __(('app.blog')))
 
 @section('breadcrumb')
     @parent
-    <li class="breadcrumb-item active">Blog</li>
+    <li class="breadcrumb-item active">{{ __('app.blog') }}</li>
 @endsection
 
 @section('content')
 
 <div class="mb-5">
     {{-- @if(auth()->user()->can('create-posts')) --}}
-        <a href="{{ route('dashboard.posts.create') }}" class="btn btn-sm btn-outline-primary mr-2">Create</a>
+        <a href="{{ route('dashboard.posts.create') }}" class="btn btn-sm btn-outline-primary mr-2">{{ __('app.create') }}</a>
         {{-- <a href="{{ route('dashboard.categories.trash') }}" class="btn btn-sm btn-outline-dark">Trash</a>  --}}
      {{-- @endif --}}
 </div>
@@ -31,7 +31,7 @@
                 </option>
             @endforeach
     </select>
-    <button class="btn btn-dark mx-2">Filter</button>
+    <button class="btn btn-dark mx-2">{{ __('app.filter') }}</button>
 </form>
 {{-- end filter --}}
 
@@ -40,11 +40,11 @@
         <tr>
             <th>#</th>
             <th>ID</th>
-            <th>title</th>
-            <th>Author </th>
-            <th>Status</th>
-            <th>Created At</th>
-            <th colspan="2"></th>
+            <th>{{ __('app.title') }}</th>
+            <th>{{ __('app.author') }} </th>
+            <th>{{ __('app.status') }}</th>
+            <th>{{ __('app.created_at') }}</th>
+            <th colspan="2">{{ __('app.actions') }}</th>
         </tr>
     </thead>
     <tbody>
@@ -67,7 +67,11 @@
             <td>{{ $post->created_at }}</td>
             <td>
                 {{-- @can('categories.update') --}}
-                <a href="{{ route('dashboard.posts.edit', $post->id) }}" class="btn btn-sm btn-outline-success">Edit</a>
+                <a href="{{ route('dashboard.posts.edit', $post->id) }}" class="btn btn-sm btn-outline-success">{{ __('app.edit') }}</a>
+                {{-- @endcan --}}
+            </td> <td>
+                {{-- @can('categories.update') --}}
+                <a href="{{ route('dashboard.posts.show', $post->id) }}" class="btn btn-sm btn-outline-success">{{ __('app.show') }}</a>
                 {{-- @endcan --}}
             </td> 
              <td> 
@@ -77,14 +81,14 @@
                     <!-- Form Method Spoofing -->
                     {{-- <input type="hidden" name="_method" value="delete"> --}}
                     @method('DELETE')
-                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                    <button type="submit" class="btn btn-sm btn-outline-danger">{{ __('app.delete') }}</button>
                 </form>
                 {{-- @endcan --}}
             </td>
         </tr>
         @empty
         <tr>
-            <td colspan="9">No Posts defined.</td>
+            <td colspan="9">{{ __('app.no_posts_defined') }}.</td>
         </tr>
         @endforelse
     </tbody>

@@ -32,13 +32,32 @@
                     <div class="filter-sidebar">
                         <div class="product-sidebar">
                             <!-- Start Single Widget -->
-                            {{-- <div class="single-widget search">
+                            <div class="single-widget search">
                                 <h3>{{ __('app.search') }}</h3>
-                                <form action="#">
-                                    <input type="text" placeholder="{{ __('app.search') }}...">
-                                    <button type="submit"><i class="lni lni-search-alt"></i></button>
+                                <form action="{{ request()->url() }}" method="get" >
+                                    <input type="text" name="search"  placeholder="{{ __('app.search') }}...">
+                                    {{-- <button type="submit"><i class="lni lni-search-alt"></i></button> --}}
                                 </form>
-                            </div> --}}
+                            </div>
+                            <!-- End Single Widget -->
+                             <!-- Start Single Widget -->
+                            <div class="single-widget condition">
+                               <h3>{{ __('app.brand') }}</h3>
+                                  @foreach($brands as $brand)
+                                    <div class="form-check">
+                                        <input class="form-check-input filter-input" 
+                                            type="checkbox" 
+                                            name="brand[]" 
+                                            value="{{ $brand->id }}" 
+                                            id="brand-{{ $brand->id }}"
+                                            @checked(in_array($brand->id, request('brand', [])))>
+                                        <label class="form-check-label" for="brand-{{ $brand->id }}">{{ $brand->name }}
+                                            <span>({{ $brand->products_count }})</span>
+                                        </label>
+                                    </div>
+                                @endforeach  
+
+                            </div>
                             <!-- End Single Widget -->
                             <!-- Start Single Widget -->
                             <div class="single-widget">
@@ -47,9 +66,11 @@
                                     <div class="form-check">
                                         <input class="form-check-input filter-input" 
                                             type="checkbox" 
-                                            name="category_id[]" 
+                                            name="category[]" 
                                             value="{{ $category->id }}" 
-                                            id="cat-{{ $category->id }}">
+                                            id="cat-{{ $category->id }}"
+                                            @checked(in_array($category->id, request('category', [])))
+                                            >
                                         <label class="form-check-label" for="cat-{{ $category->id }}">{{ $category->name }}
                                             <span>({{ $category->products_count }})</span>
                                         </label>
@@ -58,61 +79,28 @@
 
                                 <!-- End Single Widget -->
                             </div>
-                            <!-- End Single Widget -->
-                            <!-- Start Single Widget -->
-                            {{-- <div class="single-widget range">
-                                <h3>Price Range</h3>
-                                <input type="range" class="form-range" name="range" step="1" min="100" max="10000"
-                                    value="10" onchange="rangePrimary.value=value">
-                                <div class="range-inner">
-                                    <label>$</label>
-                                    <input type="text" id="rangePrimary" placeholder="100" />
-                                </div>
-                            </div> --}}
-                            <!-- End Single Widget -->
                             <!-- Start Single Widget -->
                             <div class="single-widget condition">
                                 <h3>Filter by Price</h3>
-                                {{-- <div class="form-check"> --}}
-                                    <input class="form-control filter-input" type="number"
+                                <div class="form-check">
+                                    <input class="form-control filter-input"
+                                         type="number"
                                         name= "min_price" 
-                                        value="" 
+                                        value="{{ request('min_price') }}" 
                                         placeholder="أقل سعر"
                                         >
-                                    {{-- <label class="form-check-label" for="flexCheckDefault1">
-                                        $50 - $100L (208)
-                                    </label> --}}
-                                {{-- </div> --}}
-                                {{-- <div class="form-check"> --}}
-                                    <input class="form-control filter-input" type="number"
+                                 
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-control filter-input"
+                                        type="number"
                                         name= "max_price" 
-                                        value="" 
+                                        value="{{ request('max_price') }}" 
                                         placeholder="اعلى سعر"
                                         >
-                                    {{-- <label class="form-check-label" for="flexCheckDefault1">
-                                        $50 - $100L (208)
-                                    </label> --}}
-                                {{-- </div> --}}
-                                {{-- <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault2">
-                                    <label class="form-check-label" for="flexCheckDefault2">
-                                        $100L - $500 (311)
-                                    </label>
-                                </div> --}}
-                            </div>
-                            <!-- End Single Widget -->
-                            <!-- Start Single Widget -->
-                            {{-- <div class="single-widget condition">
-                                <h3>Filter by Brand</h3>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault11">
-                                    <label class="form-check-label" for="flexCheckDefault11">
-                                        Apple (254)
-                                    </label>
                                 </div>
-                                
-                            </div> --}}
-                            <!-- End Single Widget -->
+                                <!-- End Single Widget -->
+                           
                         </div>
                         <!-- End Product Sidebar -->
                     </div>
@@ -132,11 +120,11 @@
                                                  {{-- onchange="this.form.submit()" --}}
                                                  >
                                                 <option value="">Default</option>
-                                                <option value="low_price" @selected(request('sort') == 'low_price')> Lower Price</option>
-                                                <option value="high_price" @selected(request('sort') == 'high_price')> higher Price</option>
-                                                <option value="rating" @selected(request('sort') == 'rating')>Average Rating</option>
-                                                <option value="newest" @selected(request('sort') == 'newest')>Newest</option>
-                                                <option value="oldest" @selected(request('sort') == 'oldest')></option>
+                                                <option value="low_price" @selected(request('sort_by') == 'low_price')> Lower Price</option>
+                                                <option value="high_price" @selected(request('sort_by') == 'high_price')> higher Price</option>
+                                                <option value="rating" @selected(request('sort_by') == 'rating')>Average Rating</option>
+                                                <option value="newest" @selected(request('sort_by') == 'newest')>Newest</option>
+                                                <option value="oldest" @selected(request('sort_by') == 'oldest')></option>
                                             </select>
                                             <h3 class="total-show-product">Showing: 
                                                 <span>{{ $products->firstItem() }} to {{ $products->lastItem() }}
@@ -198,7 +186,7 @@
     </a>
 
     
-    @push('style')
+@push('style')
 <style>
 .pagination {
     display: flex !important;
@@ -211,62 +199,154 @@
 
 @push('script')
 <script>
-    function fetchProducts(url = null) {
-        let categories = [];
-        $('input[name="category_id[]"]:checked').each(function() {
-            categories.push($(this).val());
-        });
+let timer = null;
+let isLoading = false;
 
-        let data = {
-            category_id: categories,
-            sort_by: $('select[name="sort_by"]').val(),
-            min_price: $('input[name="min_price"]').val(),
-            max_price: $('input[name="max_price"]').val(),
-        };
+/* =========================
+   BUILD DATA
+========================= */
+function getFiltersData() {
+    return {
+        category: $('input[name="category[]"]:checked').map(function () {
+            return $(this).val();
+        }).get(),
 
-        let fetchUrl = url ? url : "{{ route('products.index') }}";
+        brand: $('input[name="brand[]"]:checked').map(function () {
+            return $(this).val();
+        }).get(),
 
-        $.ajax({
-            url: fetchUrl,
-            data: data,
-            beforeSend: function() {
-                $('#products-container').css('opacity', '0.5'); // تأثير بصري أثناء التحميل
-            },
-            success: function(response) {
-                $('#products-container').html(response);
-                $('#products-container').css('opacity', '1');
-                
-                // تحديث الرابط في المتصفح
-                window.history.pushState({}, '', fetchUrl + (fetchUrl.includes('?') ? '&' : '?') + $.param(data));
-                
-                // العودة للأعلى بسلاسة عند الانتقال لصفحة جديدة
-                if(url) {
-                    $('html, body').animate({scrollTop: $(".product-grids").offset().top - 50}, 500);
-                }
-            }
-        });
-    }
+        sort_by: $('select[name="sort_by"]').val(),
+        min_price: $('input[name="min_price"]').val(),
+        max_price: $('input[name="max_price"]').val(),
+        search: $('input[name="search"]').val(),
+    };
+}
 
-    // مراقبة التغيير في المدخلات
-    $(document).on('change', '.filter-input', function() {
-        fetchProducts();
-    });
+/* =========================
+   UPDATE URL
+========================= */
+function updateUrl(data) {
+    const url = new URL("{{ route('products.index') }}");
 
-    // إصلاح الضغط على الروابط (تم حذف التكرار)
-    $(document).on('click', '.pagination a', function(e) {
-        e.preventDefault();
-        let url = $(this).attr('href');
-        if (url && url !== '#') {
-            fetchProducts(url);
+    Object.keys(data).forEach(key => {
+        if (Array.isArray(data[key])) {
+            data[key].forEach(val => {
+                url.searchParams.append(key + '[]', val);
+            });
+        } else if (data[key]) {
+            url.searchParams.set(key, data[key]);
         }
     });
 
-    // مراقبة حقول السعر
-    let timer;
-    $(document).on('keyup', 'input.filter-input', function() {
-        clearTimeout(timer);
-        timer = setTimeout(fetchProducts, 500); 
+    window.history.pushState({}, '', url.toString());
+}
+
+/* =========================
+   RESTORE INPUTS FROM URL
+========================= */
+function restoreInputsFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+
+    // checkboxes
+    $('input[name="category[]"]').each(function () {
+        $(this).prop('checked', params.getAll('category[]').includes($(this).val()));
     });
+
+    $('input[name="brand[]"]').each(function () {
+        $(this).prop('checked', params.getAll('brand[]').includes($(this).val()));
+    });
+
+    // inputs
+    $('input[name="min_price"]').val(params.get('min_price') || '');
+    $('input[name="max_price"]').val(params.get('max_price') || '');
+    $('input[name="search"]').val(params.get('search') || '');
+    $('select[name="sort_by"]').val(params.get('sort_by') || '');
+}
+
+/* =========================
+   FETCH PRODUCTS
+========================= */
+function fetchProducts(url = null) {
+
+    if (isLoading) return;
+
+    let data = getFiltersData();
+    let fetchUrl = url ? url : "{{ route('products.index') }}";
+
+    isLoading = true;
+
+    $.ajax({
+        url: fetchUrl,
+        data: data,
+
+        beforeSend: function () {
+            $('#products-container').css('opacity', '0.5');
+        },
+
+        success: function (response) {
+            $('#products-container').html(response);
+            $('#products-container').css('opacity', '1');
+
+            updateUrl(data);
+
+            if (url) {
+                $('html, body').animate({
+                    scrollTop: $(".product-grids").offset().top - 50
+                }, 400);
+            }
+        },
+
+        complete: function () {
+            isLoading = false;
+        }
+    });
+}
+
+/* =========================
+   EVENTS
+========================= */
+
+// change filters
+$(document).on('change', '.filter-input', function () {
+    fetchProducts();
+});
+
+// search (debounce)
+$(document).on('input', 'input[name="search"]', function () {
+    clearTimeout(timer);
+    timer = setTimeout(fetchProducts, 500);
+});
+
+// pagination
+$(document).on('click', '.pagination a', function (e) {
+    e.preventDefault();
+
+    let url = $(this).attr('href');
+
+    if (url && url !== '#') {
+        fetchProducts(url);
+    }
+});
+
+// prevent form submit
+$(document).on('submit', 'form', function (e) {
+    e.preventDefault();
+});
+
+/* =========================
+   BACK BUTTON SUPPORT
+========================= */
+window.addEventListener('popstate', function () {
+    restoreInputsFromUrl();
+    fetchProducts();
+});
+
+/* =========================
+   INIT
+========================= */
+$(document).ready(function () {
+    restoreInputsFromUrl();
+});
 </script>
 @endpush
 

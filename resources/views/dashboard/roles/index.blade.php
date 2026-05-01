@@ -1,17 +1,17 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Roles')
+@section('title', __('app.roles'))
 
 @section('breadcrumb')
     @parent
-    <li class="breadcrumb-item active">Roles</li>
+    <li class="breadcrumb-item active">{{ __('app.roles') }}</li>
 @endsection
 
 @section('content')
 
 <div class="mb-5">
     @can('create', 'App\Models\Role')
-    <a href="{{ route('dashboard.roles.create') }}" class="btn btn-sm btn-outline-primary mr-2">Create</a>
+    <a href="{{ route('dashboard.roles.create') }}" class="btn btn-sm btn-outline-primary mr-2">{{ __('app.create') }}</a>
     @endcan
 </div>
 
@@ -22,9 +22,9 @@
     <thead>
         <tr>
             <th>ID</th>
-            <th>Name</th>
-            <th>Created At</th>
-            <th colspan="2"></th>
+            <th>{{__('app.name')}}</th>
+            <th>{{__('app.created_at')}}</th>
+            <th colspan="2">{{__('app.actions')}}</th>
         </tr>
     </thead>
     <tbody>
@@ -35,7 +35,7 @@
             <td>{{ $role->created_at }}</td>
             <td>
                 @can('update', $role)
-                <a href="{{ route('dashboard.roles.edit', $role->id) }}" class="btn btn-sm btn-outline-success">Edit</a>
+                <a href="{{ route('dashboard.roles.edit', $role->id) }}" class="btn btn-sm btn-outline-success">{{ __('app.edit') }}</a>
                 @endcan
             </td>
             <td>
@@ -45,7 +45,7 @@
                     <!-- Form Method Spoofing -->
                     <input type="hidden" name="_method" value="delete">
                     @method('delete')
-                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                    <button type="submit" class="btn btn-sm btn-outline-danger">{{ __('app.delete') }}</button>
                 </form>
                 @endcan
             </td>

@@ -11,9 +11,9 @@
 @endif
 
 <div class="form-group">
-    <label for="">Title</label>
+    <label for="">{{ __('app.title') }}</label>
     <x-form.input 
-        label="Title" 
+        {{-- label="Title"  --}}
         name="title" 
         class="form-control-lg" 
         role="input"  
@@ -22,21 +22,23 @@
 </div>
 
 <div class="form-group">
-    <label for="">content</label>
-    <x-form.textarea name="content" >
-       {{ old('content', $post?->content) }}
+    <label for="">{{ __('app.content') }}</label>
+    <x-form.textarea 
+    name="content" 
+    :value="old('content',$post?->content)" >
+       {{-- {{ old('content', $post?->content) }} --}}
     </x-form.textarea>
 </div>
 
 <div class="form-group">
-    <label for="">Status</label>
+    <label for="">{{ __('app.status') }}</label>
     <div>
         <x-form.radio 
             name="status" 
             :checked="old('status', $post?->status)" 
             :options="[
-                'published' => 'published', 
-                'archived' => 'Archived'
+                'published' => __('app.published'), 
+                'archived' => __('app.archived')
                 ]" 
             />
     </div>
@@ -44,7 +46,7 @@
 
 {{-- upload new images --}}
 <div class="form-group">
-    <x-form.label id="image">Image</x-form.label>
+    <x-form.label id="image">{{ __('app.images') }}</x-form.label>
     <x-form.input 
         type="file" 
         name="image[]" 
@@ -76,7 +78,7 @@
     <button 
         type="submit" 
         class="btn btn-primary">
-            {{ $button_label ?? 'Save' }}
+            {{ $button_label ?? __('app.save') }}
     </button>
 </div>
 

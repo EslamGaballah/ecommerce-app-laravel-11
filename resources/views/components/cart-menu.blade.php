@@ -15,7 +15,9 @@
         <ul class="shopping-list" id="cart-items">
             @foreach($items as $item)
             <li>
-                <a href="javascript:void(0)" onclick="removeItem('{{ $item->id }}')" class="remove" title="Remove this item">
+                <a href="javascript:void(0)" 
+                    class="remove-item remove" 
+                    data-id="{{ $item->id }}">
                     <i class="lni lni-close"></i>
                 </a>
                 <div class="cart-img-head">
@@ -48,95 +50,3 @@
     <!--/ End Shopping Items -->
 </div>
 
-@push('scripts')
-<script>
-    /**
-     * تحديث محتويات السلة المصغرة (Mini Cart) والعدادات
-     */
-    function loadCart() {
-        fetch("{{ route('cart.json') }}")
-            .then(response => response.json())
-            .then(data => {
-
-                // 1. تحديث جميع عدادات السلة في الصفحة (باستخدام الكلاس المشترك)
-                document.querySelectorAll('.cart-count-display').forEach(el => {
-                    el.innerText = data.count;
-                });
-
-                // 2. بناء قائمة المنتجات في السلة المصغرة
-                let itemsHtml = '';
-                if (data.items.length > 0) {
-                    data.items.forEach(item => {
-                        itemsHtml += `
-                        <li>
-                            <a href="javascript:void(0)" onclick="removeItem('${item.id}')" class="remove" title="{{ __('app.remove') }}">
-                                <i class="lni lni-close"></i>
-                            </a>
-                            <div class="cart-img-head">
-                                <a class="cart-img" href="/products/${item.slug}">
-                                    <img src="${item.image}" alt="${item.name}">
-                                </a>
-                            </div>
-                            <div class="content">
-                                <h4><a href="/products/${item.slug}">${item.name}</a></h4>
-                                <p class="quantity">${item.quantity}x - <span class="amount">${item.price}</span></p>
-                            </div>
-                        </li>`;
-                    });
-                } else {
-                    itemsHtml = '<li class="text-center py-3">{{ __('app.cart_empty') }}</li>';
-                }
-
-                const cartItemsEl = document.getElementById('cart-items');
-                if (cartItemsEl) cartItemsEl.innerHTML = itemsHtml;
-
-                // 3. تحديث الإجمالي الكلي
-                const totalEl = document.getElementById('cart-total');
-                if (totalEl) totalEl.innerText = data.total;
-            })
-            .catch(error => console.error('Error loading cart:', error));
-    }
-
-    /**
-     * حذف منتج من السلة عبر AJAX
-     */
-    function removeItem(cartId) {
-        if (!confirm('{{ __('app.confirm_delete') }}')) return;
-
-        fetch(`/cart/${cartId}`, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                // تحديث البيانات في الهيدر والسلة المصغرة
-                loadCart();
-
-                // تحديث واجهة صفحة السلة الرئيسية (Cart Page) إذا كان المستخدم فيها
-                const row = document.getElementById(`cart-row-${cartId}`);
-                if (row) {
-                    row.remove();
-                    
-                    // تحديث ملخص السلة في الصفحة الرئيسية (Subtotal & Total)
-                    const subtotalEl = document.querySelector('.cart-subtotal');
-                    const payEl = document.querySelector('.cart-pay');
-                    
-                    if (subtotalEl) subtotalEl.innerText = data.cart_subtotal;
-                    if (payEl) payEl.innerText = data.cart_total;
-                }
-            }
-        })
-        .catch(error => console.error('Error removing item:', error));
-    }
-
-    // تشغيل التحميل عند فتح الصفحة لأول مرة
-    document.addEventListener('DOMContentLoaded', function() {
-        loadCart();
-    });
-</script>
-@endpush

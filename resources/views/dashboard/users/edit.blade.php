@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Edit Users')
+@section('title', __('app.edit') )
 
 @section('breadcrumb')
 @parent
@@ -15,7 +15,7 @@
     @method('put')
     
     @include('dashboard.users._form', [
-        'button_label' => 'Update'    
+        'button_label' => __('app.update')  
     ])
 </form>
 

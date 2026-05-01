@@ -11,7 +11,7 @@
 
 <div class="mb-5">
     @if(auth()->user()->can('create-categories'))
-        <a href="{{ route('dashboard.attribute_values.create') }}" class="btn btn-sm btn-outline-primary mr-2">{{__('app.create')}}</a>
+        <a href="{{ route('dashboard.attribute-values.create') }}" class="btn btn-sm btn-outline-primary mr-2">{{__('app.create')}}</a>
         {{-- <a href="{{ route('dashboard.categories.trash') }}" class="btn btn-sm btn-outline-dark">Trash</a>  --}}
      @endif
 </div>
@@ -33,7 +33,7 @@
         @forelse($attribute_values as $value)
         <tr>
             <td>{{ $value->id }}</td>
-            <td><a href="{{ route('dashboard.attribute_values.show', $value->id) }}">{{ $value->value }}</a></td>
+            <td><a href="{{ route('dashboard.attribute-values.show', $value->id) }}">{{ $value->value }}</a></td>
 
            
                 
@@ -41,19 +41,19 @@
 
             <td>
                 {{-- @can('categories.update') --}}
-                <a href="{{ route('dashboard.attribute_values.show', $value->id) }}" class="btn btn-sm btn-outline-success">{{__('app.show')}}</a>
+                <a href="{{ route('dashboard.attribute-values.show', $value->id) }}" class="btn btn-sm btn-outline-success">{{__('app.show')}}</a>
                 {{-- @endcan --}}
             </td> 
 
             <td>
                 {{-- @can('categories.update') --}}
-                <a href="{{ route('dashboard.attribute_values.edit', $value->id) }}" class="btn btn-sm btn-outline-success">{{__('app.edit')}}</a>
+                <a href="{{ route('dashboard.attribute-values.edit', $value->id) }}" class="btn btn-sm btn-outline-success">{{__('app.edit')}}</a>
                 {{-- @endcan --}}
             </td> 
            
              <td> 
                 {{-- @can('categories.delete') --}}
-                <form action="{{ route('dashboard.attribute_values.destroy', $value->id) }}" method="post">
+                <form action="{{ route('dashboard.attribute-values.destroy', $value->id) }}" method="post">
                     @csrf
                     <!-- Form Method Spoofing -->
                     <input type="hidden" name="_method" value="delete">

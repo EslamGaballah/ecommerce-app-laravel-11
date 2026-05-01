@@ -26,9 +26,18 @@ Index Of css
 23. Mail Success CSS
 24. Footer CSS
 ========================== */
+
+/*======================================
+    Normalize CSS
+========================================*/
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap");
+
 /*======================================
     Variables
 ========================================*/
+ .toast-success { background: #28a745; }
+        .toast-error { background: #dc3545; }
+
 /* ============== start whatsapp ==================== */
 .whatsapp-float {
     position: fixed;
@@ -88,7 +97,7 @@ Index Of css
 /*======================================
     Normalize CSS
 ========================================*/
-@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap");
+/* @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap"); */
 html {
   scroll-behavior: smooth;
 }
@@ -4720,7 +4729,7 @@ blockquote span {
 
 .post-comments .comments-list li .comment-desc .desc-top .edit {
  position: absolute;
-  right: 0;
+  left: 0;
   top: 25px;
   display: inline-block;
   font-size: 13px;
@@ -4734,7 +4743,7 @@ blockquote span {
 
 .post-comments .comments-list li .comment-desc .desc-top .delete {
   position: absolute;
-  right: 0;
+  left: 0;
   top: 50px;
   display: inline-block;
   font-size: 13px;

@@ -52,7 +52,7 @@
                     </div>
                 </div>
                 <!-- End Cart List Title -->
-                @foreach ($cart->get() as $item)
+                @foreach ($cart->items() as $item)
                     @php
                         $price = $item->variation?->price ?? $item->product->price;
                     @endphp
@@ -81,17 +81,18 @@
                             <div class="col-lg-2 col-md-2 col-12">
                                 <div class="count-input">
                                     <input type="number"
-                                        min="1"
-                                        class="form-control"
-                                        value="{{ $item->quantity }}"
-                                        onchange="updateQuantity('{{ $item->id }}', this.value)">
+                                        class="form-control item-quantity"
+                                        data-id="{{ $item->id }}"
+                                        value="{{ $item->quantity }}">
                                 </div>
                             </div>
                             <div class="col-lg-2 col-md-2 col-12">
                                 <p class="item-total" id="item-total-{{ $item->id }}">{{ Currency::format($item->quantity * $price) }}</p>
                             </div>
                             <div class="col-lg-1 col-md-2 col-12">
-                                <a class="remove-item" href="javascript:void(0)" onclick="removeItem('{{ $item->id }}')">
+                               <a href="javascript:void(0)" 
+                                    class="remove-item"
+                                    data-id="{{ $item->id }}">
                                     <i class="lni lni-close"></i>
                                 </a>
                             </div>
@@ -139,83 +140,5 @@
     </div>
     <!--/ End Shopping Cart -->
 
-@push('scripts')
-<script>
-    // جلب الـ Token بشكل آمن
-    const getCsrfToken = () => {
-        const meta = document.querySelector('meta[name="csrf-token"]');
-        return meta ? meta.content : '';
-    };
-
-    // ===================================
-    // دالة تحديث الكمية (تعمل فور التغيير)
-    // ===================================
-    function updateQuantity(cartId, quantity) {
-        if (parseInt(quantity) < 1) return;
-
-        fetch(`/cart/${cartId}`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': getCsrfToken(),
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({ quantity: parseInt(quantity) })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                // تحديث سعر المنتج الفردي
-                document.getElementById(`item-total-${cartId}`).innerText = data.item_total;
-
-                // تحديث إجماليات السلة
-                document.querySelector('.cart-subtotal').innerText = data.cart_subtotal;
-                document.querySelector('.cart-pay').innerText = data.cart_total;
-
-                // 🔥 تحديث الكومبوننت
-                loadCart();
-            }
-        })
-        .catch(err => {
-            console.error('Update Error:', err);
-            alert('حدث خطأ أثناء التحديث');
-        });
-    }
-
-    // ===================================
-    // دالة حذف المنتج
-    // ===================================
-    function removeItem(cartId) {
-        if (!confirm('هل تريد حذف هذا المنتج؟')) return;
-
-        fetch(`/cart/${cartId}`, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': getCsrfToken(),
-                'Accept': 'application/json'
-            }
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                // حذف السطر من الـ HTML مباشرة
-                const row = document.getElementById(`cart-row-${cartId}`);
-                if (row) row.remove();
-
-                // تحديث إجماليات السلة
-                document.querySelector('.cart-subtotal').innerText = data.cart_subtotal;
-                document.querySelector('.cart-pay').innerText = data.cart_total;
-
-                // 🔥 تحديث الكومبوننت
-                loadCart();
-            }
-        })
-        .catch(err => {
-            console.error('Delete Error:', err);
-            alert('فشل الحذف، حاول مجدداً');
-        });
-    }
-</script>
-@endpush
 
 </x-front-layout>

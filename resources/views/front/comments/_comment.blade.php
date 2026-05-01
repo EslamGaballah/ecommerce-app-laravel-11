@@ -1,23 +1,20 @@
-<li>
-    <div class="comment-img">
-        <img src="{{ $comment->user->image }}" alt="img">
-    </div>
+{{-- <li class="comment-item" data-id="{{ $comment->id }}">
     <div class="comment-desc">
-        <div class="desc-top">
-            <h6>{{ $comment->user->name }}</h6>
-            <span class="date">{{ $comment->updated_at->diffForHumans() }}</span>
-            <a href="javascript:void(0)" class="reply-link"><i class="lni lni-reply"></i>Reply</a>
+        <h6 class="user-name">{{ $comment->user->name }}</h6>
+        <p class="comment-body-text" data-id="{{ $comment->id }}">{{ $comment->body }}</p>
+        
+        <div class="actions">
+            <button  type="button" class="btn-reply" data-id="{{ $comment->id }}">{{__('app.reply')}}</button>
+            @can('update', $comment)
+                <button  type="button" class="btn-edit" data-id="{{ $comment->id }}">{{__('app.edit')}}</button>
+                <button type="button" class="btn-delete" data-id="{{ $comment->id }}">{{__('app.delete')}}</button>
+            @endcan
         </div>
-        <p>{{ $comment->body }}</p>
     </div>
-</li>
-
-@if($comment->replies->count() > 0)
-    <li class="children">
-        <ul class="comments-list">
-            @foreach($comment->replies as $reply)
-                @include('partials._comment', ['comment' => $reply])
-            @endforeach
-        </ul>
-    </li>
-@endif
+    
+    <ul class="replies-container" data-id="{{ $comment->id }}">
+        @foreach($comment->replies as $reply)
+            @include('partials._comment', ['comment' => $reply])
+        @endforeach
+    </ul>
+</li> --}}

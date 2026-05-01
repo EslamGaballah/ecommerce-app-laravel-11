@@ -2,45 +2,40 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use App\Enums\ProductStatus;
-use App\Enums\ProductType;
+use App\Filters\ProductFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Models\Attribute;
-use App\Models\AttributeValue;
 use App\Models\Brand;
 use App\Models\Category;
-use App\Models\Image;
 use App\Models\Product;
-use App\Models\ProductImage;
-use App\Models\ProductVariation;
-use App\Models\StockMovement;
-use App\Services\SkuGenerator;
-use App\Traits\UploadImageTrait;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Str;
-use Illuminate\Validation\Rules\Enum;
-use Throwable;
-use App\Services\ProductService;
 
+use App\Services\Product\ProductService;
+
+use Illuminate\Http\Request;
+
+use Throwable;
 
 class ProductsController extends Controller
 {
-    use UploadImageTrait ;
+
+    public function __construct(
+        protected ProductService $productService
+    ) {}
 
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+   public function index(Request $request)
     {
-        $products = Product::with('category', 'variations')
-        ->filter($request->query())
-        ->paginate(5);
+        $categories = Category::all();
+        $brands = Brand::all();
+        $filters = new ProductFilter($request);
 
-        return view('dashboard.products.index',compact('products'));
+        $products = $this->productService->getAll($filters);
+
+        return view('dashboard.products.index', compact('products', 'categories', 'brands'));
     }
 
     /**
@@ -54,7 +49,6 @@ class ProductsController extends Controller
         $brands = Brand::all();
         $attributes = Attribute::with('attributeValues')->get();
 
-        // $oldVariations = [];
         $oldVariations = collect();
 
         return view('dashboard.products.create',compact('product', 'categories','brands', 'attributes', 'oldVariations'));
@@ -65,20 +59,31 @@ class ProductsController extends Controller
      */
    public function store(StoreProductRequest $request)
     {
-        $this->productService->store($request);
+        try {
+            $this->productService->create($request);
 
-        return redirect()->route('dashboard.products.index')
-            ->with('success', 'created');
+            return redirect()
+                ->route('dashboard.products.index')
+                ->with('success', 'Product created');
+
+        } catch (\Throwable $e) {
+            return back()
+                ->with('error', $e->getMessage())
+                ->withInput();
+        }
     }
-
 
     /**
      * Display the specified resource.
      */
     public function show(Product $product)
     {
-
-        $product->load(['category', 'variations.values.attribute', 'variations.images','primaryVariation.images']); 
+        $product->load([
+            'category',
+            'variations.values.attribute',
+            'variations.images',
+            'primaryVariation.images'
+        ]); 
 
         return view('dashboard.products.show', compact('product'));
     }
@@ -88,9 +93,15 @@ class ProductsController extends Controller
      */
     public function edit(Product $product)
     {
-         $this->authorize('update', $product);
+        $this->authorize('update', $product);
 
-         $product->load(['variations.values.attribute', 'variations.images', 'images', 'gallery', 'thumbnail' ]);
+        $product->load([
+            'variations.values.attribute',
+            'variations.images',
+            'images',
+            'gallery',
+            'thumbnail'
+        ]);
 
         $attributes = Attribute::with('attributeValues')->get();
         $categories = Category::all();
@@ -110,176 +121,85 @@ class ProductsController extends Controller
             $existingGallery = collect();
         }
       
-        return view('dashboard.products.edit', compact('product', 'attributes', 'categories', 'brands',
-        'oldVariations',
-        'existingGallery'
+        return view('dashboard.products.edit', compact(
+            'product',
+            'attributes',
+            'categories',
+            'brands',
+            'oldVariations',
+            'existingGallery'
         ));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(StoreProductRequest $request, Product $product)
+    public function update(UpdateProductRequest $request, Product $product)
     {
-        $this->productService->update($product, $request);
+        try {
+            $this->productService->update($request, $product);
 
-        return redirect()->route('dashboard.products.index')
-            ->with('success', 'updated');
+            return redirect()
+                ->route('dashboard.products.index')
+                ->with('success', 'Product Updated');
+
+        } catch (\Throwable $e) {
+            return back()->with('error', $e->getMessage());
+        }
     }
-   
 
     /**
-     * Remove the specified resource from storage.
+     * SOFT DELETE PRODUCTS
      */
     public function destroy(Product $product)
     {
         $this->authorize('delete', $product);
 
-        DB::beginTransaction();
+        $this->productService->delete($product);
 
-        try {
-        
-            $product->delete();
-            
-            DB::commit();
-            
-        } catch (Throwable $e) {
-            DB::rollBack();
-            return Redirect::route('products.index')
-                ->with('error', 'Failed to delete product');
-        }
-            return Redirect::route('dashboard.products.index')
-                ->with('sucess', 'Product Deleted');
+        return back()->with('success', 'Deleted');
     }
 
     /**
      * show trash.
      */
-     public function trash()
+    public function trash()
     {
         $products = Product::onlyTrashed()->paginate();
         return view('dashboard.products.trash', compact('products'));
     }
 
-     public function restore( $id)
+    /**
+     * RESTORE FROM TRASH.
+     */
+    public function restore($id)
     {
         $product = Product::onlyTrashed()->findOrFail($id);
 
-         $this->authorize('restore', $product);
+        $this->authorize('restore', $product);
 
-        $product->restore();
-        return Redirect::route('dashboard.products.trash' )
-        ->with('success', 'Product restored');
+        $this->productService->restore($product);
+
+        return redirect()
+            ->route('dashboard.products.trash')
+            ->with('success', 'Product restored');
     }
 
     /**
      * Remove the specified resource from trash.
      */
+   
     public function forceDelete($id)
     {
-        $product = Product::onlyTrashed()->with(['images', 'variations.images'])->findOrFail($id);
-        $this->authorize('forcedelete', $product);
+        $this->authorize('forceDelete', $id);
 
-        DB::beginTransaction();
+        $product = Product::onlyTrashed()
+            ->with(['images', 'variations.images'])
+            ->findOrFail($id);
 
-        try {
-            // 1. حذف صور المنتج الأساسي (الـ Thumbnail والـ Gallery)
-            foreach ($product->images as $image) {
-                $this->deleteImage($image->image);
-            }
-            $product->images()->delete();
+        $this->productService->forceDelete($product);
 
-            // 2. المرور على الـ Variations وحذف صورها
-            foreach ($product->variations as $variation) {
-                foreach ($variation->images as $vImage) {
-                    $this->deleteImage($vImage->image);
-                }
-                // حذف سجلات صور الـ variation
-                $variation->images()->delete();
-                // فصل السمات في الجدول الوسيط
-                $variation->values()->detach();
-            }
-            
-            // حذف الـ variations من قاعدة البيانات
-            $product->variations()->delete();
-
-            // 3. الحذف النهائي للمنتج
-            $product->forceDelete();
-
-            DB::commit();
-
-        } catch (Throwable $e) {
-            DB::rollBack();
-            return Redirect::route('dashboard.products.trash') // تم تعديل الراوت هنا ليكون أدق
-                ->with('error', 'Failed to delete product: ' . $e->getMessage());
-        }
-
-        return Redirect::route('dashboard.products.trash')
-            ->with('success', 'Product and all its assets deleted permanently');
+        return back()->with('success', 'Deleted permanently');
     }
-    /**
-     * Remove variation.
-     */
-    public function deleteVariation( ProductVariation $variation) 
-    {
-        // تحميل العلاقة مسبقاً للتأكد من وجود البيانات وتجنب الخطأ
-        $variation->load('product'); 
-
-        if (!$variation->product) {
-
-            return back()->with('error', 'المنتج المرتبط بهذا التنوع غير موجود');
-           
-        }
-      
-        DB::beginTransaction();
-
-        try {
-            // last Variation
-            if ($variation->product->variations()->count() === 1) {
-                return back()->with('error', 'لا يمكن حذف آخر Variation للمنتج');
-            }
-
-            // primary variation
-            if ($variation->is_primary) {
-                $next = $variation->product
-                    ->variations()
-                    ->where('id', '!=', $variation->id)
-                    ->first();
-
-                if ($next) {
-                    $next->update(['is_primary' => true]);
-                }
-            }
-
-            // delete storage images 
-            if ($variation->images->isNotEmpty()) {
-                foreach ($variation->images as $image) {
-                
-                $this->deleteImage($image->image);
-                }
-
-                $variation->images()->delete();
-
-            }
-           
-            // 🔗 فصل السمات
-            $variation->values()->detach();
-
-            // 🗑️ حذف الـ variation
-            $variation->delete();
-
-            DB::commit();
-
-            // return back()->with('success', 'تم حذف الـ Variation بنجاح');
-
-        } catch (\Throwable $e) {
-            DB::rollBack();
-
-            throw $e;
-        }
-
-        return response()->json(['status' => 'deleted']);
-
-    }
-    
+        
 }

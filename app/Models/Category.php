@@ -31,12 +31,15 @@ class Category extends Model
     // glopale scope
     public function scopeFilter(Builder $builder, $filters)
     {
-        $builder->when($filters['name'] ?? false, function($builder, $value) {
-            $builder->where('categories.name', 'LIKE', "%{$value}%");
+        $builder->when($filters['name'] ?? null, function ($builder, $value) {
+            $builder->where(function ($query) use ($value) {
+                $query->where('name_en', 'like', "%$value%")
+                    ->orWhere('name_ar', 'like', "%$value%");
+            });
         });
 
         $builder->when($filters['status'] ?? false, function($builder, $value) {
-            $builder->where('categories.status', '=', $value);
+            $builder->where('status', '=', $value);
         });
     }
 

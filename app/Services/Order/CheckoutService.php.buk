@@ -1,0 +1,65 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\Coupon;
+use App\Models\Governorate;
+
+class CheckoutService
+{
+    protected $cart;
+
+    public function __construct(CartService $cart)
+    {
+        $this->cart = $cart;
+    }
+
+    public function prepareCheckoutData($governorateId = null)
+    {
+        if ($this->cart->isEmpty()) {
+            throw new \Exception('Cart is empty');
+        }
+
+        $items = $this->cart->getItems();
+        $cartTotal = $this->cart->total();
+
+        $shipping = 0;
+
+        if ($governorateId) {
+            $governorate = Governorate::find($governorateId);
+            $shipping = $governorate?->shipping_price ?? 0;
+        }
+
+        $tax = 20;
+
+        $totals = $this->calculateTotals($cartTotal, $shipping, $tax);
+
+        return compact('items', 'cartTotal', 'shipping', 'tax', 'totals');
+    }
+
+    public function calculateTotals($cartTotal, $shipping, $tax)
+    {
+        $coupon = Coupon::find(session('coupon_id'));
+
+        $discount = 0;
+
+        if ($coupon) {
+            if ($coupon->type === 'fixed') {
+                $discount = $coupon->value;
+            } elseif ($coupon->type === 'percent') {
+                $discount = ($coupon->value / 100) * $cartTotal;
+            }
+        }
+
+        $subtotal = max($cartTotal - $discount, 0);
+        $total = $subtotal + $shipping + $tax;
+
+        return [
+            'original' => $cartTotal,
+            'discount' => $discount,
+            'shipping' => $shipping,
+            'tax' => $tax,
+            'total' => $total,
+        ];
+    }
+}

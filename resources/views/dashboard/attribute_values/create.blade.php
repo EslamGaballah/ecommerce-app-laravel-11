@@ -10,7 +10,7 @@
 @section('content')
 
 
-<form action="{{ route('dashboard.attribute_values.store') }}" method="post" enctype="multipart/form-data">
+<form action="{{ route('dashboard.attribute-values.store') }}" method="post" enctype="multipart/form-data">
     @csrf
     
     @include('dashboard.attribute_values._form')

@@ -1,6 +1,6 @@
  <li>
     <div class="comment-img">
-        <img src="{{ $comment->user->image ?? 'https://via.placeholder.com/50' }}" alt="img">
+        <img src="{{ $comment->user->image ?? ' http://127.0.0.1:8000/assets/images/logo/logo.svg ' }}" alt="img">
     </div>
     <div class="comment-desc">
         <div class="desc-top">
@@ -23,12 +23,14 @@
                 </button>
 
                 <!-- Delete comment -->
-                <form action="{{ route('comments.destroy', $comment->id) }}" 
-                    method="POST" 
-                    style="display:inline">
+                <form class="delete-comment-form"
+                    action="{{ route('comments.destroy', $comment->id) }}" 
+                    method="POST"
+                    style="display:inline"
+                    >
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class=" delete text-danger" onclick="return confirm('هل أنت متأكد؟')" 
+                    <button type="submit" class=" delete text-danger"  
                     style="border:none; background:none;">
                         <i class="lni lni-trash"></i> {{ __('app.delete') }}
                     </button>
@@ -41,8 +43,9 @@
             <!-- edit comment form-->
         <div id="edit-form-{{ $comment->id }}" class="comment-form d-none mt-2"
             style="margin-top: 10px; padding-left: 20px;">
-            <h6 class="mb-2"> {{ __('app.edit') }}</h6>
-            <form action="{{ route('comments.update', $comment->id) }}" 
+            <h6 class=" update-comment mb-2"> {{ __('app.edit') }}</h6>
+            <form class="update-comment-form"
+                action="{{ route('comments.update', $comment->id) }}" 
                 method="POST">
                 @csrf
                 @method('PUT')
@@ -67,7 +70,8 @@
     <div id="reply-form-{{ $comment->id }}" class="comment-form d-none " 
         style="margin-top: 10px; padding-left: 20px;">
         <h6 class="mb-2">Reply to {{ $comment->user->name }}</h6>
-        <form action="{{ route('comments.store', $comment->post_id) }}" 
+        <form class="add-comment-form"
+            action="{{ route('comments.store', $comment->post_id) }}" 
             method="POST">
             @csrf
             <input type="hidden" name="post_id" value="{{ $comment->post_id }}">

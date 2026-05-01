@@ -29,13 +29,16 @@
                     <div class="single-inner">
                         <div class="post-details">
                             <div class="main-content-head">
-                                <div class="post-thumbnils">
-                                    <img src="{{ asset('storage/' . $post->images->first()?->image) ?? 'https://via.placeholder.com/850x460' }}" 
-                                        alt="{{ $post->title }}">                                
+                                <div class="post-thumbnils"  style="width:100%; height:500px; overflow:hidden; object-fit:cover;">
+                                    <img 
+                                        src="{{ $post->images->first()?->image 
+                                            ? asset('storage/' . $post->images->first()->image) 
+                                            : 'لا يوجد صورة' }}"
+                                    >                    
                                 </div>
                                 <div class="meta-information">
                                     <h2 class="post-title">
-                                        <a href="javascript:void(0)">{{$post->title}}</a>
+                                        <a href="">{{$post->title}}</a>
                                     </h2>
                                     <!-- End Meta Info -->
                                     <ul class="meta-info">
@@ -131,7 +134,9 @@
                             
                             <div class="comment-form">
                                 <h3 class="comment-reply-title">{{ __('app.leave_comment') }}</h3>
-                                <form action="{{ route('comments.store', $post->id) }}" method="POST">
+                                    <form class="add-comment-form"
+                                        action="{{ route('comments.store', $post->id) }}" 
+                                        method="POST">
                                     @csrf
                                     <div class="row">
                          
@@ -139,7 +144,7 @@
                                             <div class="form-box form-group">
                                                 <input type="hidden" name="post_id" value="{{ $post->id }}">
                                                 <textarea name="body" class="form-control form-control-custom"
-                                                    placeholder="Your Comments"></textarea>
+                                                    placeholder="{{ __('app.leave_comment') }}"></textarea>
                                             </div>
                                         </div>
                                         <div class="col-12">
@@ -165,11 +170,90 @@
     <a href="#" class="scroll-top">
         <i class="lni lni-chevron-up"></i>
     </a>
-   @push('script')
-    <script>
-function toggleForm(id) {
-    const form = document.getElementById(id);
-    form.classList.toggle('d-none');
-}
+@push('script')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    document.addEventListener('submit', function (e) {
+        const form = e.target;
+
+        // 1. التحقق: هل النموذج المرسل هو أحد نماذج التعليقات؟
+        const isAdd = form.classList.contains('add-comment-form');
+        const isUpdate = form.classList.contains('update-comment-form');
+        const isDelete = form.classList.contains('delete-comment-form');
+
+        if (isAdd || isUpdate || isDelete) {
+            e.preventDefault(); // إيقاف الإرسال التقليدي فوراً
+
+            // --- منطق الحذف (Confirm) ---
+            if (isDelete) {
+                if (!confirm('هل أنت متأكد من حذف هذا التعليق؟')) return;
+            }
+
+            // تجهيز البيانات
+            // في حالة الحذف نرسل FormData المحتوية على _method DELETE
+            const formData = new FormData(form);
+            const action = form.action;
+            const method = 'POST'; // نستخدم POST دائماً وLaravel سيفهم الـ _method المخفي
+
+            fetch(action, {
+                method: method,
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                // --- تنفيذ الأكشن في الواجهة (UI) ---
+                
+                if (isDelete) {
+                    // حذف العنصر من القائمة
+                    form.closest('li').remove();
+                } 
+                
+                else if (isUpdate) {
+                    // تحديث نص التعليق وإخفاء الفورم
+                    const bodyElement = document.getElementById('body-' + data.id);
+                    if (bodyElement) bodyElement.innerText = data.body;
+                    form.closest('.comment-form').classList.add('d-none');
+                } 
+                
+                else if (isAdd) {
+                    // إضافة تعليق جديد أو رد
+                    if (form.querySelector('[name="parent_id"]')) {
+                        // حالة الرد (Reply)
+                        let parentLi = form.closest('li');
+                        let repliesList = parentLi.querySelector('.comments-list');
+
+                        if (!repliesList) {
+                            repliesList = document.createElement('ul');
+                            repliesList.classList.add('comments-list');
+                            parentLi.appendChild(repliesList);
+                        }
+                        repliesList.insertAdjacentHTML('beforeend', data.html);
+                        form.closest('.comment-form').classList.add('d-none'); // إخفاء فورم الرد
+                    } else {
+                        // حالة تعليق أساسي جديد
+                        const mainList = document.querySelector('.post-comments .comments-list');
+                        if (mainList) {
+                            mainList.insertAdjacentHTML('afterbegin', data.html);
+                        }
+                    }
+                    form.reset(); // تفريغ الحقول
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('عذراً، حدث خطأ ما. يرجى المحاولة مرة أخرى.');
+            });
+        }
+    });
+});
 </script>
 @endpush

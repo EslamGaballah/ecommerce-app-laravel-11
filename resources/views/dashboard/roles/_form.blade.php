@@ -1,20 +1,28 @@
 
 <div class="form-group">
-    <x-form.input label="Role Name" class="form-control-lg" role="input" name="name" :value="$role->name" />
+    <x-form.input label="{{__('app.name')}}" class="form-control-lg" role="input" name="name" :value="$role->name" />
 </div>
 
 <fieldset>
-    <legend class="fw-bold mb-4">{{ __('Permissions Management') }}</legend>
+    <legend class="fw-bold mb-4">{{ __('app.permissions_management') }}</legend>
 
     <div class="row">
         @foreach ($permissions as $groupName => $groupItems)
             <div class="col-md-6 mb-4">
                 <div class="card h-100 shadow-sm border-primary permission-group">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <span class="text-capitalize fw-bold">{{ $groupName }}</span>
+                        <span class="text-capitalize fw-bold">
+                            {{-- استخدام trans()->has() للتأكد من وجود الترجمة --}}
+                            {{trans()->has('permission_labels.groups.' . $groupName) ? __('permission_labels.groups.' . $groupName) : ucfirst($groupName) }}
+                        </span>
                         
                         <div class="form-check mb-0">
-                            <input class="form-check-input select-all-group" type="checkbox" id="select-all-{{ $groupName }}">
+                            @php
+                                // التحقق مما إذا كانت كل صلاحيات المجموعة مختارة مسبقاً
+                                $allChecked = $groupItems->every(fn($p) => $role->permissions->contains($p->id));
+                            @endphp
+                            <input class="form-check-input select-all-group" type="checkbox" 
+                                   id="select-all-{{ $groupName }}" {{ $allChecked ? 'checked' : '' }}>
                             <label class="form-check-label text-white small" for="select-all-{{ $groupName }}">
                                 {{ __('Select All') }}
                             </label>
@@ -31,16 +39,16 @@
                                                value="{{ $permission->id }}" 
                                                id="perm-{{ $permission->id }}"
                                                @checked(
-                                                    isset($role) && $role->permissions->contains($permission->id) ||
-                                                    collect(old('permissions'))->contains($permission->id)
+                                                   (isset($role) && $role->permissions->contains($permission->id)) ||
+                                                   (is_array(old('permissions')) && in_array($permission->id, old('permissions')))
+                                               )>
 
-                                                    )>
-
-                                        <label class="form-check-label text-capitalize" for="perm-{{ $permission->id }}">
-                                            {{-- {{ explode('-', $permission->name)[0] }} --}}
-                                            {{-- {{ str_replace('-' . $groupName, '', $permission->name) }} --}}
-                                            {{ str_replace('-', ' ', str_replace('-' . $groupName, '', $permission->name)) }}
-
+                                        <label class="form-check-label" for="perm-{{ $permission->id }}">
+                                            @php
+                                                $parts = explode('-', $permission->name);
+                                                $action = $parts[0] ?? '';
+                                            @endphp
+                                            {{ trans()->has('permission_labels.actions.' . $action) ? __('permission_labels.actions.' . $action) : ucwords(str_replace('-', ' ', $action)) }}
                                         </label>
                                     </div>
                                 </div>

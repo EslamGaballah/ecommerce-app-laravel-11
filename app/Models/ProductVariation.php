@@ -41,12 +41,12 @@ class ProductVariation extends Model
         return $this->morphMany(StockMovement::class, 'stockable');
     }
 
-    // public function images() 
-    // {
-    //     return $this->morphMany(Image::class, 'imageable');
-    // }
+    public function images() 
+    {
+        return $this->morphMany(Image::class, 'imageable');
+    }
 
-    public function images()
+    public function variation()
     {
         return $this->morphMany(Image::class, 'imageable')->where('type', 'variation');
     }
@@ -59,6 +59,7 @@ class ProductVariation extends Model
     {
         return $this->morphMany(Image::class, 'imageable')->where('type', 'gallery');
     }
+    
 
     public function primaryImage()
     {

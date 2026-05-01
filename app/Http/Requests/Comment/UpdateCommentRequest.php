@@ -11,7 +11,8 @@ class UpdateCommentRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $comment = $this->route('product');
+        // $comment = $this->route('product');
+        $comment = $this->route('comment');
 
         return auth()->user()->can('update', $comment);
     }
@@ -25,9 +26,6 @@ class UpdateCommentRequest extends FormRequest
     {
         return [
             'body' => 'required|string|min:1|max:1000',
-            'parent_id' => 'nullable|exists:comments,id',
-            'product_id' => 'nullable|exists:products,id',
-            'post_id' => 'nullable|exists:posts,id',
         ];
     }
 }

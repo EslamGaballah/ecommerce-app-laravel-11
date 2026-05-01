@@ -17,13 +17,56 @@
 <x-alert type="success" />
 <x-alert type="info" />
 
-{{-- filter --}}
-{{-- <form action="{{ url()->current() }}" method="get" class="d-flex justify-content-between mb-4"> --}}
-<form action="{{ request()->url() }}" method="get" class="d-flex justify-content-between mb-4">
-    <x-form.input name="name" placeholder="Name" class="mx-2" :value="request('name')" />
-    <select name="status" class="form-control mx-2">
+<form action="{{ request()->url() }}" method="get" 
+    {{-- class="d-flex flex-wrap justify-content-between mb-4"> --}}
+    class="d-flex flex-wrap align-items-center flex-md-nowrap gap-2 mb-4 overflow-auto">
+
+    {{-- 🔍 search --}}
+    <x-form.input 
+        name="search" 
+        placeholder="Search..." 
+        {{-- class="mx-2 mb-2" --}}
+        class="mb-0"
+        style="width: 180px;"
+        :value="request('search')" 
+    />
+
+    {{-- 📂 category --}}
+    <select name="category" 
+        {{-- class="form-control mx-2 mb-2"> --}}
+        class="form-select mb-0" style="width: 160px;">
+        <option value="">{{ __('app.categories') }}</option>
+        @foreach($categories as $category)
+            <option 
+                value="{{ $category->id }}"
+                @selected(request('category') == $category->id)
+            >
+                {{ $category->name }}
+            </option>
+        @endforeach
+    </select>
+
+    {{-- 🏷 brand --}}
+    <select name="brand" 
+        {{-- class="form-control mx-2 mb-2"> --}}
+        class="form-select mb-0" style="width: 160px;">
+        <option value="">{{ __('app.brands') }}</option>
+        @foreach($brands as $brand)
+            <option 
+                value="{{ $brand->id }}"
+                @selected(request('brand') == $brand->id)
+            >
+                {{ $brand->name }}
+            </option>
+        @endforeach
+    </select>
+
+    {{-- ⚡ status --}}
+    <select name="status" 
+        {{-- class="form-control mx-2 mb-2"> --}}
+        class="form-select mb-0" style="width: 140px;">
         <option value="">{{ __('app.all') }}</option>
-            @foreach(\App\Enums\ProductStatus::cases() as $status)
+        @foreach(\App\Enums\ProductStatus::cases() as $status)
             <option 
                 value="{{ $status->value }}"
                 @selected(request('status') == $status->value)
@@ -32,8 +75,38 @@
             </option>
         @endforeach
     </select>
-    <button class="btn btn-dark mx-2">{{ __('app.filter') }}</button>
+
+    {{-- 🔽 sort --}}
+    <select name="sort" 
+        {{-- class="form-control mx-2 mb-2"> --}}
+        class="form-select mb-0" style="width: 180px;">
+        <option value="">{{ __('app.sort_by') }}</option>
+
+        <option value="low_price"  @selected(request('sort') == 'low_price')>
+           {{ __('app.low_price') }}
+        </option>
+
+        <option value="high_price" @selected(request('sort') == 'high_price')>
+           {{ __('app.high_price') }}
+        </option>
+
+        <option value="newest" @selected(request('sort') == 'newest')>
+           {{ __('app.newst') }}
+        </option>
+
+        <option value="oldest" @selected(request('sort') == 'oldest')>
+           {{ __('app.oldest') }}
+        </option>
+    </select>
+
+    {{-- 🔘 submit --}}
+    <button class="btn btn-dark mx-2 mb-0">
+        {{ __('app.filter') }}
+    </button>
+
 </form>
+
+
 
 <table class="table">
     <thead>

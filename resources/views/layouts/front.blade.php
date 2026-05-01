@@ -130,7 +130,10 @@
     <script src="{{ asset('assets/js/glightbox.min.js') }}"></script>
     <script src="{{ asset('assets/js/main.js') }}"></script>
 
-    @vite(['resources/js/app.js'])
+    @vite([
+        'resources/js/app.js',
+        'resources/js/cart.js'
+    ])
 
     @stack('script')
     @stack('scripts')

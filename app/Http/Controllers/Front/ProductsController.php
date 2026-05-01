@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Front;
 
+use App\Filters\ProductFilter;
 use App\Helpers\Currency;
 use App\Http\Controllers\Controller;
+use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -13,35 +15,23 @@ class ProductsController extends Controller
 {
 
     public function index(Request $request) {
-        // $products = Product::with(['favoritedBy' => function($q) {
-        //     $q->where('user_id', auth()->id());
-        // }])->paginate(15);
-        // $products = Product::paginate();
-        $products = Product::query()
-        ->byCategory($request->category_id)
-        ->byBrand($request->brand_id)
-        ->byPriceRange($request->min_price, $request->max_price)
-        ->sortBy($request->sort_by)
-        ->with([
-            'category',
-            //   'primaryVariation',
-            'variations.images',
-            'primaryVariation.images'])
-        ->paginate(4)
-        ->withQueryString();        
-
-        // $variation = $products->default_variation;
-
         
+         $filters = new ProductFilter($request);
+
+        $products = Product::with('category', 'variations')
+            ->filter($filters)
+            ->latest()
+            ->paginate(12)
+            ->withQueryString();
 
         if ($request->ajax()) {
-        return view('front.products._list', compact('products'))->render();
-        }
+            return view('front.products._list', compact('products'))->render();
+        }    
 
         $categories = Category::withCount('products')->get();
-        // $brands = Brand::all();
+        $brands = Brand::withCount('products')->get();
 
-        return view('front.products.index', compact('products' , 'categories'));
+        return view('front.products.index', compact('products', 'categories', 'brands'));
     }
 
     public function show( Product $product)
@@ -116,24 +106,6 @@ class ProductsController extends Controller
             'images'    => $variation->images->pluck('image')->values(),
             'available' => $variation->stock > 0,
         ]);
-    }
-
-    public function search(Request $request)
-    {
-        $categories = Category::withCount('products')->get();
-        $query = Product::query();
-
-        if ($request->filled('q')) {
-            $query->where('name', 'like', '%' . $request->q . '%');
-        }
-
-        if ($request->filled('category_id')) {
-            $query->where('category_id', $request->category_id);
-        }
-
-        $products = $query->latest()->paginate(12);
-
-       return view('front.products.index', compact('products' , 'categories'));
     }
 
 

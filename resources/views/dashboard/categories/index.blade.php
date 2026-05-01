@@ -74,7 +74,7 @@
             </td> 
             <td>
                 {{-- @can('categories.update') --}}
-                <a href="{{ route('dashboard.categories.edit', $category->id) }}" class="btn btn-sm btn-outline-success">{{__('app.update')}}</a>
+                <a href="{{ route('dashboard.categories.show', $category->id) }}" class="btn btn-sm btn-outline-success">{{__('app.show')}}</a>
                 {{-- @endcan --}}
             </td> 
              <td> 
@@ -91,7 +91,7 @@
         </tr>
         @empty
         <tr>
-            <td colspan="9">No categories defined.</td>
+            <td colspan="9">{{ __('app.no_categories_defined') }}.</td>
         </tr>
         @endforelse
     </tbody>

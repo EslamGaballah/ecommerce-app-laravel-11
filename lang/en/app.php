@@ -33,9 +33,12 @@ return [
     */
     'users' => 'Users',
     'roles' => 'Roles',
+    'create_user' => 'Create New User',
     'user_name' => 'User Name',
     'first_name' => 'First Name',
     'last_name' => 'Last Name',
+     'create_role' => ' Create Role ',
+    'permissions_management' => ' Permission Management   ',
 
     /*
     |--------------------------------------------------------------------------
@@ -47,6 +50,7 @@ return [
     'edit' => 'Edit',
     'update' => 'Update',
     'delete' => 'Delete',
+    'deleted_at' => 'Deleted At',
     'force_delete' => 'Force Delete',
     'restore' => 'Restore',
     'trash' => 'Trash',
@@ -67,6 +71,7 @@ return [
     'categories' => 'Categories',
     'category' => 'Category',
     'brands' => 'Brands',
+    'brands' => 'Brand',
     'parent' => 'Parent',
     'products' => 'Products',
     'product_name' => 'Product Name',
@@ -87,12 +92,27 @@ return [
     'attributes' => 'Attributes',
     'values' => 'Values',
     'attribute_values' => 'Attribute Values',
+    'add_attribute' => 'Add Attribute',
+    'select_attribute' => 'Select Attribute',
     'simple' => 'Simple',
     'variable' => 'Variable',
     'sku' => 'SKU',
     'thumbnail' => 'Thumbnail',
+    'gallery' => 'Gallery',
     'images' => 'Images',
     'variants' => 'Variants',
+    'no_products_defined' => 'No Products Defined',
+    'no_categories_defined' => 'No Categories Defined',
+    'no_brands_defined' => 'No Brands Defined',
+    'no_attributes_defined' => 'No Attributes Defined',
+    'no_orders_defined' => 'No Orders Defined',
+    'latest_reviews'=> 'Latest Reviews',
+    'leave_review' => 'Leave Review',
+    'generate_variants'=>' Generate Variants',
+    'confirm_delete' => 'Confirm Delete',
+        'governorate' => 'Governorate',
+
+    
 
     /*
     |--------------------------------------------------------------------------
@@ -145,6 +165,12 @@ return [
     */
     'blog' => 'Blog',
     'posts' => 'Posts',
+    'create_post' => 'Create Post',
+    'title' => 'Title',
+    'content' => 'content',
+    'author' => 'Author',
+    'published' => 'published',
+    'edit_post' => ' Edit_post',
     'tags' => 'Tags',
     'read_more' => 'Read More',
     'featured_posts' => 'Featured Posts',
@@ -152,10 +178,14 @@ return [
     'comments' => 'Comments',
     'leave_comment' => 'Leave a Comment',
     'post_comment' => 'Post Comment',
+    'submit_reply' => 'Submit Reply ',
     'no_comments_yet' => 'No Comments Yet',
     'reviews' => 'Reviews',
     'review' => 'Review',
     'images' => 'Images',
+    'no_posts_defined' => 'No Posts Defined',
+    'share_post' => ' Share Post',
+
 
     /*
     |--------------------------------------------------------------------------
@@ -188,12 +218,14 @@ return [
     'created_at' => 'Created At',
     'updated_at' => 'Updated At',
     'updated_by' => 'Updated By',
+    'reply'=> 'Reply',
 
     /*
     |--------------------------------------------------------------------------
     | Coupons
     |--------------------------------------------------------------------------
     */
+    'create_coupon'=> 'Create Coupon',
     'coupon_code' => 'Coupon Code',
     'type' => 'Type',
     'value' => 'Value',
@@ -203,6 +235,7 @@ return [
     'used_count' => 'Used Count',
     'expiry_date' => 'Expiry Date',
     'active_status' => 'Active Status',
+    'no_coupons_defined' => 'No Coopons Defined',
 
     /*
     |--------------------------------------------------------------------------

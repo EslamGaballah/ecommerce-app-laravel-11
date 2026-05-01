@@ -13,10 +13,10 @@ class Permission extends Model
         return $this->hasMany(Role::class);
     }
 
-     public function getNameAttribute()
-    {
-        return app()->getLocale() == 'ar'
-            ? $this->name_ar
-            : $this->name_en;
-    }
+    //  public function getNameAttribute()
+    // {
+    //     return app()->getLocale() == 'ar'
+    //         ? $this->name_ar
+    //         : $this->name_en;
+    // }
 }

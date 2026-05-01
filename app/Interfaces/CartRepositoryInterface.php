@@ -10,7 +10,7 @@ interface CartRepositoryInterface
 {
     public function get() : Collection;
     
-    public function add(Product $product, $quantity = 1);
+    public function add(Product $product, $quantity = 1, $variationId = null);
 
     public function update($id, $quantity);
 
@@ -19,4 +19,6 @@ interface CartRepositoryInterface
     public function empty();
 
     public function total() : float;
+
+    public function count() : int;
 }

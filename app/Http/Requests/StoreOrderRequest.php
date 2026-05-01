@@ -26,6 +26,7 @@ class StoreOrderRequest extends FormRequest
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['string', 'max:255'],
             'phone_number' => ['required', 'string', 'max:255'],
+            'governorate_id' => ['required', 'exists:governorates,id'],
             'city' => ['required', 'string', 'max:255'],
             'street_address' => ['required', 'string', 'max:255'],
             'country' => ['required', 'string', 'max:255'],

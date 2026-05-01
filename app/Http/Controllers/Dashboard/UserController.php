@@ -39,10 +39,12 @@ class UserController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create($user)
+    public function create()
     {
-        $roles = Role::all();
-        return view('dashboard.users.create', compact('user','roles'));
+        $user = new User();
+        $roles = Role::select('id', 'name')->get();
+
+        return view('dashboard.users.create', compact('user', 'roles'));
     }
 
     /**
@@ -50,6 +52,8 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+
+    // dd($request->all());
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
@@ -93,7 +97,7 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        $roles = Role::all();
+        $roles = Role::select('id', 'name')->get();
 
         return view('dashboard.users.edit', compact('user','roles'));
     }
@@ -109,23 +113,34 @@ class UserController extends Controller
             'required',
             'email',
             Rule::unique('users', 'email')->ignore($user->id),
-    ],
+        ],
             'password' => 'nullable|confirmed|min:8',
             'role_id' => 'required|exists:roles,id'
         ]);
 
-       $data = [
-        'name' => $request->name,
-        'email' => $request->email,
-    ];
+         DB::beginTransaction();
 
-    if ($request->filled('password')) {
-        $data['password'] = Hash::make($request->password);
-    }
+        try { 
+            $data = [
+                    'name' => $request->name,
+                    'email' => $request->email,
+            ];
 
-    $user->update($data);
+            if ($request->filled('password')) {
+                $data['password'] = Hash::make($request->password);
+            }
 
-        $user->roles()->sync($request->role_id);
+            $user->update($data);
+
+            $user->roles()->sync($request->role_id);
+
+        DB::commit();
+
+         } catch (Throwable $e) {
+                    DB::rollBack();
+                    return back()->with('error', 'Failed to create user');
+            }
+
 
         return Redirect()->route('dashboard.users.index')->with('success','User updated successfully');
 

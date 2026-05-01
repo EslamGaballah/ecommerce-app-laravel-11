@@ -55,14 +55,14 @@ Route::get('product/search', [ProductsController::class, 'search'])->name('produ
 
 Route::resource('cart', CartController::class)->except(['show']);
 Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
-Route::patch('/cart/{id}', [CartController::class, 'update']);
-Route::delete('/cart/{id}', [CartController::class, 'destroy']);
+// Route::patch('/cart/{id}', [CartController::class, 'update']);
+// Route::delete('/cart/{id}', [CartController::class, 'destroy']);
 Route::get('/cart/json', [CartController::class, 'cartJson'])->name('cart.json');
 
 Route::get('comments', [CommentController::class, 'index'])->name('comments.index');
 
 Route::get('/posts',[PostController::class,'index']) ->name('front.posts.index');
-Route::get('/posts/{post)',[PostController::class,'show']) ->name('front.posts.show');
+Route::get('/posts/{post}',[PostController::class,'show']) ->name('front.posts.show');
 
 
 Route::middleware('auth')->group(function() {
@@ -91,7 +91,7 @@ Route::middleware('auth')->group(function() {
                 ->name('notifications.readAll');
 
 
-        Route::post('/comments/{post)', [CommentController::class, 'store'])->name('comments.store');
+        Route::post('/comments/{post}', [CommentController::class, 'store'])->name('comments.store');
         Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
         Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 

@@ -48,7 +48,7 @@ class AttributeValueController extends Controller
 
         // AttributeValue::create($data);
 
-        return Redirect::route('dashboard.attribute_values.index')
+        return Redirect::route('dashboard.attribute-values.index')
             ->with('success', 'attribute_values created');
     }
 

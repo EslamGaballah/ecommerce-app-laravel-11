@@ -29,6 +29,8 @@ Index Of css
 /*======================================
     Variables
 ========================================*/
+ .toast-success { background: #28a745; }
+        .toast-error { background: #dc3545; }
 
 /* ============== start whatsapp ==================== */
 .whatsapp-float {

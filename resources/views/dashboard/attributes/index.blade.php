@@ -72,7 +72,7 @@
         </tr>
         @empty
         <tr>
-            <td colspan="9">No attributes defined.</td>
+            <td colspan="9">{{ __('app.no_attributes_defined') }}.</td>
         </tr>
         @endforelse
     </tbody>

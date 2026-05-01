@@ -1,17 +1,18 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Trashed Products')
+@section('title', __ ('app.trash'))
+
 
 @section('breadcrumb')
     @parent
-    <li class="breadcrumb-item">Products</li>
-    <li class="breadcrumb-item active">Trash</li>
+    <li class="breadcrumb-item">{{ __('app.products') }}</li>
+    <li class="breadcrumb-item active">{{ __('app.trash') }}</li>
 @endsection
 
 @section('content')
 
 <div class="mb-5">
-    <a href="{{ route('dashboard.products.index') }}" class="btn btn-sm btn-outline-primary">Back</a>
+    <a href="{{ route('dashboard.products.index') }}" class="btn btn-sm btn-outline-primary">{{ __('app.back') }}</a>
 </div>
 
 {{-- <x-alert type="success" />
@@ -32,10 +33,10 @@
         <tr>
             <th></th>
             <th>ID</th>
-            <th>Name</th>
-            <th>Status</th>
-            <th>Deleted At</th>
-            <th colspan="2"></th>
+            <th>{{ __('app.name') }}</th>
+            <th>{{ __('app.status') }}</th>
+            <th>{{ __('app.deleted_at') }}</th>
+            <th colspan="2">{{ __('app.actions') }}</th>
         </tr>
     </thead>
     <tbody>
@@ -50,20 +51,20 @@
                 <form action="{{ route('dashboard.products.restore', $product->id) }}" method="post">
                     @csrf
                     @method('put')
-                    <button type="submit" class="btn btn-sm btn-outline-info">Restore</button>
+                    <button type="submit" class="btn btn-sm btn-outline-info">{{ __('app.restore') }}</button>
                 </form>
             </td>
             <td>
                 <form action="{{ route('dashboard.products.forceDelete', $product->id) }}" method="post">
                     @csrf
                     @method('delete')
-                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                    <button type="submit" class="btn btn-sm btn-outline-danger">{{ __('app.delete') }}</button>
                 </form>
             </td>
         </tr>
         @empty
         <tr>
-            <td colspan="7">No categories defined.</td>
+            <td colspan="7">{{ __('app.no_products_defined') }}.</td>
         </tr>
         @endforelse
     </tbody>

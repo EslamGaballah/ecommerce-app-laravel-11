@@ -25,8 +25,8 @@ class PostController extends Controller
     {
         $posts = Post::with('user')->paginate();
 
-        // return view('dashboard.posts.index', compact('posts'));
-        return view('front.blog.blog-grid-sidebar', compact('posts'));
+        return view('dashboard.posts.index', compact('posts'));
+        // return view('front.blog.blog-grid-sidebar', compact('posts'));
     }
 
     /**
@@ -128,11 +128,10 @@ class PostController extends Controller
 
              } catch (Throwable $e) {
                     DB::rollBack();
-                    throw $e;
                     return back()->with('error', 'Failed to update post');
             }
 
-             return back()->with('success', 'post updated');
+              return Redirect::route('dashboard.posts.index')->with('success', 'post updated');
 
     }
 

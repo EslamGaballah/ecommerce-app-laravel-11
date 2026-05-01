@@ -86,7 +86,7 @@
         </tr>
         @empty
         <tr>
-            <td colspan="9">No brands defined.</td>
+            <td colspan="9">{{ __('app.no_brands_defined') }}.</td>
         </tr>
         @endforelse
     </tbody>

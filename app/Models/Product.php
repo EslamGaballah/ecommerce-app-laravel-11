@@ -62,48 +62,58 @@ class Product extends Model
         });
     }
 
-
-    public static function scopeFilter (Builder $builder, $filters)
+    public function scopeFilter($query, $filters)
     {
-        $builder->when($filters['name'] ?? false, function($builder, $value){
-            $builder->where('products.name', 'LIKE', "%{$value}");
-        });
-
-        $builder->when($filters['status'] ?? false, function($builder, $value) {
-            $builder->where('products.status', '=', $value);
-        });
+        return $filters->apply($query);
     }
 
-    public function scopeByCategory($query, $categoryIds)
-    {
-        return $query->when($categoryIds, function ($q) use ($categoryIds) {
-        $q->whereIn('category_id', (array)$categoryIds);
-    });
-    }
+    // ------------------------------
+    // All filters moved to class filter
+    // ------------------------------
+    // public static function scopeFilter (Builder $builder, $filters)
+    // {
+    //     $builder->when($filters['name'] ?? false, function($builder, $value){
+    //         $builder->where('products.name', 'LIKE', "%{$value}");
+    //     });
+
+    //     $builder->when($filters['status'] ?? false, function($builder, $value) {
+    //         $builder->where('products.status', '=', $value);
+    //     });
+    // }
+
+    // public function scopeByCategory($query, $categoryIds)
+    // {
+    //     return $query->when($categoryIds, function ($q) use ($categoryIds) {
+    //     $q->whereIn('category_id', (array)$categoryIds);
+    // });
+    // }
     
-    public function scopeByBrand($query, $brandId)
-    {
-        return $query->when($brandId, function ($q) use ($brandId) {
-            $q->where('brand_id', $brandId);
-        });
-    }
+    // public function scopeByBrand($query, $brandId)
+    // {
+    //     return $query->when($brandId, function ($q) use ($brandId) {
+    //         $q->where('brand_id', $brandId);
+    //     });
+    // }
    
-    public function scopeByPriceRange($query, $min_price, $max_price)
-    {
-        return $query->when($min_price, fn($q) => $q->where('price', '>=', $min_price))
-                    ->when($max_price, fn($q) => $q->where('price', '<=', $max_price));
-    }
+    // public function scopeByPriceRange($query, $min_price, $max_price)
+    // {
+    //     return $query->when($min_price, fn($q) => $q->where('price', '>=', $min_price))
+    //                 ->when($max_price, fn($q) => $q->where('price', '<=', $max_price));
+    // }
 
-    public function scopeSortBy($query, $type)
-    {
-        return match ($type) {
-            'low_price'  => $query->orderBy('price', 'asc'),
-            'high_price' => $query->orderBy('price', 'desc'),
-            'newest'     => $query->orderBy('created_at', 'desc'),
-            'oldest'     => $query->orderBy('created_at', 'asc'),
-            default      => $query->orderBy('id', 'desc'), 
-        };
-    }
+    // public function scopeSortBy($query, $type)
+    // {
+    //     return match ($type) {
+    //         'low_price'  => $query->orderBy('price', 'asc'),
+    //         'high_price' => $query->orderBy('price', 'desc'),
+    //         'newest'     => $query->orderBy('created_at', 'desc'),
+    //         'oldest'     => $query->orderBy('created_at', 'asc'),
+    //         default      => $query->orderBy('id', 'desc'), 
+    //     };
+    // }
+    // ------------------------------
+    // End filters 
+    // ------------------------------
 
     public function favoritedBy()
     {
@@ -119,17 +129,17 @@ class Product extends Model
 
     public function user() 
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class);
     }
 
     public function category() 
     {
-        return $this->belongsTo(Category::class, 'category_id', 'id');
+        return $this->belongsTo(Category::class);
     }
 
     public function brand() 
     {
-        return $this->belongsTo(Brand::class, 'brand_id', 'id');
+        return $this->belongsTo(Brand::class);
     }
 
     public function images() 

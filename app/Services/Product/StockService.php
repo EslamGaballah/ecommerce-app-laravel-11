@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Product;
 
 use App\Models\StockMovement;
 
 class StockService
 {
-    public function createStock($model, $stock, $reason = 'Initial stock')
+    public function create($model, $stock, $reason = 'Initial stock')
     {
-        StockMovement::create([
+        return StockMovement::create([
             'stockable_id' => $model->id,
             'stockable_type' => $model->getMorphClass(),
             'stock' => $stock,

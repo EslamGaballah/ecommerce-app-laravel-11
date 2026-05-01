@@ -30,11 +30,14 @@ Route::middleware(['auth','can:access-dashboard'])
 
     Route::get('/',[DashboardController::class, 'index'])->name('index');
 
-    Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
+    // Profile
+    Route::prefix('profile')->name('profile.')->controller(ProfileController::class)->group(function() {
+        Route::get('/', 'edit')->name('edit');
+        Route::patch('/', 'update')->name('update');
+    });
 
 
-    Route::resource('categories', CategoriesController::class)->names('categories');
+    Route::resource('categories', CategoriesController::class);
 
     Route::resource('brands', BrandsController::class)->names('brands');
 
@@ -50,7 +53,7 @@ Route::middleware(['auth','can:access-dashboard'])
 
     Route::resource('attributes', AttributesController::class);
 
-    Route::resource('attribute_values', AttributeValueController::class);
+    Route::resource('attribute-values', AttributeValueController::class);
 
     Route::resource('coupons', \App\Http\Controllers\Dashboard\CouponController::class);
 

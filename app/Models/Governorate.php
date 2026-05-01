@@ -28,7 +28,7 @@ class Governorate extends Model
 
     public function getStatusLabelAttribute()
     {
-        return $this->is_active ? __('app.avilable') : __('app.unAvilable');
+        return $this->is_active ? __('app.available') : __('app.unavailable');
     }
 
     public function getStatusColorAttribute()
@@ -38,13 +38,16 @@ class Governorate extends Model
 
      public function scopeFilter(Builder $builder, $filters)
     {
-        $builder->when($filters['name'] ?? false, function($builder, $value) {
-            $builder->where('governorate.name', 'LIKE', "%{$value}%");
+        $builder->when($filters['name'] ?? null, function ($builder, $value) {
+            $builder->where(function ($query) use ($value) {
+                $query->where('name_en', 'like', "%$value%")
+                    ->orWhere('name_ar', 'like', "%$value%");
+            });
         });
 
-        $builder->when(isset($filters['is_active']) && $filters['is_active'] !== '', function($builder) use ($filters) {
-        $builder->where('is_active', '=', $filters['is_active']);
-    });
+        $builder->when($filters['is_active'] ?? null, function ($builder, $value) {
+            $builder->where('is_active', $value);
+        });
     }
 
     public function scopeActive($query)

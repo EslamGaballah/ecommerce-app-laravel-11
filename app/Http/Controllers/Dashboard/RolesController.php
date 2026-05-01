@@ -89,7 +89,11 @@ class RolesController extends Controller
      */
     public function edit(Role $role)
     {
-        $permissions = Permission::all();
+        $permissions = Permission::all()->groupBy(function ($permission) {
+            $parts = explode('-', $permission->name);
+            return count($parts) > 1 ? end($parts) : 'other';
+        });
+
 
         return view('dashboard.roles.edit', compact('role', 'permissions'));
 
@@ -114,7 +118,6 @@ class RolesController extends Controller
 
         } catch (Throwable $e) {
             DB::rollBack();
-            throw $e;
             return back()->with('error', 'Failed to create Role');
         }
         return redirect()->route('dashboard.roles.index');

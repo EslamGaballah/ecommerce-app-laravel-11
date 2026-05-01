@@ -10,7 +10,7 @@
 
 @section('content')
 
-<form action="{{ route('dashboard.attribute_values.update', $attribute_value->id) }}" method="post" enctype="multipart/form-data">
+<form action="{{ route('dashboard.attribute-values.update', $attribute_value->id) }}" method="post" enctype="multipart/form-data">
     @csrf
     @method('put')
     

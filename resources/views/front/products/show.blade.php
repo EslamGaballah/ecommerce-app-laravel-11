@@ -177,27 +177,24 @@
                                     <div class="col-lg-4 col-md-4 col-12">
 
                                         <div class="form-group quantity">
-
                                             <label>{{ __('app.quantity') }}</label>
 
-                                            <select class="form-control" name="quantity" id="quantity-select">
+                                            <div class="d-flex align-items-center gap-2">
 
-                                                @if($product->variations->count())
+                                                <button type="button" class="btn btn-outline-secondary" id="minus-btn">-</button>
 
-                                                    <option>1</option>
+                                                <input type="number" 
+                                                    name="quantity" 
+                                                    id="quantity-input"
+                                                    class="form-control text-center"
+                                                    min="1"
+                                                    value="1"
+                                                    max="{{ $product->variations->count() ? $product->default_variation->stock : $product->stock }}"
+                                                    style="width: 80px;">
 
-                                                @else
+                                                <button type="button" class="btn btn-outline-secondary" id="plus-btn">+</button>
 
-                                                    @for($i=1;$i<=$product->stock;$i++)
-
-                                                        <option value="{{ $i }}">{{ $i }}</option>
-
-                                                    @endfor
-
-                                                @endif
-
-                                            </select>
-
+                                            </div>
                                         </div>
 
                                     </div>
@@ -299,190 +296,315 @@
     </section>
 
 
-    @push('script')
+@push('script')
 
-        @php
+@php
+$variationsJs = $product->variations->map(function ($v) {
+    return [
+        'id'      => $v->id,
+        'price'   => $v->price,
+        'compare' => $v->compare_price,
+        'qty'     => $v->stock,
+        'attrs'   => $v->values->pluck('id')->toArray(),
+        'images'   => $v->images->pluck('image')->toArray(),
+    ];
+});
+@endphp
 
-            $variationsJs = $product->variations->map(function ($v) {
+<script>
+/* =========================
+   DATA
+========================= */
+const variations = @json($variationsJs);
+const requiredAttributes = {{ count($attributes) }};
+const selectedAttributes = {};
 
-                return [
+/* =========================
+   ELEMENTS
+========================= */
+const priceEl = document.getElementById('product-price');
+const stockEl = document.getElementById('stock-status');
+const qtyInput = document.getElementById('quantity-input');
+const variationInput = document.getElementById('variation_id');
+const addBtn = document.getElementById('add-to-cart-btn');
+const img = document.getElementById('current');
+const form = document.getElementById('add-to-cart-form');
+const imagesContainer = document.querySelector('#gallery .images');
+const minusBtn = document.getElementById('minus-btn');
+const plusBtn = document.getElementById('plus-btn');
 
-                    'id'=>$v->id,
-                    'price'=>$v->price,
-                    'compare'=>$v->compare_price,
-                    'qty'=>$v->stock,
-                    'attrs'=>$v->values->pluck('id')->toArray(),
-                    'image'=>$v->image
+/* =========================
+   MAP VARIATIONS (FAST LOOKUP)
+========================= */
+const variationMap = Object.fromEntries(
+    variations.map(v => [
+        [...v.attrs].sort().join('-'),
+        v
+    ])
+);
 
-                ];
+/* =========================
+   ATTRIBUTES CLICK
+========================= */
+document.querySelectorAll('.attr-btn').forEach(btn => {
 
-            });
+    btn.addEventListener('click', () => {
 
-        @endphp
+        const attributeId = btn.dataset.attribute;
+        const valueId = btn.dataset.value;
 
+        // حفظ الاختيار حسب كل attribute
+        selectedAttributes[attributeId] = valueId;
 
-       <script>
+        // UI active state داخل نفس المجموعة فقط
+        const group = btn.closest('.attribute-group');
 
-    const variations = @json($variationsJs);
-    const requiredAttributes = {{ count($attributes) }};
+        group.querySelectorAll('.attr-btn')
+            .forEach(b => b.classList.remove('active'));
 
-    const priceEl = document.getElementById('product-price');
-    const stockEl = document.getElementById('stock-status');
-    const qty = document.getElementById('quantity-select');
-    const variationInput = document.getElementById('variation_id');
-    const addBtn = document.getElementById('add-to-cart-btn');
-    const img = document.getElementById('current');
-    const form = document.getElementById('add-to-cart-form');
+        btn.classList.add('active');
 
-    // =========================
-    // اختيار الخصائص (variation)
-    // =========================
-    document.querySelectorAll('.attr-btn').forEach(btn => {
-
-        btn.addEventListener('click', () => {
-
-            const group = btn.closest('.attribute-group');
-
-            group.querySelectorAll('.attr-btn').forEach(b => b.classList.remove('active'));
-
-            btn.classList.add('active');
-
-            updateVariation();
-
-        });
-
+        updateVariation();
     });
 
-
-    function updateVariation() {
-
-        const selected = [...document.querySelectorAll('.attr-btn.active')]
-            .map(b => parseInt(b.dataset.value));
-
-        if (selected.length < requiredAttributes) return;
-
-        const v = variations.find(v =>
-            selected.every(val => v.attrs.includes(val))
-        );
-
-        if (!v) {
-
-            stockEl.innerText = 'غير متوفر';
-            addBtn.disabled = true;
-            variationInput.value = '';
-
-            return;
-        }
-
-        variationInput.value = v.id;
-
-        priceEl.innerHTML = v.price +
-            (v.compare ? `<span class="discount-price text-muted text-decoration-line-through">${v.compare}</span>` : '');
-
-        stockEl.innerText = 'متوفر (' + v.qty + ')';
-
-        qty.innerHTML = '';
-
-        for (let i = 1; i <= v.qty; i++) {
-            qty.innerHTML += `<option value="${i}">${i}</option>`;
-        }
-
-        addBtn.disabled = v.qty <= 0;
-
-        if (v.image) {
-            img.src = '/storage/' + v.image;
-        }
-
-    }
+});
 
 
-    // =========================
-    // AJAX ADD TO CART 🔥
-    // =========================
-    form.addEventListener('submit', function (e) {
+/* =========================
+   UPDATE VARIATION
+========================= */
+function updateVariation() {
 
-        e.preventDefault();
+    const selectedValues = Object.values(selectedAttributes).map(Number);
 
-        // ✅ منع الإرسال لو مفيش variation
-        if (variations.length > 0 && !variationInput.value) {
-            alert('من فضلك اختر الخصائص أولاً');
-            return;
-        }
+    console.log('selected:', selectedValues);
+    console.log('variations:', variations);
 
-        const formData = new FormData(form);
-
+    if (selectedValues.length < requiredAttributes) {
+        stockEl.textContent = 'من فضلك اختر كل الخصائص';
         addBtn.disabled = true;
-        addBtn.innerText = 'جاري الإضافة...';
+        return;
+    }
 
-        fetch(form.action, {
-            method: "POST",
-            headers: {
-                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
-                "Accept": "application/json"
-            },
-            body: formData
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                // ✅ إظهار رسالة النجاح
-                showToast(data.message || 'تمت الإضافة بنجاح');
+    // 🔥 الحل الحقيقي
+    const v = variations.find(variation => {
+        return variation.attrs.length === selectedValues.length &&
+               variation.attrs.every(attr => selectedValues.includes(attr));
+    });
 
-                // ✅ تحديث جميع عدادات الكارت في الصفحة
-                // استخدمنا الكلاس cart-count-display الذي اتفقنا عليه سابقاً
-                document.querySelectorAll('.cart-count-display').forEach(el => {
-                    el.innerText = data.count; // الـ Controller يرسل count
-                });
+    if (!v) {
+        stockEl.textContent = 'غير متوفر';
+        addBtn.disabled = true;
+        variationInput.value = '';
+        return;
+    }
 
-                // ✅ تحديث السلة المصغرة (Dropdown)
-                if (typeof loadCart === "function") {
-                    loadCart();
-                }
+    // ✅ SET VARIATION
+    variationInput.value = v.id;
 
-            } else {
-                showToast('حدث خطأ أثناء الإضافة', 'error');
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            showToast('خطأ في الاتصال', 'error');
-        })
-        .finally(() => {
-            addBtn.disabled = false;
-            addBtn.innerText = "{{ __('app.add_to_cart') }}";
+    // ✅ PRICE
+    priceEl.innerHTML =
+        v.price +
+        (v.compare
+            ? `<span class="discount-price text-muted text-decoration-line-through">${v.compare}</span>`
+            : '');
+
+    // ✅ STOCK
+    stockEl.innerHTML = v.qty > 0
+        ? `<span class="text-success">متوفر (${v.qty})</span>`
+        : `<span class="text-danger">غير متوفر</span>`;
+
+    // ✅ QUANTITY
+    qtyInput.max = v.qty;
+    qtyInput.value = 1;
+    qtyInput.disabled = v.qty <= 0;
+
+    plusBtn.disabled = v.qty <= 0;
+    minusBtn.disabled = v.qty <= 0;
+
+    // ✅ BUTTON
+    addBtn.disabled = v.qty <= 0;
+
+    // ✅ IMAGE
+    imagesContainer.innerHTML = '';
+
+    if (v.images && v.images.length > 0) {
+
+        // صورة رئيسية
+        img.src = "{{ asset('storage') }}/" + v.images[0];
+
+        // thumbnails
+        v.images.forEach(image => {
+
+            const el = document.createElement('img');
+
+            el.src = "{{ asset('storage') }}/" + image;
+            el.classList.add('img');
+
+            el.onclick = () => {
+                img.src = el.src;
+            };
+
+            imagesContainer.appendChild(el);
         });
+
+    } else {
+
+        // 🔥 fallback لو مفيش صور للفارييشن
+        const productImages = @json($product->images->pluck('image'));
+
+        if (productImages.length > 0) {
+
+            img.src = "{{ asset('storage') }}/" + productImages[0];
+
+            productImages.forEach(image => {
+
+                const el = document.createElement('img');
+
+                el.src = "{{ asset('storage') }}/" + image;
+                el.classList.add('img');
+
+                el.onclick = () => {
+                    img.src = el.src;
+                };
+
+                imagesContainer.appendChild(el);
+            });
+        }
+    }
+}
+/* =========================
+   QTY CONTROL
+========================= */
+
+minusBtn.addEventListener('click', () => {
+    let val = parseInt(qtyInput.value) || 1;
+    if (val > 1) {
+         qtyInput.value = val - 1;
+    }
+});
+
+
+
+plusBtn.addEventListener('click', () => {
+    let val = parseInt(qtyInput.value) || 1;
+    let max = parseInt(qtyInput.max) || 1;
+
+    if (val < max) {
+        qtyInput.value = val + 1;
+    }
+});
+
+qtyInput.addEventListener('input', () => {
+    let val = parseInt(qtyInput.value) || 1;
+
+    if (val < 1) val = 1;
+    if (val > parseInt(qtyInput.max)) val = parseInt(qtyInput.max);
+
+    qtyInput.value = val;
+});
+
+/* =========================
+   AUTO SELECT FIRST OPTIONS
+========================= */
+if (variations.length > 0) {
+
+    document.querySelectorAll('.attribute-group').forEach(group => {
+
+        const btn = group.querySelector('.attr-btn');
+
+        if (btn) {
+            btn.click(); // هذا الآن يشتغل صح لأنه يملأ selectedAttributes
+        }
 
     });
 
+} else {
+    qtyInput.max = {{ $product->stock ?? 1 }};
+}
 
-    // =========================
-    // Toast بسيط 👌
-    // =========================
-    function showToast(message, type = 'success') {
+/* =========================
+   AJAX ADD TO CART
+========================= */
+form.addEventListener('submit', function (e) {
+    e.preventDefault();
 
-        let toast = document.createElement('div');
-
-        toast.innerText = message;
-
-        toast.style.position = 'fixed';
-        toast.style.bottom = '20px';
-        toast.style.right = '20px';
-        toast.style.padding = '12px 20px';
-        toast.style.background = type === 'success' ? '#28a745' : '#dc3545';
-        toast.style.color = '#fff';
-        toast.style.borderRadius = '8px';
-        toast.style.zIndex = '9999';
-
-        document.body.appendChild(toast);
-
-        setTimeout(() => {
-            toast.remove();
-        }, 3000);
+    if (variations.length > 0 && !variationInput.value) {
+        showToast('من فضلك اختر الخصائص أولاً', 'error');
+        return;
     }
+
+    const formData = new FormData(form);
+
+    addBtn.disabled = true;
+    addBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> جاري الإضافة...';
+
+    fetch(form.action, {
+        method: "POST",
+        headers: {
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
+            "Accept": "application/json"
+        },
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        if (data.success) {
+
+            showToast(data.message || 'تمت الإضافة بنجاح');
+
+            document.querySelectorAll('.cart-count-display')
+                .forEach(el => el.innerText = data.count);
+
+            if (typeof loadCart === "function") {
+                loadCart();
+            } else {
+                // fallback سريع
+                document.querySelectorAll('.cart-count-display')
+                    .forEach(el => el.innerText = data.count);
+            }
+
+        } else {
+            showToast('حدث خطأ أثناء الإضافة', 'error');
+        }
+
+    })
+    .catch(() => {
+        showToast('خطأ في الاتصال', 'error');
+    })
+    .finally(() => {
+        addBtn.disabled = false;
+        addBtn.innerText = "{{ __('app.add_to_cart') }}";
+    });
+});
+
+
+/* =========================
+   TOAST
+========================= */
+function showToast(message, type = 'success') {
+
+    const toast = document.createElement('div');
+
+    toast.innerText = message;
+
+    toast.style.position = 'fixed';
+    toast.style.bottom = '20px';
+    toast.style.right = '20px';
+    toast.style.padding = '12px 20px';
+    toast.style.color = '#fff';
+    toast.style.borderRadius = '8px';
+    toast.style.zIndex = 9999;
+    toast.style.background = type === 'success' ? '#28a745' : '#dc3545';
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.remove(), 3000);
+}
 
 </script>
 
-    @endpush
-
+@endpush
 
 </x-front-layout>

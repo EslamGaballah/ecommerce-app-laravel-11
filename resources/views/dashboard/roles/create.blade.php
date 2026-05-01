@@ -1,10 +1,10 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Create Role')
+@section('title', __('app.create_role'))
 
 @section('breadcrumb')
 @parent
-<li class="breadcrumb-item active">Roles</li>
+<li class="breadcrumb-item active">{{ __('app.roles') }}</li>
 @endsection
 
 @section('content')

@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Orders')
+@section('title', __('app.orders'))
 
 @section('breadcrumb')
     @parent
@@ -108,7 +108,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="12" class="text-center">No Orders Defined.</td>
+            <td colspan="9">{{ __('app.no_orders_defined') }}.</td>
             </tr>
             @endforelse
         </tbody>

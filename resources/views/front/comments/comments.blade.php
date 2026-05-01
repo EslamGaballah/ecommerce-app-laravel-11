@@ -1,127 +1,194 @@
-@foreach($comments as $comment)
-<div class="comment" data-id="{{ $comment->id }}" style="margin-left: {{ $level ?? 0 }}px">
-
-    <strong>{{ $comment->user->name }}</strong>
-
-    <p class="comment-body" data-id="{{ $comment->id }}">
-        {{ $comment->body }}
-    </p>
-
-    <button class="btn-reply" data-id="{{ $comment->id }}">Reply</button>
-
-    @can('update', $comment)
-        <button class="btn-edit" data-id="{{ $comment->id }}">Edit</button>
-        <button class="btn-delete" data-id="{{ $comment->id }}">Delete</button>
-    @endcan
-
-    <div class="replies"></div>
-
-    @if($comment->replies->count())
-        @include('comments', [
-            'comments' => $comment->replies,
-            'level' => ($level ?? 0) + 30
-        ])
-    @endif
+{{-- حاوية التعليقات
+<div id="comments-wrapper">
+    <ul class="comments-list" style="list-style: none; padding: 0;">
+        @foreach($comments as $comment)
+            @include('partials._comments', ['comment' => $comment])
+        @endforeach
+    </ul>
 </div>
-@endforeach
 
+<hr>
 
-{{-- add comment --}}
-
+{{-- فورم إضافة تعليق جديد --}}
 <form id="add-comment-form">
     @csrf
-    <textarea id="new-comment-body"></textarea>
-    <button>Add Comment</button>
+    <input type="hidden" id="post_id" value="{{ $post->id }}">
+
+    <textarea id="new-comment-body" class="form-control"
+        placeholder="{{ __('app.write_comment') }}"></textarea>
+
+    <button type="submit" class="btn btn-primary mt-2">
+        {{ __('app.add_comment') }}
+    </button>
 </form>
 
-<div id="comments-wrapper">
-    @include('comments.comments', ['comments' => $comments])
-</div>
+@push('style')
+<style>
+    .replies-container {
+        list-style: none;
+        margin-right: 30px; /* للـ RTL */
+        border-right: 2px solid #eee;
+        padding-right: 15px;
+        margin-top: 10px;
+    }
+    .comment-item {
+        margin-bottom: 20px;
+        padding: 15px;
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 8px;
+    }
+    .actions { margin-top: 10px; }
+    .actions button, .actions a { margin-left: 10px; cursor: pointer; border: none; background: none; color: #007bff; }
+    .reply-form { margin-top: 15px; background: #f8f9fa; padding: 10px; border-radius: 5px; }
+</style>
+@endpush
 
 @push('script')
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-
 <script>
-// ADD ROOT COMMENT
-$('#add-comment-form').submit(function(e){
-    e.preventDefault();
+document.addEventListener('DOMContentLoaded', () => {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-    $.post("{{ route('comments.store') }}", {
-        body: $('#new-comment-body').val(),
-        _token: '{{ csrf_token() }}'
-    }, function(res){
-        location.reload(); // أول مرة فقط
+    // 1. إضافة تعليق رئيسي (Root Comment)
+    const addForm = document.getElementById('add-comment-form');
+    if (addForm) {
+        addForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const textarea = document.getElementById('new-comment-body');
+            const wrapper = document.querySelector('.comments-list');
+
+            const response = await fetch("{{ route('comments.store') }}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                body: JSON.stringify({ 
+                    body: textarea.value,
+                     post_id: document.getElementById('post_id').value
+                 })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                wrapper.insertAdjacentHTML('afterbegin', data.html);
+                textarea.value = '';
+            }
+        });
+    }
+
+    // 2. مستمع أحداث للنقرات (Reply, Edit, Delete, Cancel)
+    document.addEventListener('click', async (e) => {
+        const target = e.target;
+
+        // إظهار فورم الرد
+        if (target.classList.contains('btn-reply')) {
+            const id = target.dataset.id;
+            if (document.querySelector(`.reply-form[data-id="${id}"]`)) return;
+
+            const formHtml = `
+                <form class="reply-form" data-id="${id}">
+                    <textarea class="form-control" required placeholder="اكتب ردك..."></textarea>
+                    <button type="submit" class="btn btn-sm btn-primary mt-2">إرسال</button>
+                    <button type="button" class="btn-cancel btn btn-sm btn-link mt-2">إلغاء</button>
+                </form>`;
+            target.closest('.comment-desc').insertAdjacentHTML('beforeend', formHtml);
+        }
+
+        // إلغاء (فورم الرد أو التعديل)
+        if (target.classList.contains('btn-cancel')) {
+            target.closest('form').remove();
+        }
+
+        // حذف تعليق
+        // document.addEventListener('click', async (e) => {
+        if (target.classList.contains('btn-delete')) {
+
+            const id = target.dataset.id;
+
+            if (!confirm('هل أنت متأكد؟')) return;
+
+            const response = await fetch(`/comments/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                target.closest('.comment-item').remove();
+            }
+        }
     });
-});
 
-// REPLY INLINE
-$(document).on('click', '.btn-reply', function(){
-    let id = $(this).data('id');
+        // بدء التعديل
+        if (target.classList.contains('btn-edit')) {
+            const id = target.dataset.id;
+            const p = document.querySelector(`.comment-body-text[data-id="${id}"]`);
+            const oldText = p.innerText;
 
-    $(this).after(`
-        <form class="reply-form">
-            <textarea></textarea>
-            <input type="hidden" value="${id}">
-            <button>Reply</button>
-        </form>
-    `);
-});
+            p.dataset.oldText = oldText; // حفظ النص القديم للطوارئ
+            p.innerHTML = `
+                <textarea class="form-control edit-input">${oldText}</textarea>
+                <button class="btn-save-edit btn btn-sm btn-success mt-2" data-id="${id}">حفظ</button>
+                <button type="button" class="btn-cancel-edit btn btn-sm btn-link mt-2">تراجع</button>
+            `;
+        }
 
-// SUBMIT REPLY
-$(document).on('submit', '.reply-form', function(e){
-    e.preventDefault();
-    let body = $(this).find('textarea').val();
-    let parent = $(this).find('input').val();
-    let container = $(this).closest('.comment').find('.replies:first');
+        // تراجع عن التعديل
+        if (target.classList.contains('btn-cancel-edit')) {
+            const p = target.closest('.comment-body-text');
+            p.innerText = p.dataset.oldText;
+        }
 
-    $.post("{{ route('comments.store') }}", {
-        body, parent_id: parent, _token: '{{ csrf_token() }}'
-    }, function(res){
-        container.append(`<div style="margin-left:30px">${res.user}: ${res.body}</div>`);
+        // حفظ التعديل النهائي
+        if (target.classList.contains('btn-save-edit')) {
+            const id = target.dataset.id;
+            // const newBody = target.previousElementSibling.value;
+            const parent = target.closest('.comment-body-text');
+            const newBody = parent.querySelector('.edit-input').value;
+
+
+            const response = await fetch(`/comments/${id}`, {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                 },
+                body: JSON.stringify({ body: newBody })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                parent.innerText = data.body; // تحديث بدون reload 🔥
+            }
+        }
     });
 
-    $(this).remove();
-});
+    // 3. مستمع أحداث لإرسال الرد (Submit Reply)
+    document.addEventListener('submit', async (e) => {
+        if (e.target.classList.contains('reply-form')) {
+            e.preventDefault();
+            const form = e.target;
+            const id = form.dataset.id;
+            const body = form.querySelector('textarea').value;
+            const container = document.querySelector(`.replies-container[data-id="${id}"]`);
 
-// EDIT
-$(document).on('click', '.btn-edit', function(){
-    let id = $(this).data('id');
-    let p = $(`.comment-body[data-id="${id}"]`);
-    let text = p.text();
+            const response = await fetch("{{ route('comments.store') }}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                 },
+                body: JSON.stringify({ body: body, parent_id: id })
+            });
 
-    p.html(`
-        <textarea class="edit">${text}</textarea>
-        <button class="save" data-id="${id}">Save</button>
-    `);
-});
-
-// UPDATE
-$(document).on('click', '.save', function(){
-    let id = $(this).data('id');
-    let body = $(this).prev().val();
-    let p = $(`.comment-body[data-id="${id}"]`);
-
-    $.ajax({
-        url:`/comments/${id}`,
-        type:'PUT',
-        data:{ body, _token:'{{ csrf_token() }}' },
-        success:()=>p.text(body)
-    });
-});
-
-// DELETE
-$(document).on('click', '.btn-delete', function(){
-    let id = $(this).data('id');
-
-    if(!confirm('Delete comment?')) return;
-
-    $.ajax({
-        url:`/comments/${id}`,
-        type:'DELETE',
-        data:{ _token:'{{ csrf_token() }}' },
-        success:()=> $(`.comment[data-id="${id}"]`).remove()
+            if (response.ok) {
+                const data = await response.json();
+                container.insertAdjacentHTML('beforeend', data.html);
+                form.remove();
+            }
+        }
     });
 });
 </script>
-
-@endpush
+@endpush --}}
