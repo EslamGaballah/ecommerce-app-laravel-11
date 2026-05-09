@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filters;
+namespace App\Facades\Filters;
 
 use Illuminate\Http\Request;
 
@@ -69,7 +69,7 @@ class ProductFilter
             ->orWhere('name_ar', 'like', "%$value%");
         });
     }
-    
+
     public function price($query, $value)
     {
         return $query->where('price', '<=', $value);
@@ -115,5 +115,5 @@ class ProductFilter
             default      => $query->orderBy('id', 'desc'),
         };
     }
-    
+
 }

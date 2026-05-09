@@ -22,7 +22,7 @@
          <select name="parent_id" class="form-control form-select">
             <option value="">{{ __('app.parent') }}</option>
             @foreach($parents as $parent)
-            <option value="{{ $parent->id }}" @selected(old('parent_id', $category->parent_id) == $parent->id)>{{ $parent->name }}</option>
+                <option value="{{ $parent->id }}" @selected(old('parent_id', $category->parent_id) == $parent->id)>{{ $parent->name }}</option>
             @endforeach
         </select>
     </div>
@@ -30,21 +30,16 @@
         <label for="">{{ __('app.description') }}</label>
         <x-form.textarea name="description" :value="old('description',$category->description)" />
     </div>
-    
-    {{-- <div class="form-group">
-        <x-form.label id="image">Image</x-form.label>
-        <x-form.input type="file" name="image" accept="image/*" />
-        @if ($category->image)
-        <img src="{{ asset('storage/' . $category->image) }}" alt="" height="60">
-        @endif
-    </div> --}}
+
     <div class="form-group">
         <label for="">{{ __('app.status') }}</label>
         <div>
-            <x-form.radio name="status" :checked="$category->status" 
+            <x-form.radio
+                name="status"
+                :value="$category->status"
                 :options="[
-                    'active' =>  __('app.active') , 
-                    'archived' =>  __('app.archived') 
+                    'active' =>  __('app.active') ,
+                    'archived' =>  __('app.archived')
                     ]" />
         </div>
     </div>

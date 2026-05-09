@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\Api\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Models\Image;
 use App\Models\Product;
 use App\Models\ProductImage;
-use App\Traits\UploadImageTrait;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Throwable;
@@ -14,7 +13,6 @@ use Throwable;
 class ProductsController extends Controller
 {
 
-    use UploadImageTrait ;
     /**
      * Display a listing of the resource.
      */
@@ -38,7 +36,7 @@ class ProductsController extends Controller
 
          DB::beginTransaction();
 
-            try { 
+            try {
                 $product = Product::create($data);
 
                 // create images
@@ -50,7 +48,7 @@ class ProductsController extends Controller
                         $image_alt = $request->image_alt[$index] ?? null;
 
                         // post_images table
-                        ProductImage::create([
+                        Image::create([
                             'product_id' => $product->id,
                             'image' => $path,
                             'image_alt' => $image_alt,

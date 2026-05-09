@@ -13,8 +13,11 @@ class BrandsController extends Controller
      */
     public function index()
     {
-        $brands = Brand::withCount('products')->paginate();
-        return view('dashboard.brands.index', compact('brands'));
+        $brands = Brand::withCount('products')
+                    ->filter(request()->all())
+                    ->latest()
+                    ->paginate();
+                return view('dashboard.brands.index', compact('brands'));
     }
 
     /**

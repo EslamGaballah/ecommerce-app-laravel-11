@@ -26,17 +26,14 @@ enum OrderStatus: string
         return __('app.' . $this->value);
     }
 
-    // لون الحالة (مفيد في Blade)
     public function color(): string
     {
         return match ($this) {
             self::PENDING       => 'warning',
             self::PROCESSING    => 'info',
             self::SHIPPED       => 'primary',
-            self::DELIVERED     => 'success',
-            self::COMPLETED     => 'success',
-            self::CANCELED      => 'danger',
-            self::REFUNDED      => 'danger',
+            self::DELIVERED, self::COMPLETED => 'success',
+            self::CANCELED, self::REFUNDED => 'danger',
 
         };
     }

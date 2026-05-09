@@ -25,6 +25,13 @@ return [
     'follow_us' => 'Follow Us',
     'hotline' => 'Hotline',
     'all' => 'All',
+    'sort_by' => 'Sort By',
+    'low_price' => 'Low Price',
+    'high_price' => 'High Price',
+    'newest' => 'Newest',
+    'oldest' => 'Oldest',
+
+
 
     /*
     |--------------------------------------------------------------------------
@@ -112,7 +119,7 @@ return [
     'confirm_delete' => 'Confirm Delete',
         'governorate' => 'Governorate',
 
-    
+
 
     /*
     |--------------------------------------------------------------------------
@@ -122,7 +129,6 @@ return [
     'cart' => 'Cart',
     'view_cart' => 'View Cart',
     'add_to_cart' => 'Add to Cart',
-    'subtotal' => 'Cart Subtotal',
     'cart_total' => 'Cart Subtotal',
     'subtotal' => 'Subtotal',
     'total' => 'Total',
@@ -182,7 +188,6 @@ return [
     'no_comments_yet' => 'No Comments Yet',
     'reviews' => 'Reviews',
     'review' => 'Review',
-    'images' => 'Images',
     'no_posts_defined' => 'No Posts Defined',
     'share_post' => ' Share Post',
 

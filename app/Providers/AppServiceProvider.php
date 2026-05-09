@@ -36,13 +36,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // View::composer('partials.category-menu', function ($view) {  // add data to selected view only
+//         View::composer('partials.category-menu', function ($view) {  // add data to selected view only
         View::composer('*', function ($view) { // add data to all views
-        // $categories = Category::whereNull('parent_id')
-        $categories = Category::where('status', 'active')
-            ->with('childrenRecursive')
-            ->withCount('products')
-            ->get();
+         $categories = Category::whereNull('parent_id')
+//        $categories = Category::where('status', 'active')
+                ->where('status', 'active')
+                ->with('childrenRecursive')
+                ->withCount('products')
+//                ->get();
+         ->paginate();
 
         $view->with('categories', $categories);
         });

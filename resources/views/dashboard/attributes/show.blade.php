@@ -15,15 +15,13 @@
         <tr>
             <th>#</th>
             <th>{{__('app.name')}}</th>
-            <th>{{__('app.attribute_values')}}</th> 
+            <th>{{__('app.attribute_values')}}</th>
             <th> {{__('app.created_at')}}</th>
             <th colspan="2">{{__('app.actions')}}</th>
         </tr>
     </thead>
     <tbody>
-        {{-- @php
-            $products = $category->products()->with('store')->latest()->paginate(5);
-        @endphp --}}
+
         @forelse($attribute_values as $attribute_value)
         <tr>
             <td><img src="{{ asset('storage/' . $product->image) }}" alt="" height="50"></td>
@@ -36,8 +34,8 @@
                 {{-- @can('categories.update') --}}
                 <a href="{{ route('dashboard.products.edit', $product->id) }}" class="btn btn-sm btn-outline-success">{{__('app.edit')}}</a>
                 {{-- @endcan --}}
-            </td> 
-             <td> 
+            </td>
+             <td>
                 {{-- @can('categories.delete') --}}
                 <form action="{{ route('dashboard.products.destroy', $product->id) }}" method="post">
                     @csrf
@@ -51,7 +49,7 @@
         </tr>
         @empty
         <tr>
-            <td colspan="5">No products defined.</td>
+            <td colspan="5">{{ __('app.no_attributes_defined') }}</td>
         </tr>
         @endforelse
     </tbody>

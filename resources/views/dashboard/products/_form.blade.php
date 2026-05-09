@@ -87,7 +87,7 @@ function previewThumbnail(event){
 <hr>
 
 @php
-    $productTypeValue = old('product_type', $product->product_type ?? 'simple');
+    $productTypeValue = old('product_type', $product->product_type?->value ?? 'simple');
 @endphp
 <div class="form-group">
     <label>{{ __('app.product_type') }}</label>
@@ -126,7 +126,7 @@ function previewThumbnail(event){
 </div>
 
 <div id="galleryPreview" class="d-flex flex-wrap mt-3">
-   
+
 </div>
 </div>
 
@@ -167,7 +167,7 @@ function previewThumbnail(event){
 @endphp
 
 
-    
+
 
     <div class="border rounded p-3 mb-3">
         <div class="row g-2 align-items-end">

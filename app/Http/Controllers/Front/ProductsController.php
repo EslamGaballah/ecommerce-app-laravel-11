@@ -2,20 +2,19 @@
 
 namespace App\Http\Controllers\Front;
 
-use App\Filters\ProductFilter;
+use App\Facades\Filters\ProductFilter;
 use App\Helpers\Currency;
 use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class ProductsController extends Controller
 {
 
     public function index(Request $request) {
-        
+
          $filters = new ProductFilter($request);
 
         $products = Product::with('category', 'variations')
@@ -26,7 +25,7 @@ class ProductsController extends Controller
 
         if ($request->ajax()) {
             return view('front.products._list', compact('products'))->render();
-        }    
+        }
 
         $categories = Category::withCount('products')->get();
         $brands = Brand::withCount('products')->get();
@@ -40,13 +39,13 @@ class ProductsController extends Controller
         $product->refresh();
 
         $product->load([
-            'category', 
-            'variations.values.attribute', 
+            'category',
+            'variations.values.attribute',
             'primaryVariation.values.attribute',
             'variations.images',
-            'primaryVariation.images', 
+            'primaryVariation.images',
             'reviews.user'
-        ]); 
+        ]);
 
         $defaultVariation = $product->default_variation;
 
@@ -66,12 +65,12 @@ class ProductsController extends Controller
         ->selectRaw('rating, COUNT(*) as count')
         ->groupBy('rating')
         ->pluck('count', 'rating');
-         
+
 
         // $comments = $product->comments()->whereNull('parent_id')->with('children')->get();
 
         return view('front.products.show', compact('product', 'defaultVariation', 'attributes', 'ratingsCount' ));
-    
+
     }
 
 

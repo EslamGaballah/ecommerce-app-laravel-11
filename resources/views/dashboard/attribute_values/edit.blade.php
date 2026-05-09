@@ -13,9 +13,9 @@
 <form action="{{ route('dashboard.attribute-values.update', $attribute_value->id) }}" method="post" enctype="multipart/form-data">
     @csrf
     @method('put')
-    
+
     @include('dashboard.attribute_values._form', [
-        'button_label' => 'Update'    
+        'button_label' => __('app.update')
     ])
 </form>
 

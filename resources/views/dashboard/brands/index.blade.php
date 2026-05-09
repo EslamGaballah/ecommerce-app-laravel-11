@@ -12,7 +12,6 @@
 <div class="mb-5">
     @if(auth()->user()->can('create-categories'))
         <a href="{{ route('dashboard.brands.create') }}" class="btn btn-sm btn-outline-primary mr-2">{{__('app.create')}}</a>
-        {{-- <a href="{{ route('dashboard.categories.trash') }}" class="btn btn-sm btn-outline-dark">Trash</a>  --}}
      @endif
 </div>
 
@@ -24,8 +23,8 @@
     <x-form.input name="name" placeholder="Name" class="mx-2" :value="request('name')" />
     <select name="status" class="form-control mx-2">
         <option value="">All</option>
-       
-            @foreach (['active' => 'Active' ,'arvived' => 'Archived'] as $value => $label )
+
+            @foreach (['active' => 'Active' ,'archived' => 'Archived'] as $value => $label )
                 <option value="{{ $value }}" @selected(request('status') == $value)>
                     {{ $label }}
                 </option>
@@ -58,7 +57,7 @@
 
             <td>{{ $brand->description }}</td>
 
-                
+
             <td>{{ $brand->products_count }}</td>
             <td>{{ $brand->status }}</td>
             <td>{{ $brand->created_at }}</td>
@@ -66,13 +65,13 @@
                 {{-- @can('categories.update') --}}
                 <a href="{{ route('dashboard.brands.edit', $brand->id) }}" class="btn btn-sm btn-outline-success">{{__('app.edit')}}</a>
                 {{-- @endcan --}}
-            </td> 
+            </td>
             <td>
                 {{-- @can('categories.update') --}}
                 <a href="{{ route('dashboard.brands.edit', $brand->id) }}" class="btn btn-sm btn-outline-success">{{__('app.update')}}</a>
                 {{-- @endcan --}}
-            </td> 
-             <td> 
+            </td>
+             <td>
                 {{-- @can('categories.delete') --}}
                 <form action="{{ route('dashboard.brands.destroy', $brand->id) }}" method="post">
                     @csrf
@@ -91,9 +90,6 @@
         @endforelse
     </tbody>
 </table>
-
-{{-- {{ $brands->appends(request()->query())->links('pagination::bootstrap-5') }} --}}
-{{-- {{ $categories->links('pagination::bootstrap-5') }} --}}
 
 {{ $brands->withQueryString()->appends(['search' => 1])->links('pagination::bootstrap-5') }}
 

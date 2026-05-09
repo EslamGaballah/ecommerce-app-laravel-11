@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use App\Filters\ProductFilter;
+use App\Facades\Filters\ProductFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
@@ -10,12 +10,8 @@ use App\Models\Attribute;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
-
 use App\Services\Product\ProductService;
-
 use Illuminate\Http\Request;
-
-use Throwable;
 
 class ProductsController extends Controller
 {
@@ -83,7 +79,7 @@ class ProductsController extends Controller
             'variations.values.attribute',
             'variations.images',
             'primaryVariation.images'
-        ]); 
+        ]);
 
         return view('dashboard.products.show', compact('product'));
     }
@@ -107,7 +103,7 @@ class ProductsController extends Controller
         $categories = Category::all();
         $brands = Brand::all();
         $oldVariations = $product->variations;
-        
+
         // $thumbnailPath = $images->where('type', 'thumbnail')->first()?->image;
         if ($product->product_type === 'simple') {
             $existingGallery = $product->images
@@ -120,7 +116,7 @@ class ProductsController extends Controller
             // variable product → مفيش gallery للمنتج نفسه
             $existingGallery = collect();
         }
-      
+
         return view('dashboard.products.edit', compact(
             'product',
             'attributes',
@@ -188,7 +184,7 @@ class ProductsController extends Controller
     /**
      * Remove the specified resource from trash.
      */
-   
+
     public function forceDelete($id)
     {
         $this->authorize('forceDelete', $id);
@@ -201,5 +197,5 @@ class ProductsController extends Controller
 
         return back()->with('success', 'Deleted permanently');
     }
-        
+
 }

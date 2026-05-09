@@ -30,11 +30,11 @@
                         <div class="post-details">
                             <div class="main-content-head">
                                 <div class="post-thumbnils"  style="width:100%; height:500px; overflow:hidden; object-fit:cover;">
-                                    <img 
-                                        src="{{ $post->images->first()?->image 
-                                            ? asset('storage/' . $post->images->first()->image) 
+                                    <img
+                                        src="{{ $post->images->first()?->image
+                                            ? asset('storage/' . $post->images->first()->image)
                                             : 'لا يوجد صورة' }}"
-                                    >                    
+                                    >
                                 </div>
                                 <div class="meta-information">
                                     <h2 class="post-title">
@@ -43,7 +43,7 @@
                                     <!-- End Meta Info -->
                                     <ul class="meta-info">
                                         <li>
-                                            <a href="javascript:void(0)"> <i class="lni lni-user"></i> 
+                                            <a href="javascript:void(0)"> <i class="lni lni-user"></i>
                                                 {{$post->user->name ?? 'admin'}}</a>
                                         </li>
                                         <li>
@@ -63,10 +63,10 @@
                                 </div>
                                 <div class="detail-inner">
                                     <p>{{$post->content}}</p>
-                                   
+
                                     <div class="post-bottom-area">
                                         <!-- Start Post Tag -->
-                                        @if($post->tags && $post->tags->count())                                        
+                                        @if($post->tags && $post->tags->count())
                                             <div class="post-tag">
                                                 <ul>
                                                     @foreach($post->tags as $tag)
@@ -131,15 +131,15 @@
                                     @endforelse
                                 </ul>
                             </div>
-                            
+
                             <div class="comment-form">
                                 <h3 class="comment-reply-title">{{ __('app.leave_comment') }}</h3>
                                     <form class="add-comment-form"
-                                        action="{{ route('comments.store', $post->id) }}" 
+                                        action="{{ route('comments.store', $post->id) }}"
                                         method="POST">
                                     @csrf
                                     <div class="row">
-                         
+
                                         <div class="col-12">
                                             <div class="form-box form-group">
                                                 <input type="hidden" name="post_id" value="{{ $post->id }}">
@@ -162,14 +162,15 @@
         </div>
     </section>
     <!-- End Blog Singel Area -->
-</x-front-layout>
 
-   
+
+
 
     <!-- ========================= scroll-top ========================= -->
     <a href="#" class="scroll-top">
         <i class="lni lni-chevron-up"></i>
     </a>
+
 @push('script')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -211,19 +212,19 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .then(data => {
                 // --- تنفيذ الأكشن في الواجهة (UI) ---
-                
+
                 if (isDelete) {
                     // حذف العنصر من القائمة
                     form.closest('li').remove();
-                } 
-                
+                }
+
                 else if (isUpdate) {
                     // تحديث نص التعليق وإخفاء الفورم
                     const bodyElement = document.getElementById('body-' + data.id);
                     if (bodyElement) bodyElement.innerText = data.body;
                     form.closest('.comment-form').classList.add('d-none');
-                } 
-                
+                }
+
                 else if (isAdd) {
                     // إضافة تعليق جديد أو رد
                     if (form.querySelector('[name="parent_id"]')) {
@@ -257,3 +258,4 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 @endpush
+    </x-front-layout>

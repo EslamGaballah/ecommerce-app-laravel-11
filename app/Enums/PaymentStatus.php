@@ -12,12 +12,15 @@ enum PaymentStatus: string
 
     public function label(): string
     {
-        return match($this) {
-            self::PENDING => 'في الانتظار',
-            self::PAID => 'تم الدفع',
-            self::FAILED => 'فشل الدفع',
-            self::REFUNDED => 'تم رد المبلغ ',
-        };
+//        return match($this) {
+//            self::PENDING => 'في الانتظار',
+//            self::PAID => 'تم الدفع',
+//            self::FAILED => 'فشل الدفع',
+//            self::REFUNDED => 'تم رد المبلغ ',
+//        };
+
+        return __('app.' . $this->value);
+
     }
 
     public function color(): string

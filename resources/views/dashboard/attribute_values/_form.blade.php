@@ -21,14 +21,13 @@
 
 
     <div class="form-group">
-        {{-- <label for="values">{{ __('app.values') }} (افصل بين القيم بفاصلة ,)</label> --}}
         <x-form.input label="{{ __('app.value') }}  ( افصل بين القيم بفاصلة ,  1, 2  ) " class="form-control-lg" role="input" name="value" :value="$attribute_value->value" />
     </div>
 
-   
+
 </div>
-    
-    
+
+
     <div class="form-group">
         <button type="submit" class="btn btn-primary">{{ __( $button_label ?? 'app.save') }}</button>
     </div>

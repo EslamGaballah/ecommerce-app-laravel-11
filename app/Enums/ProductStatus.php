@@ -7,7 +7,7 @@ enum ProductStatus: string
     case Active     = 'active';
     case Archived   = 'archived';
     case Draft      = 'draft';
-    
+
 
     // اسم الحالة للعرض
     public function label(): string
@@ -16,21 +16,16 @@ enum ProductStatus: string
         //     self::Active    => 'قيد الانتظار',
         //     self::Archived => 'قيد التنفيذ',
         //     self::Draft => 'قيد الشحن',
-       
+
         return __('app.' . $this->value);
     }
 
-    // لون الحالة (مفيد في Blade)
     public function color(): string
     {
         return match ($this) {
             self::Active    => 'success',
             self::Archived => 'info',
             self::Draft => 'primary',
-            // self::Completed  => 'success',
-            // self::Canceled   => 'danger',
-            // self::refunded   => 'danger',
-
         };
     }
 

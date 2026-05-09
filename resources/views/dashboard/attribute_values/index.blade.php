@@ -35,23 +35,23 @@
             <td>{{ $value->id }}</td>
             <td><a href="{{ route('dashboard.attribute-values.show', $value->id) }}">{{ $value->value }}</a></td>
 
-           
-                
+
+
             <td>{{ $value->created_at }}</td>
 
             <td>
                 {{-- @can('categories.update') --}}
                 <a href="{{ route('dashboard.attribute-values.show', $value->id) }}" class="btn btn-sm btn-outline-success">{{__('app.show')}}</a>
                 {{-- @endcan --}}
-            </td> 
+            </td>
 
             <td>
                 {{-- @can('categories.update') --}}
                 <a href="{{ route('dashboard.attribute-values.edit', $value->id) }}" class="btn btn-sm btn-outline-success">{{__('app.edit')}}</a>
                 {{-- @endcan --}}
-            </td> 
-           
-             <td> 
+            </td>
+
+             <td>
                 {{-- @can('categories.delete') --}}
                 <form action="{{ route('dashboard.attribute-values.destroy', $value->id) }}" method="post">
                     @csrf
@@ -72,6 +72,6 @@
 </table>
 
 
-{{-- {{ $attribute_values->withQueryString()->appends(['search' => 1])->links('pagination::bootstrap-5') }} --}}
+ {{ $attribute_values->withQueryString()->appends(['search' => 1])->links('pagination::bootstrap-5') }}
 
 @endsection

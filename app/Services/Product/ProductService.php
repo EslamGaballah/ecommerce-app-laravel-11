@@ -4,7 +4,7 @@ namespace App\Services\Product;
 
 use App\Events\ProductCreated;
 use App\Events\ProductUpdated;
-use App\Filters\ProductFilter;
+use App\Facades\Filters\ProductFilter;
 use App\Interfaces\ProductRepositoryInterface;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;

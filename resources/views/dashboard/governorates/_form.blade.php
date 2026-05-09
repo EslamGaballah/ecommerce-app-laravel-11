@@ -21,22 +21,22 @@
     </div>
     <div class="form-group">
         <label class="form-label">{{ __ ('app.delivery_days')}}</label>
-        <input type="number" 
+        <input type="number"
             name="delivery_days"
             class="form-control"
             value="{{ old('delivery_days', $governorate->delivery_days ?? '') }}"
             min="1"
             required>
     </div>
-    
+
     <div class="form-group">
         <label for="">{{ __('app.status') }}</label>
         <div>
-            <x-form.radio 
-                name="is_active" 
-                :checked="old('is_active', $governorate->is_active)" 
+            <x-form.radio
+                name="is_active"
+                :value="$governorate->is_active"
                 :options="[
-                    1 => __('app.active'), 
+                    1 => __('app.active'),
                     0 => __('app.archived')
                 ]"
             />
