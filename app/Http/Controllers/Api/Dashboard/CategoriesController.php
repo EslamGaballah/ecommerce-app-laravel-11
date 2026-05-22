@@ -3,110 +3,110 @@
 namespace App\Http\Controllers\Api\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Category\StoreCategoryRequest;
+use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Str;
+use Throwable;
 
 class CategoriesController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::with('parent')->paginate();
-        return response()->json($categories, 201);
+        $categories = Category::with('parent')
+            ->withCount('products')
+            ->filter($request->query())
+            ->orderByDesc('products_count')
+            ->paginate(5);
+
+        return response()->json($categories);
     }
-    public function create()
-    {
-        $parents = Category::all();
-        $category = new Category();
-        $category = Category::with('parents');
-        return response()->json($category,201,[
-            'location' => route('categories.create')
-        ]);
-        
-        // dd($category);
-    }
+
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreCategoryRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:255',
-            'status' => 'in:active,archived',
-            'parent_id' => 'nullable'
-        ]);
+        try {
+            $data = $request->validated();
+            $data['slug'] = \Str::slug($request->post('name'));
 
-        $request->merge([
-            'slug' => str::slug($request->post('name'))
-        ]);
+            $category = Category::create($data);
 
-        $category = Category::create($request->all());
+            return response()->json([
+                'message' => 'Category created successfully',
+                'data' => $category
+            ], 201);
 
-        return response()->json($category, 201);
+        } catch (Throwable $e) {
+            return response()->json([
+                'message' => 'Failed to create category',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    // public function show(string $id)
-    // {
-    //     $category = Category::findOrFail($id);
-    //     return response()->json($category);
-
-    // }
     public function show(Category $category)
     {
-        return response()->json($category);
+        // جلب المنتجات التابعة للقسم مع عمل Paginate تماشياً مع كود الـ Web
+        $products = Product::where('category_id', $category->id)->paginate();
 
-    }
-
-    public function edit(Category $category)
-    {
-
-        return response()->json($category);
-
+        return response()->json([
+            'category' => $category,
+            'products' => $products
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request,  $id)
+    public function update(UpdateCategoryRequest $request, Category $category)
     {
-        info($request);
-        $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'description' => 'nullable|string|max:255',
-            'status' => 'in:active,archived',
-            'parent_id' => 'nullable'
+        try {
+            $data = $request->validated();
+            $data['slug'] = \Str::slug($request->post('name'));
 
-        ]);
-        
-        $request->merge([
-            'slug' => str::slug($request->post('name'))
-        ]);
+            $category->update($data);
 
-        $category = Category::findOrFail($id);
-        $category->update($request->all());
+            return response()->json([
+                'message' => 'Category updated successfully',
+                'data' => $category
+            ], 200);
 
-        return response()->json($category);
+        } catch (Throwable $e) {
+            return response()->json([
+                'message' => 'Failed to update category',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Category $category)
     {
-        // $category = Category::findOrFail($id)->deleteOrFail();
-        $category = Category::destroy($id);
+        try {
+            $this->authorize('update', $category);
 
-        return response()->json([
-            'message' => 'Category deleted successfully'
-        ]);
+            $category->delete();
 
+            return response()->json([
+                'message' => 'Category deleted successfully'
+            ], 200);
+
+        } catch (Throwable $e) {
+            return response()->json([
+                'message' => 'Failed to delete category',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

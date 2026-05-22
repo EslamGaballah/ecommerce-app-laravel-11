@@ -113,6 +113,22 @@ class CartController extends Controller
         ]);
     }
 
+    public function empty(Request $request)
+    {
+        $this->cart->empty();
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Cart cleared successfully!'
+            ]);
+        }
+
+        return redirect()
+            ->route('cart.index')
+            ->with('success', 'Cart cleared successfully!');
+    }
+
     public function cartJson()
     {
         $items = $this->cart->items();

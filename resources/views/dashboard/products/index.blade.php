@@ -17,190 +17,142 @@
 <x-alert type="success" />
 <x-alert type="info" />
 
+{{-- filter form --}}
 <form action="{{ request()->url() }}" method="get" 
-    {{-- class="d-flex flex-wrap justify-content-between mb-4"> --}}
-    class="d-flex flex-wrap align-items-center flex-md-nowrap gap-2 mb-4 overflow-auto">
+    class="d-flex flex-wrap flex-md-nowrap align-items-stretch gap-2 mb-4 overflow-auto pb-2 flex-row-reverse">
+    
+    {{-- 🔘 submit --}}
+    <button type="submit" class="btn btn-dark mb-0 text-nowrap d-flex align-items-center justify-content-center px-4">
+        {{ __('app.filter') }}
+    </button>
 
-    {{-- 🔍 search --}}
-    <x-form.input 
-        name="search" 
-        placeholder="Search..." 
-        {{-- class="mx-2 mb-2" --}}
-        class="mb-0"
-        style="width: 180px;"
-        :value="request('search')" 
-    />
-
-    {{-- 📂 category --}}
-    <select name="category" 
-        {{-- class="form-control mx-2 mb-2"> --}}
-        class="form-select mb-0" style="width: 160px;">
-        <option value="">{{ __('app.categories') }}</option>
-        @foreach($categories as $category)
-            <option 
-                value="{{ $category->id }}"
-                @selected(request('category') == $category->id)
-            >
-                {{ $category->name }}
-            </option>
-        @endforeach
-    </select>
-
-    {{-- 🏷 brand --}}
-    <select name="brand" 
-        {{-- class="form-control mx-2 mb-2"> --}}
-        class="form-select mb-0" style="width: 160px;">
-        <option value="">{{ __('app.brands') }}</option>
-        @foreach($brands as $brand)
-            <option 
-                value="{{ $brand->id }}"
-                @selected(request('brand') == $brand->id)
-            >
-                {{ $brand->name }}
-            </option>
-        @endforeach
+    {{-- 🔽 sort --}}
+    <select name="sort" class="form-control mb-0" style="min-width: 140px; height: 38px; padding-left: 20px; background-position: left 0.5rem center;">
+        <option value="">{{ __('app.sort_by') }}</option>
+        <option value="low_price"  @selected(request('sort') == 'low_price')>{{ __('app.low_price') }}</option>
+        <option value="high_price" @selected(request('sort') == 'high_price')>{{ __('app.high_price') }}</option>
+        <option value="newest"     @selected(request('sort') == 'newest')>{{ __('app.newest') }}</option>
+        <option value="oldest"     @selected(request('sort') == 'oldest')>{{ __('app.oldest') }}</option>
     </select>
 
     {{-- ⚡ status --}}
-    <select name="status" 
-        {{-- class="form-control mx-2 mb-2"> --}}
-        class="form-select mb-0" style="width: 140px;">
+    <select name="status" class="form-control mb-0" style="min-width: 120px; height: 38px; padding-left: 20px; background-position: left 0.5rem center;">
         <option value="">{{ __('app.all') }}</option>
         @foreach(\App\Enums\ProductStatus::cases() as $status)
-            <option 
-                value="{{ $status->value }}"
-                @selected(request('status') == $status->value)
-            >
+            <option value="{{ $status->value }}" @selected(request('status') == $status->value)>
                 {{ $status->label() }}
             </option>
         @endforeach
     </select>
 
-    {{-- 🔽 sort --}}
-    <select name="sort" 
-        {{-- class="form-control mx-2 mb-2"> --}}
-        class="form-select mb-0" style="width: 180px;">
-        <option value="">{{ __('app.sort_by') }}</option>
-
-        <option value="low_price"  @selected(request('sort') == 'low_price')>
-           {{ __('app.low_price') }}
-        </option>
-
-        <option value="high_price" @selected(request('sort') == 'high_price')>
-           {{ __('app.high_price') }}
-        </option>
-
-        <option value="newest" @selected(request('sort') == 'newest')>
-           {{ __('app.newst') }}
-        </option>
-
-        <option value="oldest" @selected(request('sort') == 'oldest')>
-           {{ __('app.oldest') }}
-        </option>
+    {{-- 🏷 brand --}}
+    <select name="brand" class="form-control mb-0" style="min-width: 140px; height: 38px; padding-left: 20px; background-position: left 0.5rem center;">
+        <option value="">{{ __('app.brands') }}</option>
+        @foreach($brands as $brand)
+            <option value="{{ $brand->id }}" @selected(request('brand') == $brand->id)>
+                {{ $brand->name }}
+            </option>
+        @endforeach
     </select>
 
-    {{-- 🔘 submit --}}
-    <button class="btn btn-dark mx-2 mb-0">
-        {{ __('app.filter') }}
-    </button>
+    {{-- 📂 category --}}
+    <select name="category" class="form-control mb-0" style="min-width: 140px; height: 38px; padding-left: 20px; background-position: left 0.5rem center;">
+        <option value="">{{ __('app.categories') }}</option>
+        @foreach($categories as $category)
+            <option value="{{ $category->id }}" @selected(request('category') == $category->id)>
+                {{ $category->name }}
+            </option>
+        @endforeach
+    </select>
+
+    {{-- 🔍 search --}}
+    <div style="min-width: 200px; flex-grow: 1;">
+        <x-form.input 
+            name="search" 
+            placeholder="Search..." 
+            class="form-control mb-0 h-100"
+            :value="request('search')" 
+        />
+    </div>
 
 </form>
 
 
-
-<table class="table">
+<table class="table align-middle"> 
     <thead>
         <tr>
-            {{-- <th>#</th> --}}
             <th>ID</th>
             <th>{{ __('app.name') }}</th>
             <th>{{ __('app.category') }}</th>
             <th>{{ __('app.stock') }}</th>
             <th>{{ __('app.price') }}</th>
-            {{-- <th>{{ __('app.compare_price') }}</th> --}}
             <th>{{ __('app.status') }}</th>
             <th>{{ __('app.created_at') }}</th>
-            <th colspan="2">{{ __('app.actions') }}</th>
+            <th class="text-center">{{ __('app.actions') }}</th>
         </tr>
     </thead>
     <tbody>
         @forelse($products as $product)
         <tr>
-            {{-- <td>
-                @if ($product->images->isNotEmpty())
-                    <img src="{{ asset('storage/' . $product->images->first()->image) }}" 
-                        alt="" height="50">
-                @else
-                    <span>No Image</span>
-                @endif
-            </td> --}}
             <td>{{ $product->id }}</td>
-            <td> <a href="{{ route('dashboard.products.show', $product->id) }}">{{ $product->name }}</td>
+            <td><a href="{{ route('dashboard.products.show', $product->id) }}">{{ $product->name }}</a></td> 
             <td>{{ $product->category->name }}</td>
-            <td>@if($product->stock)
+            <td>
+                @if($product->stock)
                     {{ $product->stock}}
                 @else
                     {{ $product->total_quantity }}
                 @endif
-
             </td>
-
             <td>
                 @if ($product->price && $product->compare_price)
-                     <span class="fw-bold">
-                        {{ $product->price }}
-                    </span>
-                    <span class="text-muted text-decoration-line-through">
-                        {{ $product->compare_price }}
-                    </span>
-                    
+                     <span class="fw-bold">{{ $product->price }}</span>
+                     <span class="text-muted text-decoration-line-through">{{ $product->compare_price }}</span>
                 @elseif($product->primaryVariation && $product->primaryVariation->compare_price > $product->price)
-                    <span class="fw-bold">
-                        {{ $product->primaryVariation->price }}
-                    </span>
-                    <span class="text-muted text-decoration-line-through">
-                        {{ $product->primaryVariation->compare_price }}
-                    </span>
+                    <span class="fw-bold">{{ $product->primaryVariation->price }}</span>
+                    <span class="text-muted text-decoration-line-through">{{ $product->primaryVariation->compare_price }}</span>
                 @endif
-                
-                
             </td>
-
             <td>
                 <span class="badge bg-{{ $product->status->color() }} badge-{{ $product->id }}">
                     {{ $product->status->label() }}
                 </span>
             </td>
             <td>{{ $product->created_at }}</td>
-            <td>
-                <a href="{{ route('dashboard.products.show', $product->id) }}" class="btn btn-sm btn-outline-success">{{ __('app.show') }}</a>
-            </td>
-            <td>
-                <a href="{{ route('dashboard.products.edit', $product->id) }}" class="btn btn-sm btn-outline-success">{{ __('app.edit') }}</a>
-            </td>
-            <td>
-                <form action="{{ route('dashboard.products.destroy', $product->id) }}" method="post">
-                    @csrf
-                    <!-- Form Method Spoofing -->
-                    <input type="hidden" name="_method" value="delete">
-                    @method('delete')
-                    <button type="submit" class="btn btn-sm btn-outline-danger">{{ __('app.delete') }}</button>
-                </form>
+            
+            <td class="text-center" style="width: 220px;">
+                <div class="d-flex align-items-center justify-content-center gap-1">
+                    
+                    <a href="{{ route('dashboard.products.show', $product->id) }}" class="btn btn-sm btn-outline-success text-nowrap m-0">
+                        {{ __('app.show') }}
+                    </a>
+                    
+                    <a href="{{ route('dashboard.products.edit', $product->id) }}" class="btn btn-sm btn-outline-success text-nowrap m-0">
+                        {{ __('app.edit') }}
+                    </a>
+                    
+                    <form action="{{ route('dashboard.products.destroy', $product->id) }}" method="post" class="m-0 d-inline">
+                        @csrf
+                        <input type="hidden" name="_method" value="delete">
+                        @method('delete')
+                        <button type="submit" class="btn btn-sm btn-outline-danger text-nowrap">
+                            {{ __('app.delete') }}
+                        </button>
+                    </form>
+
+                </div>
             </td>
         </tr>
         @empty
         <tr>
-            <td colspan="9">No products defined.</td>
+            <td colspan="8" class="text-center">No products defined.</td> 
         </tr>
         @endforelse
     </tbody>
 </table>
 
-{{-- {{ $products->appends(request()->query())->links('pagination::bootstrap-5') }} 
-{{ $products->links('pagination::bootstrap-5') }}  --}}
 
-
-{{ $products->withQueryString()->appends(['search' => 1])->links('pagination::bootstrap-5') }}
+{{ $products->withQueryString()->links('pagination::bootstrap-5') }}
 
 
 @endsection

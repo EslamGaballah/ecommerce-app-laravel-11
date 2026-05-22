@@ -2,24 +2,27 @@
 {{-- PRODUCT FORM (FULL REPLACEMENT WITH NEW VARIATIONS SUPPORT) --}}
 {{-- ========================================= --}}
 
-<div class="form-group">
-    <x-form.input label="الاسم بالعربية"
-              class="form-control-lg"
-              id="product_name_ar"
-              name="name_ar"
-              :value="old('name_ar', $product?->name_ar ?? '')" />
-</div>
-<div class="form-group">
-    <x-form.input label="NAME_EN"
-              class="form-control-lg"
-              id="product_name_en"
-              name="name_en"
-              :value="old('name_en', $product?->name_en ?? '')" />
+<div class="row">
+    <div class="col-md-6 form-group mb-3">
+        <x-form.input label="الاسم بالعربية"
+                      class="form-control-lg"
+                      id="product_name_ar"
+                      name="name_ar"
+                      :value="old('name_ar', $product?->name_ar ?? '')" />
+    </div>
+
+    <div class="col-md-6 form-group mb-3">
+        <x-form.input label="NAME_EN"
+                      class="form-control-lg"
+                      id="product_name_en"
+                      name="name_en"
+                      :value="old('name_en', $product?->name_en ?? '')" />
+    </div>
 </div>
 
 <div class="form-group mb-3">
     <label>{{ __('app.thumbnail') }}</label>
-    <input type="file" name="thumbnail" class="form-control" accept="image/*" onchange="previewThumbnail(event)">
+    <input type="file" name="thumbnail" class="custom-file" accept="image/*" onchange="previewThumbnail(event)">
     <div id="thumbnailPreview" class="mt-2">
     @if($product && $product->thumbnail)
         <img src="{{ asset('storage/' . $product->thumbnail->image) }}" width="120" class="img-thumbnail">
@@ -44,34 +47,34 @@ function previewThumbnail(event){
 
 <div class="form-group">
     <label>{{ __('app.description') }}</label>
-    <x-form.textarea name="description"
+    <x-form.textarea name="description" class="form-control rows-5"
                      :value="old('description', $product->description ?? '')" />
 </div>
 
-<div class="form-group">
-    <label>{{ __('app.category') }}</label>
-    <select name="category_id" class="form-control form-select">
-        <option value="">{{ __('app.category') }}</option>
-        @foreach($categories as $category)
-            <option value="{{ $category->id }}"
-                @selected(old('category_id', $product->category_id ?? '') == $category->id)>
-                {{ $category->name }}
-            </option>
-        @endforeach
-    </select>
-</div>
+<div class="row g-3 mb-3">
+    
+    {{-- 📂 قسم الأقسام --}}
+    <div class="col-md-6">
+        <x-form.select 
+            name="category_id" 
+            :label="__('app.category')"
+            class="form-control-lg" {{-- ممرر الحجم الكبير ليتوافق مع حقول الأسماء --}}
+            :selected="old('category_id', $product->category_id ?? '')"
+            :options="$categories->pluck('name', 'id')"
+        />
+    </div>
 
-<div class="form-group">
-    <label>{{ __('app.brand') }}</label>
-    <select name="brand_id" class="form-control form-select">
-        <option value="">{{ __('app.brand') }}</option>
-        @foreach($brands as $brand)
-            <option value="{{ $brand->id }}"
-                @selected(old('brand_id', $product->brand_id ?? '') == $brand->id)>
-                {{ $brand->name }}
-            </option>
-        @endforeach
-    </select>
+    {{-- 🏷️ قسم العلامات التجارية --}}
+    <div class="col-md-6">
+        <x-form.select 
+            name="brand_id" 
+            :label="__('app.brand')"
+            class="form-control-lg" {{-- ممرر الحجم الكبير ليتوافق مع حقول الأسماء --}}
+            :selected="old('brand_id', $product->brand_id ?? '')"
+            :options="$brands->pluck('name', 'id')"
+        />
+    </div>
+
 </div>
 
 <div class="form-group">
@@ -114,13 +117,16 @@ function previewThumbnail(event){
         </div>
     </div>
 
-    <div class="form-group mt-3">
+<div 
+class="form-group mt-3"
+>
     <label>{{ __('app.gallery') }}</label>
 
     <input type="file"
            name="gallery[]"
            multiple
-           class="form-control"
+           {{-- class="form-control" --}}
+           class="custom-file"
            accept="image/*"
            onchange="handleGalleryUpload(event)">
 </div>

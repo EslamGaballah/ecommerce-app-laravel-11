@@ -2,122 +2,146 @@
 
 namespace App\Http\Controllers\Api\Dashboard;
 
+use App\Facades\Filters\ProductFilter;
 use App\Http\Controllers\Controller;
-use App\Models\Image;
+use App\Http\Requests\Product\StoreProductRequest;
+use App\Http\Requests\Product\UpdateProductRequest;
 use App\Models\Product;
-use App\Models\ProductImage;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
+use App\Services\Product\ProductService;
+use Illuminate\Http\Request;
 use Throwable;
 
 class ProductsController extends Controller
 {
+    public function __construct(
+        protected ProductService $productService
+    ) {}
 
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $products = Product::with('category','images')
-        ->filter($request->query())
-        ->orderBy('products.name')
-        ->paginate();
+        $filters = new ProductFilter($request);
+        $products = $this->productService->getAll($filters);
+
         return response()->json($products);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreProductRequest $request)
     {
-        $data = $request->validated();
-        $data['user_id'] = auth()->id();
-        $data['slug'] = str::slug($request->post('name'));
+        try {
+            $product = $this->productService->create($request);
 
-         DB::beginTransaction();
+            return response()->json([
+                'message' => 'Product created successfully',
+                'data' => $product
+            ], 201);
 
-            try {
-                $product = Product::create($data);
-
-                // create images
-                if ($request->hasFile('image')) {
-                    foreach ($request->file('image') as $index => $imageFile) {
-
-                        $path = $this->uploadImage($imageFile, 'products');
-
-                        $image_alt = $request->image_alt[$index] ?? null;
-
-                        // post_images table
-                        Image::create([
-                            'product_id' => $product->id,
-                            'image' => $path,
-                            'image_alt' => $image_alt,
-                        ]);
-                    }
-                }
-
-                 DB::commit();
-
-                } catch (Throwable $e) {
-                    DB::rollBack();
-                    throw $e;
-                    return back()->with('error', 'Failed to create product');
-                }
-        return response()->json($product,201, );
-
+        } catch (Throwable $e) {
+            return response()->json([
+                'message' => 'Failed to create product',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Product $product)
     {
-        $product = Product::findOrFail($id);
+        $product->load([
+            'category',
+            'variations.values.attribute',
+            'variations.images',
+            'primaryVariation.images'
+        ]);
+
         return response()->json($product);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateProductRequest $request, Product $product)
     {
-        $data = $request->validated();
-        $data['user_id'] = auth()->id();
-        $data['slug'] = str::slug($request->post('name'));
+        try {
+            $this->authorize('update', $product);
 
-         $product = Product::findOrFail($id);
-         $product->update($data);
-         return response()->json($product,201, );
+            $updatedProduct = $this->productService->update($request, $product);
+
+            return response()->json([
+                'message' => 'Product updated successfully',
+                'data' => $updatedProduct
+            ], 200);
+
+        } catch (Throwable $e) {
+            return response()->json([
+                'message' => 'Failed to update product',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified resource from storage (Soft Delete).
      */
     public function destroy(Product $product)
     {
         $this->authorize('delete', $product);
 
-        $product->delete();
+        $this->productService->delete($product);
+
         return response()->json([
-            'message' => 'product soft deleted successfully'
+            'message' => 'Product soft deleted successfully'
         ]);
     }
 
-    public function restore(string $id)
+    /**
+     * Display a listing of the trashed resources.
+     */
+    public function trash()
     {
-        $product = Product::withTrashed()->findOrFail($id);
-        $product->restore();
+        $products = Product::onlyTrashed()->paginate();
+        
+        return response()->json($products);
+    }
+
+    /**
+     * Restore from trash.
+     */
+    public function restore($id)
+    {
+        $product = Product::onlyTrashed()->findOrFail($id);
+
+        $this->authorize('restore', $product);
+
+        $this->productService->restore($product);
+
         return response()->json([
-            'message' => 'product restored successfully'
+            'message' => 'Product restored successfully'
         ]);
     }
 
-    public function forceDelete(string $id)
+    /**
+     * Remove the specified resource from trash permanently.
+     */
+    public function forceDelete($id)
     {
-        $product = Product::withTrashed()->findOrFail($id);
-        $product->forceDelete();
+        $this->authorize('forceDelete', $id);
+
+        $product = Product::onlyTrashed()
+            ->with(['images', 'variations.images'])
+            ->findOrFail($id);
+
+        $this->productService->forceDelete($product);
+
         return response()->json([
-            'message' => 'product deleted successfully'
+            'message' => 'Product deleted permanently'
         ]);
     }
 }
