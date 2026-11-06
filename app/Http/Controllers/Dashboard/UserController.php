@@ -15,10 +15,24 @@ use Throwable;
 class UserController extends Controller
 {
 
-   public function __construct()
-{
-// $this->middleware('can:viewAny,' . \App\Models\User::class);
-}
+    /**
+     * Only admins may grant the admin role.
+     */
+    private function ensureCanAssignRole($roleId): void
+    {
+        $isAdminRole = Role::whereKey($roleId)->where('name', 'admin')->exists();
+
+        abort_if($isAdminRole && ! auth()->user()->hasRole('admin'), 403);
+    }
+
+    /**
+     * Only admins may change or delete an admin.
+     */
+    private function ensureCanManage(User $user): void
+    {
+        abort_if($user->hasRole('admin') && ! auth()->user()->hasRole('admin'), 403);
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -60,6 +74,9 @@ class UserController extends Controller
             'password' => 'required|confirmed|min:8',
             'role_id' => 'required|exists:roles,id',
         ]);
+
+        $this->ensureCanAssignRole($request->role_id);
+
          DB::beginTransaction();
 
          try { 
@@ -97,6 +114,8 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
+        $this->ensureCanManage($user);
+
         $roles = Role::select('id', 'name')->get();
 
         return view('dashboard.users.edit', compact('user','roles'));
@@ -107,6 +126,8 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
+        $this->ensureCanManage($user);
+
          $request->validate([
             'name' => 'required',
             'email' => [
@@ -117,6 +138,8 @@ class UserController extends Controller
             'password' => 'nullable|confirmed|min:8',
             'role_id' => 'required|exists:roles,id'
         ]);
+
+        $this->ensureCanAssignRole($request->role_id);
 
          DB::beginTransaction();
 
@@ -138,7 +161,8 @@ class UserController extends Controller
 
          } catch (Throwable $e) {
                     DB::rollBack();
-                    return back()->with('error', 'Failed to create user');
+                    report($e);
+                    return back()->with('error', 'Failed to update user');
             }
 
 
@@ -151,6 +175,12 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        $this->ensureCanManage($user);
+
+        if ($user->is(auth()->user())) {
+            return back()->with('error', 'You cannot delete your own account here');
+        }
+
        $user->delete();
         return redirect()->route('dashboard.users.index')->with('success','User deleted');
     }

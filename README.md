@@ -1,66 +1,73 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# E-commerce Store (Laravel 11)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+An Arabic/English online store with a customer storefront, an admin dashboard, and a JSON API.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Storefront:** product catalog with filters, simple and variable products, cart (guest and signed-in), checkout, order history, favorites, reviews, and a blog with comments.
+- **Dashboard:** products, categories, brands, attributes, tags, coupons, governorates (shipping prices), orders, posts, users, and roles with permissions.
+- **API:** public catalog and token-protected management and cart endpoints (Laravel Sanctum).
+- **Notifications:** order notifications saved to the database and broadcast through Pusher.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Cash on delivery is the only payment method that works today.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Requirements
 
-## Learning Laravel
+PHP 8.2+, Composer, Node.js 20+, and MySQL 8.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Setup
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+```bash
+composer install
+npm install
+cp .env.example .env
+php artisan key:generate
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Set the `DB_*` values in `.env` and create that database, then:
 
-## Laravel Sponsors
+```bash
+php artisan migrate --seed
+php artisan storage:link
+composer dev
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+The store opens at http://localhost:8000 and the dashboard at `/dashboard`.
 
-### Premium Partners
+The seeder creates `admin@gmail.com` and `user@gmail.com`, both with the password `password`. Use them for local development only.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+## Scheduled tasks
 
-## Contributing
+Add `php artisan schedule:run` to cron so that pending orders older than 30 days are removed weekly and their stock is returned.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Tests
 
-## Code of Conduct
+Tests run against a separate MySQL database so they can never touch your development data. Create it once:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```sql
+CREATE DATABASE example_app_testing CHARACTER SET utf8mb4;
+```
 
-## Security Vulnerabilities
+Then run:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+php artisan test
+```
 
-## License
+`tests/TestCase.php` refuses to run unless the database name ends with `_testing`.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Permissions
+
+Users get their access from roles, and the `admin` role can do everything. `config/permissions.php` lists every permission. After adding one, run:
+
+```bash
+php artisan db:seed --class=RolePermissionSeeder
+```
+
+## API
+
+```
+POST /api/login        { "email": "...", "password": "..." } returns a token
+```
+
+Send the token as `Authorization: Bearer <token>`. `GET /api/products` and `GET /api/categories` are public. Everything else in `routes/api.php` needs a token.

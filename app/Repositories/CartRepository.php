@@ -5,8 +5,10 @@ namespace App\Repositories;
 use App\Interfaces\CartRepositoryInterface;
 use App\Models\Cart;
 use App\Models\Product;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class CartRepository implements CartRepositoryInterface
 {
@@ -17,50 +19,61 @@ class CartRepository implements CartRepositoryInterface
         $this->items = collect([]);
     }
 
-     private function getCartKey()
+    private function getCartKey()
     {
         if (Auth::check()) {
             return ['user_id' => Auth::id()];
         }
 
-        return ['cookie_id' => Cart::cartCookieId()];
+        return ['cookie_id' => Cart::cartCookieId(), 'user_id' => null];
     }
 
-    public function get() : Collection
+    /**
+     * The current cart's rows, skipping products that were deleted or unpublished after being added.
+     */
+    private function sellableItems(): Builder
     {
-        if (!$this->items->count()) {
-            $this->items = Cart::with('product','product.images','variation.values.attribute')
-                ->where($this->getCartKey())
+        return Cart::where($this->getCartKey())
+            ->whereHas('product', fn ($query) => $query->active());
+    }
+
+    public function get(): Collection
+    {
+        if (! $this->items->count()) {
+            $this->items = $this->sellableItems()
+                ->with('product', 'product.images', 'variation.values.attribute')
                 ->get();
         }
 
         return $this->items;
     }
 
+    public function find($id)
+    {
+        return $this->sellableItems()
+            ->with('product', 'variation')
+            ->whereKey($id)
+            ->firstOrFail();
+    }
+
     public function add(Product $product, $quantity = 1, $variationId = null)
     {
         $cartKey = $this->getCartKey();
 
-        // 🔍 البحث عن العنصر
         $item = Cart::where($cartKey)
             ->where('product_id', $product->id)
             ->where('variation_id', $variationId)
             ->first();
 
-        if (!$item) {
-
-            $item = Cart::create(array_merge($cartKey,[
+        if ($item) {
+            $item->increment('quantity', $quantity);
+        } else {
+            $item = Cart::create(array_merge($cartKey, [
                 'product_id' => $product->id,
-                'variation_id' => $variationId, // 🔥 المهم
+                'variation_id' => $variationId,
                 'quantity' => $quantity,
             ]));
-
-            $this->items->push($item);
-
-            return $item;
         }
-
-        $item->increment('quantity', $quantity);
 
         $this->items = collect();
 
@@ -71,14 +84,14 @@ class CartRepository implements CartRepositoryInterface
     {
         $item = Cart::with('product', 'variation')
             ->where('id', $id)
-            ->where($this->getCartKey()) 
+            ->where($this->getCartKey())
             ->firstOrFail();
 
         $item->update([
             'quantity' => $quantity,
         ]);
 
-        $this->items = collect(); // reset
+        $this->items = collect();
 
         return $item;
     }
@@ -89,7 +102,7 @@ class CartRepository implements CartRepositoryInterface
             ->where($this->getCartKey())
             ->delete();
 
-        $this->items = collect(); // reset cache
+        $this->items = collect();
     }
 
     public function empty()
@@ -98,18 +111,42 @@ class CartRepository implements CartRepositoryInterface
         $this->items = collect();
     }
 
-    public function total() : float
+    public function total(): float
     {
-            // using collection
         return $this->get()->sum(function ($item) {
-        $price = $item->variation?->price ?? $item->product->price;
-        return $item->quantity * $price;
-    });
+            $price = $item->variation?->price ?? $item->product->price;
+
+            return $item->quantity * $price;
+        });
     }
 
-    public function count() : int
+    public function count(): int
     {
         return $this->get()->count();
     }
-   
+
+    /**
+     * Move a guest's cart into the user's cart, combining rows for the same item.
+     */
+    public function mergeGuestCart(string $cookieId, int $userId): void
+    {
+        $guestRows = Cart::where('cookie_id', $cookieId)->whereNull('user_id')->get();
+
+        foreach ($guestRows as $row) {
+            $existing = Cart::where('user_id', $userId)
+                ->where('product_id', $row->product_id)
+                ->where('variation_id', $row->variation_id)
+                ->first();
+
+            if ($existing) {
+                $existing->increment('quantity', $row->quantity);
+                $row->delete();
+            } else {
+                // A new cookie id keeps this row out of the browser's next guest cart.
+                $row->update(['user_id' => $userId, 'cookie_id' => (string) Str::uuid()]);
+            }
+        }
+
+        $this->items = collect();
+    }
 }

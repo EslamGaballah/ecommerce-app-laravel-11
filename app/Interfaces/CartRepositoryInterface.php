@@ -12,7 +12,11 @@ interface CartRepositoryInterface
     
     public function add(Product $product, $quantity = 1, $variationId = null);
 
+    public function find($id);
+
     public function update($id, $quantity);
+
+    public function mergeGuestCart(string $cookieId, int $userId): void;
 
     public function delete($id);
 

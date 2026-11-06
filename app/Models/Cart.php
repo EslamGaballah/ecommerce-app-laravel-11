@@ -36,7 +36,7 @@ class Cart extends Model
     {
         $cookie_id = Cookie::get('cart_id');
         if (!$cookie_id) {
-            $cookie_id = Str::uuid();
+            $cookie_id = (string) Str::uuid();
             Cookie::queue('cart_id', $cookie_id, 30*24*60 );
 
              request()->cookies->set('cart_id', $cookie_id);

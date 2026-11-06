@@ -4,6 +4,7 @@ namespace App\Http\Requests\Category;
 
 use App\Models\Category;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateCategoryRequest extends FormRequest
 {
@@ -25,7 +26,8 @@ class UpdateCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
+                'name_ar' => 'required|string|max:255',
+                'name_en' => ['required', 'string', 'max:255', Rule::unique('categories', 'name_en')->ignore($this->route('category'))],
                 'description' => 'nullable|string|max:255',
                 'status' => 'in:active,archived',
                 'parent_id' => 'nullable|exists:categories,id'

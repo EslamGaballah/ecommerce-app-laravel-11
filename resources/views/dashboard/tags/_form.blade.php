@@ -11,7 +11,11 @@
 @endif
 
     <div class="form-group">
-        <x-form.input label="Tag Name" class="form-control-lg" role="input" name="name" :value="$Tag->name" />
+        <x-form.input label="الاسم بالعربية" class="form-control-lg" role="input" name="name_ar" :value="old('name_ar', $tag->name_ar)" />
+    </div>
+
+    <div class="form-group">
+        <x-form.input label="NAME_EN" class="form-control-lg" role="input" name="name_en" :value="old('name_en', $tag->name_en)" />
     </div>
 
     <div class="form-group">

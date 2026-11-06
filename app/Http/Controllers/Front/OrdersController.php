@@ -12,17 +12,12 @@ class OrdersController extends Controller
      */
     public function index()
     {
-
         $orders = auth()->user()
             ->orders()
             ->latest()
             ->paginate(10);
-        // $orders = Order::where('user_id', Auth::id())
-        //     ->latest()
-        //     ->paginate();
 
         return view('front.orders.index', compact('orders'));
-    
     }
 
     /**
@@ -30,29 +25,22 @@ class OrdersController extends Controller
      */
     public function show(Order $order)
     {
-        if ($order->user_id !== auth()->id()) {
-        abort(403);
-    }
+        $this->ensureOwner($order);
 
-    $order->load('items.product', 'address');
+        $order->load('items.product', 'address');
 
-    return view('front.orders.show', compact('order'));
+        return view('front.orders.show', compact('order'));
     }
 
     public function success(Order $order)
     {
+        $this->ensureOwner($order);
+
         return view('front.orders.success', compact('order'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    private function ensureOwner(Order $order): void
     {
-        //
+        abort_unless((int) $order->user_id === auth()->id(), 403);
     }
 }

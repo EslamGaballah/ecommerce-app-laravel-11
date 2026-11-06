@@ -28,6 +28,9 @@
         <option value="percent" @selected(old('type', $coupon->type ?? '')=='percent')>
             {{ __('app.percentage') }}
         </option>
+        <option value="free_shipping" @selected(old('type', $coupon->type ?? '')=='free_shipping')>
+            {{ __('app.free_shipping') }}
+        </option>
     </select>
 </div>
 
@@ -42,7 +45,17 @@
 </div>
 
 <div class="form-group mb-3">
-    <x-form.input 
+    <x-form.input
+        label="{{ __('app.min_order_amount') }}"
+        type="number"
+        step="0.01"
+        name="min_order_amount"
+        :value="old('min_order_amount', $coupon->min_order_amount ?? '')"
+    />
+</div>
+
+<div class="form-group mb-3">
+    <x-form.input
         label="{{ __('app.usage_limit') }}" 
         type="number" 
         name="usage_limit"
@@ -58,7 +71,7 @@
     <x-form.input 
         type="date" 
         name="expires_at"
-        :value="old('expires_at', isset($coupon->expiry_date) ? $coupon->expiry_date->format('Y-m-d') : '')" 
+        :value="old('expires_at', ($coupon->expires_at ?? null)?->format('Y-m-d'))" 
     />
     <small class="form-text text-muted">
         {{ __('app.leave_empty_no_expiration') }}
@@ -69,8 +82,8 @@
     <label>{{ __('app.status') }}</label>
     <div>
         <x-form.radio 
-            name="active" 
-            :checked="old('active', $coupon->active ?? 1)"
+            name="is_active"
+            :value="(int) ($coupon->is_active ?? 1)"
             :options="[
                 1 => __('app.active'),
                 0 => __('app.inactive')

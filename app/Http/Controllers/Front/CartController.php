@@ -37,17 +37,18 @@ class CartController extends Controller
 
     public function store(Request $request)
     {
-       $validated= $request->validate([
+        $validated = $request->validate([
             'product_id' => ['required', 'int', 'exists:products,id'],
-            'quantity' => ['nullable', 'int', 'min:1'], // quantity default(1)
-            'variation_id' => 'nullable|exists:product_variations,id',
-            Rule::exists('product_variations', 'id')
-                ->where('product_id', $request->product_id)
+            'quantity' => ['nullable', 'int', 'min:1', 'max:65535'], // quantity default(1)
+            'variation_id' => [
+                'nullable',
+                Rule::exists('product_variations', 'id')->where('product_id', $request->input('product_id')),
+            ],
         ]);
 
         $product = Product::findOrFail($validated['product_id']);
 
-        $this->cart->add($product, $validated['quantity'] ?? 1, $request->variation_id);
+        $this->cart->add($product, $validated['quantity'] ?? 1, $validated['variation_id'] ?? null);
 
         if ($request->expectsJson()) {
             return response()->json([
@@ -69,20 +70,10 @@ class CartController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'quantity' => ['required', 'int', 'min:1'],
+            'quantity' => ['required', 'int', 'min:1', 'max:65535'],
         ]);
 
         $item = $this->cart->update($id, $request->quantity);
-
-        $maxStock = $item->variation?->stock ?? $item->product->stock;
-
-
-        if ($request->quantity > $maxStock) {
-            return response()->json([
-                'success' => false,
-                'message' => 'الكمية أكبر من المتاح'
-            ], 422);
-        }
 
         $price = $item->variation?->price ?? $item->product->price;
 

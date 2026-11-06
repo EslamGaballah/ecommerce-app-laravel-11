@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreOrderRequest extends FormRequest
 {
@@ -24,9 +25,9 @@ class StoreOrderRequest extends FormRequest
         return [
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
-            'email' => ['string', 'max:255'],
+            'email' => ['nullable', 'email', 'max:255'],
             'phone_number' => ['required', 'string', 'max:255'],
-            'governorate_id' => ['required', 'exists:governorates,id'],
+            'governorate_id' => ['required', Rule::exists('governorates', 'id')->where('is_active', true)],
             'city' => ['required', 'string', 'max:255'],
             'street_address' => ['required', 'string', 'max:255'],
             'country' => ['required', 'string', 'max:255'],

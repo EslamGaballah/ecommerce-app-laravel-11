@@ -12,7 +12,7 @@ class AttributeValueController extends Controller
 {
     public function index()
     {
-        $attribute_values = AttributeValue::with('attribute')->get();
+        $attribute_values = AttributeValue::with('attribute')->paginate();
         
         return view('dashboard.attribute_values.index', compact('attribute_values'));
     }
@@ -75,13 +75,13 @@ class AttributeValueController extends Controller
             'value' => ['required', 'string', 'max:20' ],
         ]);
       
-            $attribute_value->updateOrCreate([
+            $attribute_value->update([
                 'attribute_id' => $request->attribute_id,
                 'value' => $request->value,
             ]);
 
-        return Redirect::route('dashboard.attribute_values.index')
-            ->with('success', 'attribute_values created');
+        return Redirect::route('dashboard.attribute-values.index')
+            ->with('success', 'attribute_values updated');
     }
 
     public function destroy (AttributeValue $attribute_value)

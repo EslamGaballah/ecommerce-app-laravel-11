@@ -14,6 +14,10 @@ class OrderItem extends Pivot
 
     public $timestamps = false;
 
+    protected $casts = [
+        'options' => 'array',
+    ];
+
     public function product()
     {
         return $this->belongsTo(Product::class)->withDefault([

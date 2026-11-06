@@ -55,9 +55,9 @@ class BrandsController extends Controller
      */
     public function show(Brand $brand)
     {
-        $brand = Brand::with(['products.category'])->get();
+        $products = $brand->products()->with('images')->paginate();
 
-        return view('dashboard.brands.show', compact('brand'));
+        return view('dashboard.brands.show', compact('brand', 'products'));
     }
 
     /**
@@ -98,7 +98,7 @@ class BrandsController extends Controller
     {
         $brand->delete();
 
-        return redirect()->route('brands.index')
+        return redirect()->route('dashboard.brands.index')
             ->with('success', 'Brand deleted successfully');
     }
 }

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
-use App\Models\Cart;
+use App\Interfaces\CartRepositoryInterface;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,11 +30,8 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
         $request->session()->regenerate();
 
-        if($cookieId) {
-            Cart::where('cookie_id', $cookieId)
-                ->update([
-                    'user_id' => auth()->id()
-                ]);
+        if ($cookieId) {
+            app(CartRepositoryInterface::class)->mergeGuestCart($cookieId, $request->user()->id);
         }
         
         // return redirect()->intended(route('dashboard', absolute: false));

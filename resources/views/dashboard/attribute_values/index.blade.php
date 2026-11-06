@@ -33,17 +33,11 @@
         @forelse($attribute_values as $value)
         <tr>
             <td>{{ $value->id }}</td>
-            <td><a href="{{ route('dashboard.attribute-values.show', $value->id) }}">{{ $value->value }}</a></td>
+            <td><a href="{{ route('dashboard.attribute-values.edit', $value->id) }}">{{ $value->value }}</a></td>
 
 
 
             <td>{{ $value->created_at }}</td>
-
-            <td>
-                {{-- @can('categories.update') --}}
-                <a href="{{ route('dashboard.attribute-values.show', $value->id) }}" class="btn btn-sm btn-outline-success">{{__('app.show')}}</a>
-                {{-- @endcan --}}
-            </td>
 
             <td>
                 {{-- @can('categories.update') --}}

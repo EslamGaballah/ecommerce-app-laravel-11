@@ -7,16 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Tag extends Model
 {
-    protected $fillable = ['name', 'slug'];
+    protected $fillable = ['name_ar', 'name_en', 'slug'];
 
     public static function scopeFilter (Builder $builder, $filters)
     {
-        $builder->when($filters['name'] ?? false, function($builder, $value){
-            $builder->where('tags.name', 'LIKE', "%{$value}");
-        });
-
-        $builder->when($filters['status'] ?? false, function($builder, $value) {
-            $builder->where('tags.status', '=', $value);
+        $builder->when($filters['name'] ?? false, function ($builder, $value) {
+            $builder->where(function ($query) use ($value) {
+                $query->where('tags.name_en', 'LIKE', "%{$value}%")
+                    ->orWhere('tags.name_ar', 'LIKE', "%{$value}%");
+            });
         });
     }
 

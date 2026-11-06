@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Front;
 
+use App\Enums\ProductStatus;
 use App\Facades\Filters\ProductFilter;
 use App\Helpers\Currency;
 use App\Http\Controllers\Controller;
@@ -18,6 +19,7 @@ class ProductsController extends Controller
          $filters = new ProductFilter($request);
 
         $products = Product::with('category', 'variations')
+            ->active()
             ->filter($filters)
             ->latest()
             ->paginate(12)
@@ -33,8 +35,21 @@ class ProductsController extends Controller
         return view('front.products.index', compact('products', 'categories', 'brands'));
     }
 
+    public function search(Request $request)
+    {
+        return redirect()->route('products.index', array_filter([
+            'search' => $request->input('q', $request->input('search')),
+            'category' => $request->input('category'),
+        ]));
+    }
+
     public function show( Product $product)
     {
+        // Staff can preview unpublished products.
+        if ($product->status !== ProductStatus::Active) {
+            abort_unless(auth()->user()?->can('access-dashboard'), 404);
+        }
+
         // refresh data to get latest ratings
         $product->refresh();
 

@@ -127,10 +127,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             p.dataset.oldText = oldText; // حفظ النص القديم للطوارئ
             p.innerHTML = `
-                <textarea class="form-control edit-input">${oldText}</textarea>
+                <textarea class="form-control edit-input"></textarea>
                 <button class="btn-save-edit btn btn-sm btn-success mt-2" data-id="${id}">حفظ</button>
                 <button type="button" class="btn-cancel-edit btn btn-sm btn-link mt-2">تراجع</button>
             `;
+            // Set as a value so comment text can never run as HTML.
+            p.querySelector('.edit-input').value = oldText;
         }
 
         // تراجع عن التعديل

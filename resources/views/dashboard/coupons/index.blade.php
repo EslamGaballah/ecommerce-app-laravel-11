@@ -61,15 +61,15 @@
                 <td>{{ $coupon->usage_limit ?? '∞' }}</td>
                 <td>{{ $coupon->used_count }}</td>
                 <td>{{ $coupon->expires_at?->format('Y-m-d') ?? '-' }}</td>
-                <td>{{ $coupon->active ? 'Active' : 'Inactive' }}</td>
+                <td>{{ $coupon->is_active ? 'Active' : 'Inactive' }}</td>
                 <td>
-                    @can('update-coupons')
+                    @can('manage-coupons')
                         <a href="{{ route('dashboard.coupons.edit', $coupon->id) }}" class="btn btn-sm btn-outline-success">{{__('app.edit')}}</a>
                     @endcan
                 </td>
                 
                 <td>
-                    @can('delete-coupons')
+                    @can('manage-coupons')
                         <form action="{{ route('dashboard.coupons.destroy', $coupon->id) }}" method="post">
                             @csrf
                             @method('delete')

@@ -24,7 +24,8 @@ class StoreCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-                'name' => 'required|string|max:255',
+                'name_ar' => 'required|string|max:255',
+                'name_en' => 'required|string|max:255|unique:categories,name_en',
                 'description' => 'nullable|string|max:255',
                 'status' => 'in:active,archived',
                 'parent_id' => 'nullable|exists:categories,id'

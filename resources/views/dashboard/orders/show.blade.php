@@ -143,7 +143,7 @@
                                     data-id="{{ $order->id }}" 
                                     data-old="{{ $order->status->value }}">
                                 @foreach(\App\Enums\OrderStatus::cases() as $status)
-                                    <option value="{{ $status->value }}" @selected($order->status == $status)>
+                                    <option value="{{ $status->value }}" @selected($order->status == $status) @disabled($order->status != $status && ! $order->status->canTransitionTo($status))>
                                         {{ $status->label() }}
                                     </option>
                                 @endforeach

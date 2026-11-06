@@ -61,7 +61,7 @@
                   </a>
                 </li>
                @endcan
-               @can('view-categories')
+               @can('manage-brands')
                 <li class="nav-item">
                   <a href="{{route('dashboard.brands.index')}}" class="nav-link">
                     <i class="nav-icon fas fa-th"></i>
@@ -84,7 +84,7 @@
                   </a>
                 </li>
               @endcan
-                @can('view-product')
+                @can('manage-coupons')
                     <li class="nav-item">
                         <a href="{{route('dashboard.coupons.index')}}" class="nav-link">
                             <i class="nav-icon fas fa-th"></i>
@@ -95,7 +95,7 @@
                         </a>
                     </li>
                 @endcan
-              @can('view-product')
+              @can('manage-attributes')
                 <li class="nav-item">
                   <a href="{{route('dashboard.attributes.index')}}" class="nav-link">
                     <i class="nav-icon fas fa-th"></i>
@@ -106,7 +106,7 @@
                   </a>
                 </li>
               @endcan
-              @can('view-product')
+              @can('manage-attributes')
                 <li class="nav-item">
                   <a href="{{route('dashboard.attribute-values.index')}}" class="nav-link">
                     <i class="nav-icon fas fa-th"></i>
@@ -118,7 +118,7 @@
                 </li>
               @endcan
 
-              {{-- @can('view-product') --}}
+              @can('manage-governorates')
                 <li class="nav-item">
                   <a href="{{route('dashboard.governorates.index')}}" class="nav-link">
                     <i class="nav-icon fas fa-th"></i>
@@ -128,9 +128,9 @@
                     </p>
                   </a>
                 </li>
-              {{-- @endcan --}}
+              @endcan
 
-              {{-- @can('view-product') --}}
+              @can('view-order')
                 <li class="nav-item">
                   <a href="{{route('dashboard.orders.index')}}" class="nav-link">
                     <i class="nav-icon fas fa-th"></i>
@@ -140,9 +140,9 @@
                     </p>
                   </a>
                 </li>
-              {{-- @endcan --}}
+              @endcan
 
-              {{-- @can('view-product') --}}
+              @can('manage-posts')
                 <li class="nav-item">
                   <a href="{{route('dashboard.posts.index')}}" class="nav-link">
                     <i class="nav-icon fas fa-th"></i>
@@ -152,7 +152,7 @@
                     </p>
                   </a>
                 </li>
-              {{-- @endcan --}}
+              @endcan
 
               @can('manage-users')
                 <li class="nav-item">

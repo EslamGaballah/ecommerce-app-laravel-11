@@ -38,12 +38,12 @@ class RolePermissionSeeder extends Seeder
         $admin->permissions()->sync(Permission::pluck('id'));
 
         $editorPerms = Permission::whereIn('name', [
-            'create-product', 'edit-product', 'view-product'
+            'access-dashboard', 'create-product', 'edit-product', 'view-product'
         ])->pluck('id');
         $editor->permissions()->sync($editorPerms);
 
         $userPerms = Permission::whereIn('name', [
-            'create-product', 'view-product'
+            'view-product'
         ])->pluck('id');
         $user->permissions()->sync($userPerms);
 

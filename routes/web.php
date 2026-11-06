@@ -2,7 +2,7 @@
 
 use App\Enums\OrderStatus;
 use App\Events\OrderCreated;
-use App\Http\Controllers\front\OrdersController;
+use App\Http\Controllers\Front\OrdersController;
 use App\Http\Controllers\Front\CartController;
 use App\Http\Controllers\Front\CheckoutController;
 use App\Http\Controllers\Front\CommentController;
@@ -11,8 +11,8 @@ use App\Http\Controllers\Front\HomeController;
 // use App\Http\Controllers\Front\OrdersController as FrontOrdersController;
 use App\Http\Controllers\Front\PostController;
 use App\Http\Controllers\Front\ProductsController;
-// use App\Http\Controllers\front\RatingController;
-use App\Http\Controllers\front\ReviewController;
+// use App\Http\Controllers\Front\RatingController;
+use App\Http\Controllers\Front\ReviewController;
 use App\Http\Controllers\LangController;
 use App\Http\Controllers\NotificationsController;
 use App\Http\Controllers\ProfileController;
@@ -31,11 +31,11 @@ use Illuminate\Support\Facades\Route;
 
 // });
 
-// Route::middleware('auth')->group(function () {
-//     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-//     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-//     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-// });
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
 // Route::get('lang/{lang}', function ($lang) {
 //     if (in_array($lang, config('app.avilable_locales'))) {
@@ -53,13 +53,11 @@ Route::post('/front/product/{product}/variation', [ProductsController::class, 'm
     ->name('variations.match');
 Route::get('product/search', [ProductsController::class, 'search'])->name('products.search');
 
-Route::resource('cart', CartController::class)->except(['show']);
-Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
+Route::delete('/cart', [CartController::class, 'empty'])->name('cart.empty');
+Route::resource('cart', CartController::class)->only(['index', 'store', 'update', 'destroy']);
 // Route::patch('/cart/{id}', [CartController::class, 'update']);
 // Route::delete('/cart/{id}', [CartController::class, 'destroy']);
 Route::get('/cart/json', [CartController::class, 'cartJson'])->name('cart.json');
-
-Route::get('comments', [CommentController::class, 'index'])->name('comments.index');
 
 Route::get('/posts',[PostController::class,'index']) ->name('front.posts.index');
 Route::get('/posts/{post}',[PostController::class,'show']) ->name('front.posts.show');

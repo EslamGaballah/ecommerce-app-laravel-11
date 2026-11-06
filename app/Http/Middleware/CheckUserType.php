@@ -21,8 +21,7 @@ class CheckUserType
          return redirect()->route('login');  
         }
 
-        // if ($user->role != $role) {
-        if (!in_array($user->role, $roles)){
+        if (! $user->roles()->whereIn('name', $roles)->exists()) {
             abort(403);
         }
 

@@ -36,6 +36,26 @@ return [
         'manage-comments'
     ],
 
+    'brands' => [
+        'manage-brands',
+    ],
+
+    'attributes' => [
+        'manage-attributes',
+    ],
+
+    'coupons' => [
+        'manage-coupons',
+    ],
+
+    'posts' => [
+        'manage-posts',
+    ],
+
+    'governorates' => [
+        'manage-governorates',
+    ],
+
     'cart' => [
         'view-cart',
         'create-cart',

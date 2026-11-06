@@ -34,7 +34,7 @@
         @forelse($attributes as $attribute)
         <tr>
             <td>{{ $attribute->id }}</td>
-            <td><a href="{{ route('dashboard.attributes.show', $attribute->id) }}">{{ $attribute->name }}</a></td>
+            <td><a href="{{ route('dashboard.attributes.edit', $attribute->id) }}">{{ $attribute->name }}</a></td>
 
             <td>
                 @if ($attribute->attributeValues)

@@ -130,9 +130,9 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
-'aliases' => [
-    'Currency' => App\Helpers\Currency::class,
-]
+'aliases' => Illuminate\Support\Facades\Facade::defaultAliases()->merge([
+        'Currency' => App\Helpers\Currency::class,
+    ])->toArray(),
 
 
 

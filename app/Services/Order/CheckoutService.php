@@ -3,9 +3,9 @@
 namespace App\Services\Order;
 
 use App\Events\OrderCreated;
+use App\Exceptions\CheckoutException;
 use App\Models\Governorate;
 use App\Services\Coupon\CouponService;
-use Illuminate\Support\Facades\DB;
 
 class CheckoutService
 {
@@ -15,49 +15,37 @@ class CheckoutService
         protected CouponService $couponService,
         protected TransactionService $transaction
     ) {}
+
     // --------------------------
     // prepare date
     // --------------------------
-    public function prepareCheckoutData($governorateId = null,  $code = null)
+    public function prepareCheckoutData($governorateId = null, $code = null)
     {
-
-        if ($this->cart->isEmpty()) {
-            throw new \Exception('Cart is empty');
-        }
+        $this->ensureCartHasItems();
 
         $items = $this->cart->items();
         $cartTotal = $this->cart->total();
 
-        $tax = 20;
+        $tax = config('shop.flat_tax');
 
         $shipping = 0;
 
         if ($governorateId) {
-            $governorate = Governorate::find($governorateId);
+            $governorate = Governorate::active()->find($governorateId);
             $shipping = $governorate?->shipping_price ?? 0;
         }
 
-        if ($code) {
-            $coupon = $this->couponService->apply($code); 
-        } else {
-            $coupon = $this->couponService->getActiveCoupon();
-        }
+        $coupon = $code
+            ? $this->couponService->apply($code, $cartTotal)
+            : $this->couponService->getActiveCoupon($cartTotal);
 
         $discount = $this->couponService->calculateDiscount($cartTotal, $coupon);
-
-//         dd([
-//     'code' => $code,
-//     'coupon' => $coupon,
-//     'discount' => $discount
-// ]);
         $shipping = $this->couponService->applyShipping($shipping, $coupon);
-
-        $totals = $this->calculateTotals($cartTotal, $shipping, $tax, $discount);
 
         return [
             'items' => $items,
             'cartTotal' => $cartTotal,
-            'totals' => $totals,
+            'totals' => $this->calculateTotals($cartTotal, $shipping, $tax, $discount),
         ];
     }
 
@@ -66,46 +54,57 @@ class CheckoutService
     // --------------------------
     public function checkout($data)
     {
-        if ($this->cart->isEmpty()) {
-            throw new \Exception('Cart is empty');
-        }
+        $this->ensureCartHasItems();
 
         $items = $this->cart->items();
         $cartTotal = $this->cart->total();
 
-        $coupon = $this->couponService->getActiveCoupon();
+        // Never silently charge more than the customer saw on the checkout page.
+        $hadCoupon = $this->couponService->hasAppliedCoupon();
+        $coupon = $this->couponService->getActiveCoupon($cartTotal);
 
-        $tax = 20;
+        if ($hadCoupon && ! $coupon) {
+            throw new CheckoutException(__('app.coupon_no_longer_valid'));
+        }
 
-        $governorate = Governorate::findOrFail($data['governorate_id']);
-        $shipping = $governorate->shipping_price ?? 0;
+        $tax = config('shop.flat_tax');
+
+        $governorate = Governorate::active()->findOrFail($data['governorate_id']);
 
         $discount = $this->couponService->calculateDiscount($cartTotal, $coupon);
-        $shipping = $this->couponService->applyShipping($shipping, $coupon);
+        $shipping = $this->couponService->applyShipping($governorate->shipping_price ?? 0, $coupon);
 
         $totals = $this->calculateTotals($cartTotal, $shipping, $tax, $discount);
 
-
-        return $this->transaction->run(function () use (
-            $items, $totals, $shipping, $tax, $coupon, $data
-        ) {
-
+        $order = $this->transaction->run(function () use ($items, $totals, $shipping, $tax, $coupon, $data) {
             $order = $this->orderService->createOrder($totals, $shipping, $tax, $coupon);
 
             $this->orderService->createOrderItems($order, $items);
 
             $order->address()->create($data);
 
+            if ($coupon) {
+                $this->couponService->redeem($coupon);
+            }
+
             $this->cart->empty();
-
-            $this->couponService->finalize();
-
-            DB::afterCommit(function () use ($order) {
-                event(new OrderCreated($order));
-            });
 
             return $order;
         });
+
+        $this->couponService->clear();
+
+        // The order is saved, so a notification failure is logged instead of shown to the customer.
+        rescue(fn () => event(new OrderCreated($order)));
+
+        return $order;
+    }
+
+    private function ensureCartHasItems(): void
+    {
+        if ($this->cart->isEmpty()) {
+            throw new CheckoutException(__('app.cart_is_empty'));
+        }
     }
 
     private function calculateTotals($cartTotal, $shipping, $tax, $discount)

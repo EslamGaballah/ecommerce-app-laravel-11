@@ -62,6 +62,11 @@ class Product extends Model
         });
     }
 
+    public function scopeActive($query)
+    {
+        return $query->where('products.status', ProductStatus::Active);
+    }
+
     public function scopeFilter($query, $filters)
     {
         return $filters->apply($query);

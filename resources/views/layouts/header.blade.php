@@ -55,7 +55,7 @@
                                 </a>
                                 
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                    {{-- <li><a class="dropdown-item" href="{{ route('profile.edit') }}">الملف الشخصي</a></li> --}}
+                                    <li><a class="dropdown-item" href="{{ route('profile.edit') }}">{{ __('app.profile') }}</a></li>
                                     <li><a class="dropdown-item" href="{{ route('front.orders.index') }}"> {{ __('app.orders') }}</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
@@ -103,7 +103,7 @@
                                         
                                         @foreach($categories as $category)
                                             <option value="{{ $category->id }}"
-                                                {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                                                {{ request('category') == $category->id ? 'selected' : '' }}>
                                                 {{ $category->name }}
                                             </option>
                                         @endforeach
@@ -111,7 +111,7 @@
                                 </div>
                             </div>
                             <div class="search-input">
-                                <input type="text" name="search" value="{{ request('q') }}" placeholder="{{__('app.search')}}">
+                                <input type="text" name="search" value="{{ request('search') }}" placeholder="{{__('app.search')}}">
                             </div>
                             <div class="search-btn">
                                 <button><i class="lni lni-search-alt"></i></button>

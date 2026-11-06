@@ -10,10 +10,7 @@
 @section('content')
 
 <div class="mb-5">
-    @if(auth()->user()->can('create-tags'))
-        <a href="{{ route('dashboard.Tags.create') }}" class="btn btn-sm btn-outline-primary mr-2">{{__('app.create')}}</a>
-        {{-- <a href="{{ route('dashboard.categories.trash') }}" class="btn btn-sm btn-outline-dark">Trash</a>  --}}
-     @endif
+    <a href="{{ route('dashboard.tags.create') }}" class="btn btn-sm btn-outline-primary mr-2">{{__('app.create')}}</a>
 </div>
 
 <x-alert type="success" />
@@ -22,15 +19,6 @@
 {{-- start filter --}}
 <form action="{{ url()->current() }}" method="get" class="d-flex justify-content-between mb-4">
     <x-form.input name="name" placeholder="Name" class="mx-2" :value="request('name')" />
-    <select name="status" class="form-control mx-2">
-        <option value="">All</option>
-       
-            @foreach (['active' => 'Active' ,'arvived' => 'Archived'] as $value => $label )
-                <option value="{{ $value }}" @selected(request('status') == $value)>
-                    {{ $label }}
-                </option>
-            @endforeach
-    </select>
     <button class="btn btn-dark mx-2">{{__('app.filter')}}</button>
 </form>
 {{-- end filter --}}
@@ -55,8 +43,8 @@
             
 
                 
-            <td>{{ $tag->products_number }}</td>
-            <td>{{ $category->created_at }}</td>
+            <td>{{ $tag->products_count }}</td>
+            <td>{{ $tag->created_at }}</td>
             <td>
                 {{-- @can('categories.update') --}}
                 <a href="{{ route('dashboard.tags.edit', $tag->id) }}" class="btn btn-sm btn-outline-success">{{__('app.edit')}}</a>
@@ -82,9 +70,6 @@
     </tbody>
 </table>
 
-{{ $tag->appends(request()->query())->links('pagination::bootstrap-5') }}
-{{ $tag->links('pagination::bootstrap-5') }}
-
-{{ $tag->withQueryString()->appends(['search' => 1])->links('pagination::bootstrap-5') }}
+{{ $tags->withQueryString()->links('pagination::bootstrap-5') }}
 
 @endsection

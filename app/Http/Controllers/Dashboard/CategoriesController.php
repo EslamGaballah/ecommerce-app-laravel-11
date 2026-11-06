@@ -13,7 +13,11 @@ use Illuminate\Support\Str;
 
 class CategoriesController extends Controller
 {
-    
+    public function __construct()
+    {
+        $this->authorizeResource(Category::class, 'category');
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -46,7 +50,7 @@ class CategoriesController extends Controller
     public function store(StoreCategoryRequest $request)
     {
             $data = $request->validated();
-            $data['slug'] = str::slug($request->post('name'));
+            $data['slug'] = Str::slug($data['name_en']);
 
              Category::create($data);
 
@@ -68,7 +72,6 @@ class CategoriesController extends Controller
      */
     public function edit (Category $category)
     {
-        $this-> authorize('edit-catggories', $category);
         $parents = Category::where('id', '<>', $category->id)
             ->where(function($query) use($category){
             $query->whereNull('parent_id')
@@ -85,7 +88,7 @@ class CategoriesController extends Controller
     public function update (UpdateCategoryRequest $request, Category $category)
     {
         $data = $request->validated();
-        $data['slug'] = str::slug($request->post('name'));
+        $data['slug'] = Str::slug($data['name_en']);
 
         $category->update($data);
 
@@ -99,8 +102,9 @@ class CategoriesController extends Controller
      */
     public function destroy (Category $category)
     {
-        $this-> authorize('update', $category);
-
         $category->delete();
+
+        return Redirect::route('dashboard.categories.index')
+            ->with('success', 'Category deleted!');
     }
 }

@@ -9,8 +9,11 @@ use App\Http\Requests\Product\UpdateProductRequest;
 use App\Models\Attribute;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Enums\ProductType;
 use App\Models\Product;
+use App\Models\ProductVariation;
 use App\Services\Product\ProductService;
+use App\Services\Product\ProductVariationService;
 use Illuminate\Http\Request;
 
 class ProductsController extends Controller
@@ -25,6 +28,8 @@ class ProductsController extends Controller
      */
    public function index(Request $request)
     {
+        $this->authorize('viewAny', Product::class);
+
         $categories = Category::all();
         $brands = Brand::all();
         $filters = new ProductFilter($request);
@@ -39,6 +44,7 @@ class ProductsController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Product::class);
 
         $product = new Product();
         $categories = Category::all();
@@ -74,6 +80,8 @@ class ProductsController extends Controller
      */
     public function show(Product $product)
     {
+        $this->authorize('view', $product);
+
         $product->load([
             'category',
             'variations.values.attribute',
@@ -105,7 +113,7 @@ class ProductsController extends Controller
         $oldVariations = $product->variations;
 
         // $thumbnailPath = $images->where('type', 'thumbnail')->first()?->image;
-        if ($product->product_type === 'simple') {
+        if ($product->product_type === ProductType::SIMPLE) {
             $existingGallery = $product->images
                 ->where('type', 'gallery')
                 ->map(fn($img) => [
@@ -161,6 +169,8 @@ class ProductsController extends Controller
      */
     public function trash()
     {
+        $this->authorize('viewAny', Product::class);
+
         $products = Product::onlyTrashed()->paginate();
         return view('dashboard.products.trash', compact('products'));
     }
@@ -187,15 +197,26 @@ class ProductsController extends Controller
 
     public function forceDelete($id)
     {
-        $this->authorize('forceDelete', $id);
-
         $product = Product::onlyTrashed()
             ->with(['images', 'variations.images'])
             ->findOrFail($id);
 
+        $this->authorize('forceDelete', $product);
+
         $this->productService->forceDelete($product);
 
         return back()->with('success', 'Deleted permanently');
+    }
+
+    public function deleteVariation(Request $request, ProductVariation $variation, ProductVariationService $variations)
+    {
+        $this->authorize('update', $variation->product);
+
+        $variations->forceDeleteByIds([$variation->id]);
+
+        return $request->expectsJson()
+            ? response()->json(['success' => true])
+            : back()->with('success', 'Deleted');
     }
 
 }

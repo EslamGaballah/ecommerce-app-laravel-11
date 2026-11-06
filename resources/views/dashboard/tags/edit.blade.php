@@ -10,7 +10,7 @@
 
 @section('content')
 
-<form action="{{ route('dashboard.tags.update', $category->id) }}" method="post" enctype="multipart/form-data">
+<form action="{{ route('dashboard.tags.update', $tag->id) }}" method="post" enctype="multipart/form-data">
     @csrf
     @method('put')
     

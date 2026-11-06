@@ -2,33 +2,35 @@
 
 namespace App\Services\Coupon;
 
+use App\Exceptions\CheckoutException;
 use App\Models\Coupon;
 use App\Services\Coupon\Factories\CouponStrategyFactory;
 
 class CouponService
 {
-    public function getActiveCoupon()
+    public function hasAppliedCoupon(): bool
     {
-        return Coupon::find(session('coupon_id'));
+        return session()->has('coupon_id');
     }
 
-    public function applyShipping(float $shipping, $coupon = null): float
+    /**
+     * The coupon applied in this session, if it is still valid for this total.
+     */
+    public function getActiveCoupon(float $cartTotal): ?Coupon
     {
-        $coupon = $coupon ?? $this->getActiveCoupon();
+        $coupon = Coupon::find(session('coupon_id'));
 
-        if ($coupon && $coupon->type === 'free_shipping') {
-            return 0;
-        }
-
-        return $shipping;
+        return $coupon?->isValid($cartTotal) ? $coupon : null;
     }
 
-    public function apply(string $code)
+    public function apply(string $code, float $cartTotal): Coupon
     {
         $coupon = Coupon::where('code', trim($code))->first();
 
-        if (!$coupon) {
-            throw new \Exception('Invalid coupon code');
+        if (! $coupon || ! $coupon->isValid($cartTotal)) {
+            $this->clear();
+
+            throw new CheckoutException(__('app.invalid_coupon'));
         }
 
         session(['coupon_id' => $coupon->id]);
@@ -36,28 +38,36 @@ class CouponService
         return $coupon;
     }
 
-     public function calculateDiscount(float $cartTotal, $coupon = null): float
+    public function applyShipping(float $shipping, ?Coupon $coupon): float
     {
-        $coupon = $coupon ?? $this->getActiveCoupon();
+        return $coupon?->type === 'free_shipping' ? 0 : $shipping;
+    }
 
-        if (!$coupon) return 0;
-
-        if ($coupon->type === 'free_shipping') {
+    public function calculateDiscount(float $cartTotal, ?Coupon $coupon): float
+    {
+        if (! $coupon) {
             return 0;
         }
 
-        $strategy = CouponStrategyFactory::make($coupon);
-
-        return $strategy->calculate($cartTotal, $coupon->value);
+        return CouponStrategyFactory::make($coupon)->calculate($cartTotal, $coupon->value);
     }
 
-    public function finalize()
+    /**
+     * Count one use. The limit is part of the update, so simultaneous orders cannot exceed it.
+     */
+    public function redeem(Coupon $coupon): void
     {
-        $coupon = $this->getActiveCoupon();
+        $redeemed = Coupon::whereKey($coupon->id)
+            ->where(fn ($query) => $query->whereNull('usage_limit')->orWhereColumn('used_count', '<', 'usage_limit'))
+            ->increment('used_count');
 
-        if ($coupon) {
-            $coupon->increment('used_count');
-            session()->forget('coupon_id');
+        if (! $redeemed) {
+            throw new CheckoutException(__('app.coupon_no_longer_valid'));
         }
+    }
+
+    public function clear(): void
+    {
+        session()->forget('coupon_id');
     }
 }

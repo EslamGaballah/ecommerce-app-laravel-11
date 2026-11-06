@@ -3,20 +3,27 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Enums\OrderStatus;
+use App\Enums\PaymentStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Services\Order\OrderService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rules\Enum;
 
 class OrdersController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Order::class, 'order');
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $orders = Order::with(['user','updatedBy', 'address'])
+        $orders = Order::with(['user', 'updatedBy', 'address'])
             ->filter($request->query())
             ->latest()
             ->paginate(10);
@@ -37,74 +44,80 @@ class OrdersController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Order $order)
+    public function update(Request $request, Order $order, OrderService $orderService)
     {
         $request->validate([
             'status' => ['required', new Enum(OrderStatus::class)],
         ]);
 
-        if ($order->status === $request->status) {
-                return response()->json([
-                    'message' => 'Same status'
-                ], 422);
+        $newStatus = OrderStatus::from($request->status);
+
+        $changed = DB::transaction(function () use ($order, $newStatus, $orderService) {
+            // Lock the row so two requests cannot both restore the same stock.
+            $current = Order::whereKey($order->id)->lockForUpdate()->firstOrFail();
+
+            if (! $current->status->canTransitionTo($newStatus)) {
+                return false;
             }
 
-        DB::transaction(function () use ($request, $order) {
-            $oldStatus = $order->status->value;
-            $newStatus = $request->status;
-
-            // create order history status
-            $order->statusHistories()->create([
-                'old_status' => $oldStatus,
-                'new_status' => $newStatus,
-                'updated_by' => auth()->id(),
-            ]);
-            
-            // update status
-            $order->update([
-                'status' => $newStatus,
+            $current->statusHistories()->create([
+                'old_status' => $current->status->value,
+                'new_status' => $newStatus->value,
                 'updated_by' => auth()->id(),
             ]);
 
-            // if order cancelled or refunded
-            if (
-                in_array($newStatus, ['cancelled', 'refunded']) &&
-                !in_array($oldStatus, ['cancelled', 'refunded'])
-            ) {
-                $order->load('items.product');
-
-                foreach ($order->items as $item) {
-                    $item->product->increment('quantity', $item->quantity);
-                }
+            if ($newStatus->isClosed()) {
+                $orderService->restoreStock($current);
             }
+
+            $current->status = $newStatus;
+
             if ($newStatus === OrderStatus::COMPLETED) {
-            $order->update([
-                'payment_status' => 'paid'
-            ]);
+                $current->payment_status = PaymentStatus::PAID;
+            } elseif ($newStatus === OrderStatus::REFUNDED && $current->payment_status === PaymentStatus::PAID) {
+                $current->payment_status = PaymentStatus::REFUNDED;
+            }
+
+            $current->save();
+
+            return true;
+        });
+
+        if (! $changed) {
+            $message = __('app.order_status_not_allowed');
+
+            return $request->expectsJson()
+                ? response()->json(['message' => $message], 422)
+                : back()->with('error', $message);
         }
-        }); 
 
         $order->refresh();
-        
+
         if ($request->expectsJson()) {
-                return response()->json([
-                    'success'    => true,
-                    'status'     => $order->status->value,
-                    'label'      => $order->status->label(),
-                    'color'      => $order->status->color(),
-                    'updated_by' => auth()->user()->name ?? 'N/A',
-                    'updated_at' => $order->updated_at->format('Y-m-d H:i'),
-                ]);
-            }
+            return response()->json([
+                'success' => true,
+                'status' => $order->status->value,
+                'label' => $order->status->label(),
+                'color' => $order->status->color(),
+                'updated_by' => auth()->user()->name ?? 'N/A',
+                'updated_at' => $order->updated_at->format('Y-m-d H:i'),
+            ]);
+        }
 
         return back()->with('success', 'Order Status Updated successfully');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Only closed orders can be deleted, so stock and sales records stay correct.
      */
-    public function destroy(string $id)
+    public function destroy(Order $order)
     {
-        // it should be soft delete
+        if (! $order->status->isClosed()) {
+            return back()->with('error', __('app.order_delete_not_allowed'));
+        }
+
+        $order->delete();
+
+        return back()->with('success', __('app.order_deleted'));
     }
 }
