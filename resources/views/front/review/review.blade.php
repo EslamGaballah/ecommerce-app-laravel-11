@@ -4,7 +4,7 @@
         <div class="single-block give-review">
 
             <h4>
-                {{ number_format($product->rating_avg, 1) }} (Overall)
+                {{ number_format($product->rating_avg, 1) }} ({{ __('app.overall') }})
             </h4>
             <p>{{ $product->rating_count }} {{ __('app.reviews') }}</p>
 
@@ -12,7 +12,7 @@
                 @for($star = 5; $star >= 1; $star--)
                     <li>
                         <span>
-                            {{ $star }} stars - {{ $ratingsCount[$star] ?? 0 }}
+                            {{ __('app.stars_count', ['stars' => $star, 'count' => $ratingsCount[$star] ?? 0]) }}
                         </span>
 
                         @for($i = 1; $i <= 5; $i++)
@@ -23,6 +23,7 @@
             </ul>
 
             <!-- Button -->
+            @if (Setting::get('product_reviews_enabled'))
             @auth
                 <button type="button" class="btn review-btn" data-bs-toggle="modal"
                         data-bs-target="#reviewModal">
@@ -33,6 +34,9 @@
                     {{ __('app.leave_review') }}
                 </a>
             @endauth
+            @else
+                <p class="text-muted mb-0">{{ __('app.reviews_closed') }}</p>
+            @endif
 
         </div>
     </div>
@@ -65,7 +69,7 @@
                         </div>
                     </div>
                 @empty
-                    <p>لا توجد مراجعات حتى الآن</p>
+                    <p>{{ __('app.no_reviews_yet') }}</p>
                 @endforelse
 
             </div>
@@ -75,6 +79,7 @@
 
 <!-- Review Modal -->
 
+@if (Setting::get('product_reviews_enabled'))
 <div class="modal fade" id="reviewModal" tabindex="-1">
     <div class="modal-dialog">
         <form action="{{ route('products.review', $product) }}" method="POST">
@@ -99,7 +104,7 @@
 
                     <label class="mt-2">{{ __('app.leave_review') }}</label>
                     <textarea name="review" class="form-control"
-                              placeholder="اكتب رأيك"></textarea>
+                              placeholder="{{ __('app.write_your_review') }}"></textarea>
                 </div>
 
                 <div class="modal-footer">
@@ -109,4 +114,5 @@
         </form>
     </div>
 </div>
+@endif
 

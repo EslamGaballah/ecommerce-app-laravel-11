@@ -7,9 +7,11 @@
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <title>{{ $title }}</title>
-    <meta name="description" content="" />
+    <meta name="description" content="{{ Setting::get('site_description') }}" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    @include('partials.theme-script')
 
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/images/favicon.svg') }}" />
 
@@ -29,12 +31,17 @@
         <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}" />
         <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}" />
     @endif
+    <link rel="stylesheet" href="{{ asset('assets/css/header.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/css/pages.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/css/dark-store.css') }}" />
+    @stack('page-styles')
 
     <!--  ============= pushar ===================  -->
 {{-- <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script> --}}
 
    <script>
         window.userID = {{ auth()->id() ?? 'null' }};
+        window.appText = @js(['cartEmpty' => __('app.cart_empty'), 'addedToCart' => __('app.added_to_cart'), 'addToCart' => __('app.add_to_cart'), 'outOfStock' => __('app.out_of_stock'), 'somethingWrong' => __('app.something_went_wrong')]);
     </script>
     <script>
         window.addNotification = function(data) {
@@ -87,6 +94,8 @@
     </div>
     <!-- /End Preloader -->
 
+        @include('partials.maintenance-banner')
+
     <!-- Start Header Area -->
     @include('layouts.header')
     <!-- End Header Area -->
@@ -107,12 +116,14 @@
         <i class="lni lni-chevron-up"></i>
     </a>
 
-    <a href="https://wa.me/201091070473"
+    @if (Setting::get('whatsapp'))
+    <a href="https://wa.me/{{ Setting::get('whatsapp') }}"
         class="whatsapp-float"
         target="_blank"
         aria-label="Chat on WhatsApp">
     <i class="lni lni-whatsapp"></i>
     </a>
+    @endif
 
     <!-- ========================= JS here ========================= -->
    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

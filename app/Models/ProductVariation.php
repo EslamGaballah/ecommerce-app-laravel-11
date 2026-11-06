@@ -69,7 +69,7 @@ class ProductVariation extends Model
 
     public function getImageAttribute()
     {
-        return $this->images()->first()?->image;
+        return $this->images->first()?->image;
     }
 
 }

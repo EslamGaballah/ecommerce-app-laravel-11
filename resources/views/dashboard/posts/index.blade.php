@@ -21,11 +21,11 @@
 
 {{-- start filter --}}
 <form action="{{ url()->current() }}" method="get" class="d-flex justify-content-between mb-4">
-    <x-form.input name="title" placeholder="title" class="mx-2" :value="request('name')" />
+    <x-form.input name="title" placeholder="{{ __('app.title') }}" class="mx-2" :value="request('title')" />
     <select name="status" class="form-control mx-2">
-        <option value="">All</option>
+        <option value="">{{ __('app.all') }}</option>
        
-            @foreach (['published' => 'published' ,'arvived' => 'Archived'] as $value => $label )
+            @foreach (['published' => __('app.published'), 'archived' => __('app.archived')] as $value => $label )
                 <option value="{{ $value }}" @selected(request('status') == $value)>
                     {{ $label }}
                 </option>
@@ -39,7 +39,7 @@
     <thead>
         <tr>
             <th>#</th>
-            <th>ID</th>
+            <th>{{ __('app.id') }}</th>
             <th>{{ __('app.title') }}</th>
             <th>{{ __('app.author') }} </th>
             <th>{{ __('app.status') }}</th>
@@ -55,7 +55,7 @@
                     <img src="{{ asset('storage/' . $post->images->first()->image) }}" 
                         alt="" height="50">
                 @else
-                    <span>No Image</span>
+                    <span>{{ __('app.no_image') }}</span>
                 @endif
             </td>
 

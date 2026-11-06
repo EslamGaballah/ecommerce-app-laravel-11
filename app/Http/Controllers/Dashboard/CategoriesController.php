@@ -55,7 +55,7 @@ class CategoriesController extends Controller
              Category::create($data);
 
             return Redirect::route('dashboard.categories.index')
-            ->with('success', 'Category created!');
+            ->with('success', __('app.created_successfully'));
     }
 
     /**
@@ -93,7 +93,7 @@ class CategoriesController extends Controller
         $category->update($data);
 
         return Redirect::route('dashboard.categories.index')
-            ->with('success', 'Category updated!');
+            ->with('success', __('app.updated_successfully'));
 
     }
 
@@ -105,6 +105,6 @@ class CategoriesController extends Controller
         $category->delete();
 
         return Redirect::route('dashboard.categories.index')
-            ->with('success', 'Category deleted!');
+            ->with('success', __('app.deleted_successfully'));
     }
 }

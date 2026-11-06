@@ -21,7 +21,7 @@
 <table class="table">
     <thead>
         <tr>
-            <th>ID</th>
+            <th>{{ __('app.id') }}</th>
             <th>{{__('app.name')}}</th>
             <th>{{__('app.created_at')}}</th>
             <th colspan="2">{{__('app.actions')}}</th>
@@ -52,7 +52,7 @@
         </tr>
         @empty
         <tr>
-            <td colspan="4">No roles defined.</td>
+            <td colspan="4">{{ __('app.no_roles_defined') }}</td>
         </tr>
         @endforelse
     </tbody>

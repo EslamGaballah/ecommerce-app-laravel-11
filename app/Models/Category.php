@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -60,5 +61,25 @@ class Category extends Model
     public function childrenRecursive()
     {
         return $this->children()->with('childrenRecursive');
+    }
+
+    /**
+     * Active top-level categories with their subcategories; once() runs the query a single time per request.
+     */
+    public static function menuTree(): Collection
+    {
+        return once(fn () => static::whereNull('parent_id')
+            ->where('status', 'active')
+            ->with('childrenRecursive')
+            ->withCount('products')
+            ->get());
+    }
+
+    public function selfAndDescendantIds(): array
+    {
+        return $this->childrenRecursive
+            ->flatMap(fn (Category $child) => $child->selfAndDescendantIds())
+            ->prepend($this->id)
+            ->all();
     }
 }

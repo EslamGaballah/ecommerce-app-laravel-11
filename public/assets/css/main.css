@@ -2403,7 +2403,7 @@ ol {
   position: relative;
 }
 
-.header .mega-category-menu .sub-category li:hover .inner-sub-category {
+.header .mega-category-menu .sub-category li:hover > .inner-sub-category {
   opacity: 1;
   visibility: visible;
   top: 0;
@@ -2435,6 +2435,7 @@ ol {
 }
 
 .header .mega-category-menu .sub-category li .inner-sub-category li a {
+  display: block;
   color: #081828;
   text-transform: capitalize;
   font-size: 14px;
@@ -2452,6 +2453,7 @@ ol {
 }
 
 .header .mega-category-menu .sub-category li a {
+  display: block;
   color: #081828;
   text-transform: capitalize;
   font-size: 14px;

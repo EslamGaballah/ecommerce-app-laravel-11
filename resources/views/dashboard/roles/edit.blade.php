@@ -1,11 +1,11 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Edit Role')
+@section('title', __('app.edit_role'))
 
 @section('breadcrumb')
 @parent
-<li class="breadcrumb-item active">Roles</li>
-<li class="breadcrumb-item active">Edit Role</li>
+<li class="breadcrumb-item active">{{ __('app.roles') }}</li>
+<li class="breadcrumb-item active">{{ __('app.edit_role') }}</li>
 @endsection
 
 @section('content')
@@ -15,7 +15,7 @@
     @method('put')
     
     @include('dashboard.roles._form', [
-        'button_label' => 'Update'    
+        'button_label' => __('app.update')    
     ])
 </form>
 

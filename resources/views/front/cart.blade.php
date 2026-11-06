@@ -1,4 +1,9 @@
-<x-front-layout title="Cart">
+<x-front-layout :title="__('app.cart')">
+    @php
+        $cartItems = app(App\Services\Order\CartService::class)->items();
+        $bundleService = app(App\Services\Bundle\BundleService::class);
+        $bundleDiscount = $bundleService->calculate($cartItems)['discount'];
+    @endphp
 
     <x-slot:breadcrumb>
         <div class="breadcrumbs">
@@ -107,7 +112,9 @@
                         <div class="row">
                             <div class="col-lg-8 col-md-6 col-12">
                                 <div class="left">
-                                   
+                                    <div id="cart-bundle-progress">
+                                        @include('front.bundles._cart-progress', ['progress' => $bundleService->progress($cartItems)])
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-lg-4 col-md-6 col-12">
@@ -118,12 +125,11 @@
                                             <span class="cart-subtotal">{{ Currency::format($cart->total()) }}</span>
                                             {{-- <span class="cart-subtotal">{{ Currency::format($totals['original']) }}</span> --}}
                                         </li>
-                                        {{-- <li>{{ __('app.shipping') }}<span> تحدد بالعنوان</span></li>
-                                        <li>You Save
-                                            <span class="cart-save">{{ Currency::format($totals['discount']) }}</span>
-                                        </li> --}}
+                                        <li id="cart-bundle-row" @class(['d-none' => ! $bundleDiscount])>{{ __('app.bundle_discount') }}
+                                            <span>- {{ Currency::format($bundleDiscount) }}</span>
+                                        </li>
                                         <li class="last">{{ __('app.cart_total')  }}
-                                            <span class="cart-pay">{{ Currency::format($cart->total()) }}</span>
+                                            <span class="cart-pay">{{ Currency::format(max($cart->total() - $bundleDiscount, 0)) }}</span>
                                         </li>
                                     </ul>
                                     <div class="button">

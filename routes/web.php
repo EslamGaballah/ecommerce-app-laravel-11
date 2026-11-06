@@ -3,12 +3,16 @@
 use App\Enums\OrderStatus;
 use App\Events\OrderCreated;
 use App\Http\Controllers\Front\OrdersController;
+use App\Http\Controllers\Front\BundleController;
 use App\Http\Controllers\Front\CartController;
 use App\Http\Controllers\Front\CheckoutController;
 use App\Http\Controllers\Front\CommentController;
 use App\Http\Controllers\Front\FavoritesController;
 use App\Http\Controllers\Front\HomeController;
 // use App\Http\Controllers\Front\OrdersController as FrontOrdersController;
+use App\Http\Controllers\Front\ContactController;
+use App\Http\Controllers\Front\PageController;
+use App\Http\Controllers\Front\PaymentController;
 use App\Http\Controllers\Front\PostController;
 use App\Http\Controllers\Front\ProductsController;
 // use App\Http\Controllers\Front\RatingController;
@@ -47,6 +51,19 @@ Route::get('lang/{lang}', [LangController::class, 'change'])->name('lang.switch'
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+Route::get('/bundles', [BundleController::class, 'index'])->name('bundles.index');
+Route::get('/bundles/{bundle}', [BundleController::class, 'show'])->name('bundles.show');
+
+Route::get('/about-us', [PageController::class, 'show'])->defaults('page', 'about')->name('pages.about');
+Route::get('/faq', [PageController::class, 'show'])->defaults('page', 'faq')->name('pages.faq');
+Route::get('/privacy-policy', [PageController::class, 'show'])->defaults('page', 'privacy')->name('pages.privacy');
+Route::get('/terms-and-conditions', [PageController::class, 'show'])->defaults('page', 'terms')->name('pages.terms');
+Route::get('/shipping-policy', [PageController::class, 'show'])->defaults('page', 'shipping')->name('pages.shipping');
+Route::get('/return-policy', [PageController::class, 'show'])->defaults('page', 'returns')->name('pages.returns');
+
+Route::get('/contact-us', [ContactController::class, 'show'])->name('contact');
+Route::post('/contact-us', [ContactController::class, 'store'])->middleware('throttle:5,1')->name('contact.store');
+
 Route::get('/front/products', [ProductsController::class, 'index'])->name('products.index');
 Route::get('/front/product/{product:slug}', [ProductsController::class, 'show'])->name('products.show');
 Route::post('/front/product/{product}/variation', [ProductsController::class, 'match'])
@@ -68,6 +85,10 @@ Route::middleware('auth')->group(function() {
         Route::post('/checkout',[CheckoutController::class,'store'])
                 ->name('checkout.store');
         Route::post('/checkout/apply-coupon', [CheckoutController::class, 'applyCoupon'])->name('checkout.applyCoupon');
+        Route::get('/orders/{order}/pay', [PaymentController::class, 'show'])->name('front.payments.show');
+        Route::post('/orders/{order}/pay', [PaymentController::class, 'store'])
+                ->middleware('throttle:20,1')
+                ->name('front.payments.store');
         Route::get('/my-orders', [OrdersController::class, 'index'])->name('front.orders.index');
         Route::get('/success/{order}', [OrdersController::class, 'success'])->name('front.orders.success');
         Route::get('/my-orders/{order}', [OrdersController::class, 'show'])->name('front.orders.show');
@@ -82,7 +103,10 @@ Route::middleware('auth')->group(function() {
                 // ->middleware('auth')
                 ->name('products.review');
 
-        Route::get('/notifications', [NotificationsController::class, 'index'])->name('notifications.index');;
+        Route::get('/notifications', [NotificationsController::class, 'index'])->name('notifications.index');
+        Route::get('/notifications/{id}/open', [NotificationsController::class, 'open'])->name('notifications.open');
+        Route::delete('/notifications/read', [NotificationsController::class, 'destroyRead'])->name('notifications.destroyRead');
+        Route::delete('/notifications/{id}', [NotificationsController::class, 'destroy'])->name('notifications.destroy');
         Route::post('/notifications/{id}/read', [NotificationsController::class, 'markAsRead'])
                 ->name('notifications.markAsRead');
         Route::post('/notifications/read-all', [NotificationsController::class, 'markAllAsRead'])
@@ -101,5 +125,8 @@ Route::middleware('auth')->group(function() {
 
 require __DIR__.'/auth.php';
 require __DIR__.'/dashboard.php';
+
+// Inside the web middleware, so the 404 page has the visitor's language and session.
+Route::fallback(fn () => abort(404));
 
 

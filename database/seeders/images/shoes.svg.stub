@@ -1,0 +1,4 @@
+<path d="M75 305q5-70 55-95l75 72q70 62 175 80 125 20 140 95H75z" fill="{main}" stroke="{dark}" stroke-width="6" stroke-linejoin="round"/>
+<rect x="65" y="452" width="470" height="36" rx="18" fill="#f8fafc" stroke="{dark}" stroke-width="5"/>
+<path d="M215 292l-28 32M250 322l-28 32M287 345l-28 32" stroke="#f8fafc" stroke-width="12" stroke-linecap="round"/>
+<path d="M85 400q60-30 120 0" fill="none" stroke="{dark}" stroke-width="10"/>

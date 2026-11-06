@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dashboard;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use App\Http\Controllers\Controller;
+use App\Notifications\OrderStatusChangedNotification;
 use App\Models\Order;
 use App\Services\Order\OrderService;
 use Illuminate\Http\Request;
@@ -36,7 +37,7 @@ class OrdersController extends Controller
      */
     public function show(Order $order)
     {
-        $order->load('items.product', 'address');
+        $order->load('items.product', 'address', 'payments');
 
         return view('dashboard.orders.show', compact('order'));
     }
@@ -60,6 +61,11 @@ class OrdersController extends Controller
                 return false;
             }
 
+            // An unpaid card order can only be canceled; shipping it would give the items away.
+            if ($current->isPayable() && $newStatus !== OrderStatus::CANCELED) {
+                return false;
+            }
+
             $current->statusHistories()->create([
                 'old_status' => $current->status->value,
                 'new_status' => $newStatus->value,
@@ -74,8 +80,9 @@ class OrdersController extends Controller
 
             if ($newStatus === OrderStatus::COMPLETED) {
                 $current->payment_status = PaymentStatus::PAID;
-            } elseif ($newStatus === OrderStatus::REFUNDED && $current->payment_status === PaymentStatus::PAID) {
+            } elseif ($newStatus->isClosed() && $current->payment_status === PaymentStatus::PAID) {
                 $current->payment_status = PaymentStatus::REFUNDED;
+                $current->payments()->where('status', PaymentStatus::PAID)->update(['status' => PaymentStatus::REFUNDED]);
             }
 
             $current->save();
@@ -91,7 +98,9 @@ class OrdersController extends Controller
                 : back()->with('error', $message);
         }
 
-        $order->refresh();
+                $order->refresh();
+
+        rescue(fn () => $order->user?->notify(new OrderStatusChangedNotification($order)));
 
         if ($request->expectsJson()) {
             return response()->json([
@@ -104,7 +113,7 @@ class OrdersController extends Controller
             ]);
         }
 
-        return back()->with('success', 'Order Status Updated successfully');
+        return back()->with('success', __('app.updated_successfully'));
     }
 
     /**

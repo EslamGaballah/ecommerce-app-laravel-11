@@ -1,0 +1,4 @@
+<path d="M210 95q90-50 180 0l30 95q-120 80-240 0z" fill="{main}" stroke="{dark}" stroke-width="5"/>
+<path d="M205 205q50 40 95 40l-30 245h-105z" fill="{main}" stroke="{dark}" stroke-width="5"/>
+<path d="M395 205q-50 40-95 40l60 205h105z" fill="{main}" stroke="{dark}" stroke-width="5"/>
+<path d="M172 490v34M196 490v34M220 490v34M244 490v34M268 490v34M366 450v34M390 450v34M414 450v34M438 450v34M462 450v34" stroke="{dark}" stroke-width="7" stroke-linecap="round"/>

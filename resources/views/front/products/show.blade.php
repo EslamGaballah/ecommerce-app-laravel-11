@@ -120,7 +120,7 @@
 
                                 <p class="mt-2 {{ $product->stock > 0 ? 'text-success':'text-danger' }}">
 
-                                    {{ $product->stock > 0 ? 'متوفر ('.$product->stock.')':'غير متوفر' }}
+                                    {{ $product->stock > 0 ? (Setting::get('show_stock') ? __('app.in_stock_count', ['count' => $product->stock]) : __('app.in_stock')) : __('app.out_of_stock') }}
 
                                 </p>
 
@@ -131,6 +131,16 @@
 
                             <p id="stock-status"></p>
 
+
+                            @foreach ($productBundles as $bundle)
+                                <a href="{{ route('bundles.show', $bundle) }}" class="bundle-product-note">
+                                    <i class="lni lni-gift"></i>
+                                    <span>
+                                        <strong>{{ $bundle->name }}</strong>
+                                        {{ $bundle->tiers->map(fn ($tier) => __('app.bundle_tier_line', ['count' => $tier->min_quantity, 'discount' => $tier->label]))->implode(' · ') }}
+                                    </span>
+                                </a>
+                            @endforeach
 
                             <form id="add-to-cart-form" 
                                 action="{{ route('cart.store') }}" 
@@ -287,7 +297,10 @@
 
         <div class="product-details-info">
 
-            @include('front.review.review')
+                        @if (Setting::get('product_ratings_visible'))
+                @include('front.review.review')
+            @endif
+
 
         </div>
 
@@ -295,6 +308,52 @@
 
     </section>
 
+    @push('page-styles')
+        <link rel="stylesheet" href="{{ asset('assets/css/home.css') }}" />
+    @endpush
+
+    @include('front.partials.product-section', [
+        'products' => $suggested,
+        'title' => __('app.suggested_products'),
+        'text' => __('app.suggested_products_text'),
+        'tinted' => true,
+    ])
+
+    @if ($bundles->isNotEmpty())
+        <section class="home-section">
+            <div class="container">
+                <div class="home-section-head">
+                    <div>
+                        <h2>{{ __('app.bundles') }}</h2>
+                        <p>{{ __('app.bundles_text') }}</p>
+                    </div>
+                    <a href="{{ route('bundles.index') }}" class="home-link">{{ __('app.view_all') }} <i class="lni lni-arrow-right"></i></a>
+                </div>
+                <div class="row g-3 g-lg-4">
+                    @foreach ($bundles as $bundle)
+                        <div class="col-lg-4 col-md-6 col-12">
+                            @include('front.bundles._card')
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endif
+
+    @include('front.partials.product-section', [
+        'products' => $featured,
+        'title' => __('app.featured_products'),
+        'text' => __('app.featured_products_text'),
+        'link' => route('products.index', ['featured' => 1]),
+        'tinted' => true,
+    ])
+
+    @include('front.partials.product-section', [
+        'products' => $bestSellers,
+        'title' => __('app.best_sellers'),
+        'text' => __('app.best_sellers_text'),
+        'link' => route('products.index', ['sort_by' => 'best_selling']),
+    ])
 
 @push('script')
 
@@ -302,8 +361,8 @@
 $variationsJs = $product->variations->map(function ($v) {
     return [
         'id'      => $v->id,
-        'price'   => $v->price,
-        'compare' => $v->compare_price,
+                'price'   => Currency::format($v->price),
+        'compare' => (float) $v->compare_price > (float) $v->price ? Currency::format($v->compare_price) : null,
         'qty'     => $v->stock,
         'attrs'   => $v->values->pluck('id')->toArray(),
         'images'   => $v->images->pluck('image')->toArray(),
@@ -381,7 +440,7 @@ function updateVariation() {
     console.log('variations:', variations);
 
     if (selectedValues.length < requiredAttributes) {
-        stockEl.textContent = 'من فضلك اختر كل الخصائص';
+        stockEl.textContent = @js(__('app.choose_options'));
         addBtn.disabled = true;
         return;
     }
@@ -393,7 +452,7 @@ function updateVariation() {
     });
 
     if (!v) {
-        stockEl.textContent = 'غير متوفر';
+        stockEl.textContent = @js(__('app.out_of_stock'));
         addBtn.disabled = true;
         variationInput.value = '';
         return;
@@ -411,8 +470,8 @@ function updateVariation() {
 
     // ✅ STOCK
     stockEl.innerHTML = v.qty > 0
-        ? `<span class="text-success">متوفر (${v.qty})</span>`
-        : `<span class="text-danger">غير متوفر</span>`;
+        ? `<span class="text-success">${@js(Setting::get('show_stock') ? __('app.in_stock_count') : __('app.in_stock')).replace(':count', v.qty)}</span>`
+        : `<span class="text-danger">${@js(__('app.out_of_stock'))}</span>`;
 
     // ✅ QUANTITY
     qtyInput.max = v.qty;
@@ -530,14 +589,14 @@ form.addEventListener('submit', function (e) {
     e.preventDefault();
 
     if (variations.length > 0 && !variationInput.value) {
-        showToast('من فضلك اختر الخصائص أولاً', 'error');
+        showToast(@js(__('app.choose_options')), 'error');
         return;
     }
 
     const formData = new FormData(form);
 
     addBtn.disabled = true;
-    addBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> جاري الإضافة...';
+    addBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> ' + @js(__('app.adding_to_cart'));
 
     fetch(form.action, {
         method: "POST",
@@ -552,7 +611,7 @@ form.addEventListener('submit', function (e) {
 
         if (data.success) {
 
-            showToast(data.message || 'تمت الإضافة بنجاح');
+            showToast(data.message || @js(__('app.added_to_cart')));
 
             document.querySelectorAll('.cart-count-display')
                 .forEach(el => el.innerText = data.count);
@@ -566,12 +625,12 @@ form.addEventListener('submit', function (e) {
             }
 
         } else {
-            showToast('حدث خطأ أثناء الإضافة', 'error');
+            showToast(@js(__('app.something_went_wrong')), 'error');
         }
 
     })
     .catch(() => {
-        showToast('خطأ في الاتصال', 'error');
+        showToast(@js(__('app.something_went_wrong')), 'error');
     })
     .finally(() => {
         addBtn.disabled = false;

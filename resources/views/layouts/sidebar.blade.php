@@ -1,221 +1,76 @@
- <!-- /.navbar -->
-<!-- Main Sidebar Container -->
-<aside class="main-sidebar sidebar-dark-primary elevation-4">
-        <!-- Brand Logo -->
-        <a href="index3.html" class="brand-link">
-          <img src="{{ asset('dist/img/AdminLTELogo.png') }}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
-               style="opacity: .8">
-          <span class="brand-text font-weight-light">AdminLTE 3</span>
-        </a>
+@php
+    $sections = [
+        null => [
+            ['route' => 'dashboard.index', 'active' => 'dashboard.index', 'icon' => 'lni-dashboard', 'label' => 'dashboard'],
+        ],
+        'menu_catalog' => [
+            ['route' => 'dashboard.products.index', 'active' => 'dashboard.products.*', 'icon' => 'lni-package', 'label' => 'products', 'can' => 'view-product'],
+            ['route' => 'dashboard.categories.index', 'active' => 'dashboard.categories.*', 'icon' => 'lni-grid-alt', 'label' => 'categories', 'can' => 'view-categories'],
+            ['route' => 'dashboard.brands.index', 'active' => 'dashboard.brands.*', 'icon' => 'lni-bookmark', 'label' => 'brands', 'can' => 'manage-brands'],
+            ['route' => 'dashboard.tags.index', 'active' => 'dashboard.tags.*', 'icon' => 'lni-tag', 'label' => 'tags', 'can' => 'manage-tags'],
+            ['route' => 'dashboard.attributes.index', 'active' => 'dashboard.attributes.*', 'icon' => 'lni-layers', 'label' => 'attributes', 'can' => 'manage-attributes'],
+            ['route' => 'dashboard.attribute-values.index', 'active' => 'dashboard.attribute-values.*', 'icon' => 'lni-list', 'label' => 'attribute_values', 'can' => 'manage-attributes'],
+        ],
+        'menu_sales' => [
+                        ['route' => 'dashboard.bundles.index', 'active' => 'dashboard.bundles.*', 'icon' => 'lni-gift', 'label' => 'bundles', 'can' => 'manage-bundles'],
+            ['route' => 'dashboard.orders.index', 'active' => 'dashboard.orders.*', 'icon' => 'lni-cart', 'label' => 'orders', 'can' => 'view-order'],
+            ['route' => 'dashboard.coupons.index', 'active' => 'dashboard.coupons.*', 'icon' => 'lni-ticket', 'label' => 'coupons', 'can' => 'manage-coupons'],
+            ['route' => 'dashboard.governorates.index', 'active' => 'dashboard.governorates.*', 'icon' => 'lni-map-marker', 'label' => 'governorates', 'can' => 'manage-governorates'],
+        ],
+        'menu_content' => [
+            ['route' => 'dashboard.posts.index', 'active' => 'dashboard.posts.*', 'icon' => 'lni-pencil-alt', 'label' => 'blog', 'can' => 'manage-posts'],
+        ],
+        'menu_administration' => [
+            ['route' => 'dashboard.messages.index', 'active' => 'dashboard.messages.*', 'icon' => 'lni-envelope', 'label' => 'contact_messages', 'can' => 'manage-messages', 'badge' => auth()->user()->can('manage-messages') ? App\Models\ContactMessage::whereNull('read_at')->count() : 0],
+            ['route' => 'dashboard.users.index', 'active' => 'dashboard.users.*', 'icon' => 'lni-users', 'label' => 'users', 'can' => 'manage-users'],
+            ['route' => 'dashboard.roles.index', 'active' => 'dashboard.roles.*', 'icon' => 'lni-shield', 'label' => 'roles', 'can' => 'manage-roles'],
+            ['route' => 'dashboard.settings.edit', 'active' => 'dashboard.settings.*', 'icon' => 'lni-cog', 'label' => 'settings', 'can' => 'manage-settings'],
+        ],
+    ];
+@endphp
 
-        <!-- Sidebar -->
-        <div class="sidebar">
-          <!-- Sidebar user panel (optional) -->
-          <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-            <div class="image">
-              <img src="{{ asset('dist/img/avatar.png') }}" class="img-circle elevation-2" alt="User Image">
-            </div>
+<aside class="main-sidebar sidebar-dark-primary elevation-0">
+    <a href="{{ route('dashboard.index') }}" class="brand-link">
+        @if (Setting::get('logo'))
+            <img src="{{ asset('storage/'.Setting::get('logo')) }}" alt="" class="dash-brand-logo">
+        @else
+            <span class="dash-brand-mark"><i class="lni lni-cart"></i></span>
+        @endif
+        <span class="brand-text">{{ Setting::get('site_name') }}</span>
+    </a>
+
+    <div class="sidebar">
+        <div class="user-panel">
+            <span class="dash-avatar">@if (auth()->user()->avatar_url)<img src="{{ auth()->user()->avatar_url }}" alt="">@else{{ mb_substr(auth()->user()->name, 0, 1) }}@endif</span>
             <div class="info">
-              @if(auth()->check())
-               <a href="#" class="d-block"> {{ auth()->user()->name }}</a>
-              @else
-                <p>not signed in !</p>
-                @endif
+                <a href="{{ route('dashboard.profile.edit') }}" class="d-block">{{ auth()->user()->name }}</a>
             </div>
-          </div>
-
-          <!-- Sidebar Menu -->
-          <nav class="mt-2">
-            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-              <!-- Add icons to the links using the .nav-icon class
-                   with font-awesome or any other icon font library -->
-
-              <li class="nav-item">
-                  <a href="{{route('home')}}" class="nav-link">
-                    <i class="nav-icon fas fa-th"></i>
-                    <p>
-                      {{ __('app.home') }}
-                      {{-- <span class="right badge badge-danger">{{ __('app.new') }}</span> --}}
-                    </p>
-                  </a>
-                </li>
-
-                <li class="nav-item">
-                  <a href="{{route('dashboard.index')}}" class="nav-link">
-                    <i class="nav-icon fas fa-th"></i>
-                    <p>
-                      {{ __('app.dashboard') }}
-                      {{-- <span class="right badge badge-danger">{{ __('app.new') }}</span> --}}
-                    </p>
-                  </a>
-                </li>
-
-              @can('view-categories')
-                <li class="nav-item">
-                  <a href="{{route('dashboard.categories.index')}}" class="nav-link">
-                    <i class="nav-icon fas fa-th"></i>
-                    <p>
-                    {{ __('app.categories') }}
-                      {{-- <span class="right badge badge-danger">{{ __('app.new') }}</span> --}}
-                    </p>
-                  </a>
-                </li>
-               @endcan
-               @can('manage-brands')
-                <li class="nav-item">
-                  <a href="{{route('dashboard.brands.index')}}" class="nav-link">
-                    <i class="nav-icon fas fa-th"></i>
-                    <p>
-                    {{ __('app.brands') }}
-                      <span class="right badge badge-danger">{{ __('app.new') }}</span>
-                    </p>
-                  </a>
-                </li>
-               @endcan
-
-              @can('view-product')
-                <li class="nav-item">
-                  <a href="{{route('dashboard.products.index')}}" class="nav-link">
-                    <i class="nav-icon fas fa-th"></i>
-                    <p>
-                      {{ __('app.products') }}
-                      {{-- <span class="right badge badge-danger">{{ __('app.new') }}</span> --}}
-                    </p>
-                  </a>
-                </li>
-              @endcan
-                @can('manage-coupons')
-                    <li class="nav-item">
-                        <a href="{{route('dashboard.coupons.index')}}" class="nav-link">
-                            <i class="nav-icon fas fa-th"></i>
-                            <p>
-                                {{ __('app.coupons') }}
-                                <span class="right badge badge-danger">{{ __('app.new') }}</span>
-                            </p>
-                        </a>
-                    </li>
-                @endcan
-              @can('manage-attributes')
-                <li class="nav-item">
-                  <a href="{{route('dashboard.attributes.index')}}" class="nav-link">
-                    <i class="nav-icon fas fa-th"></i>
-                    <p>
-                      {{ __('app.attributes') }}
-                      {{-- <span class="right badge badge-danger">{{ __('app.new') }}</span> --}}
-                    </p>
-                  </a>
-                </li>
-              @endcan
-              @can('manage-attributes')
-                <li class="nav-item">
-                  <a href="{{route('dashboard.attribute-values.index')}}" class="nav-link">
-                    <i class="nav-icon fas fa-th"></i>
-                    <p>
-                      {{ __('app.attribute_values') }}
-                      {{-- <span class="right badge badge-danger">{{ __('app.new') }}</span> --}}
-                    </p>
-                  </a>
-                </li>
-              @endcan
-
-              @can('manage-governorates')
-                <li class="nav-item">
-                  <a href="{{route('dashboard.governorates.index')}}" class="nav-link">
-                    <i class="nav-icon fas fa-th"></i>
-                    <p>
-                      {{ __('app.governorates') }}
-                      <span class="right badge badge-danger">{{ __('app.new') }}</span>
-                    </p>
-                  </a>
-                </li>
-              @endcan
-
-              @can('view-order')
-                <li class="nav-item">
-                  <a href="{{route('dashboard.orders.index')}}" class="nav-link">
-                    <i class="nav-icon fas fa-th"></i>
-                    <p>
-                      {{ __('app.orders') }}
-                      <span class="right badge badge-danger">{{ __('app.new') }}</span>
-                    </p>
-                  </a>
-                </li>
-              @endcan
-
-              @can('manage-posts')
-                <li class="nav-item">
-                  <a href="{{route('dashboard.posts.index')}}" class="nav-link">
-                    <i class="nav-icon fas fa-th"></i>
-                    <p>
-                      {{ __('app.blog') }}
-                      <span class="right badge badge-danger">{{ __('app.new') }}</span>
-                    </p>
-                  </a>
-                </li>
-              @endcan
-
-              @can('manage-users')
-                <li class="nav-item">
-                  <a href="{{route('dashboard.users.index')}}" class="nav-link">
-                    <i class="nav-icon fas fa-th"></i>
-                    <p>
-                      {{ __('app.users') }}
-                      {{-- <span class="right badge badge-danger">{{ __('app.new') }}</span> --}}
-                    </p>
-                  </a>
-                </li>
-              @endcan
-
-              @can('manage-roles')
-                <li class="nav-item">
-                  <a href="{{route('dashboard.roles.index')}}" class="nav-link">
-                    <i class="nav-icon fas fa-th"></i>
-                    <p>
-                      {{ __('app.roles') }}
-                      {{-- <span class="right badge badge-danger">{{ __('app.new') }}</span> --}}
-                    </p>
-                  </a>
-                </li>
-              @endcan
-
-              @if (!auth()->check())
-                <li class="nav-item">
-                  <a href="{{route('login')}}" class="nav-link">
-                    <i class="nav-icon fas fa-th"></i>
-                    <p>
-                      {{ __('app.login') }}
-                      <span class="right badge badge-danger">{{ __('app.new') }}</span>
-                    </p>
-                  </a>
-                </li>
-
-              @endif
-
-              @if (!auth()->check())
-                <li class="nav-item">
-                  <a href="{{route('register')}}" class="nav-link">
-                    <i class="nav-icon fas fa-th"></i>
-                    <p>
-                      {{ __('app.register') }}
-                      <span class="right badge badge-danger">{{ __('app.new') }}</span>
-                    </p>
-                  </a>
-                </li>
-              @endif
-
-              @if (auth()->check())
-                <li class="nav-item">
-                  <form method="POST" action="{{ route('logout') }}" class="nav-link">
-                    @csrf
-                    <button type="submit">{{ __('app.logout') }}</button>
-                  </form>
-                </li>
-
-              @endif
-
-            </ul>
-          </nav>
-          <!-- /.sidebar-menu -->
         </div>
-        <!-- /.sidebar -->
-      </aside>
+
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                @foreach ($sections as $title => $items)
+                    @php($visible = array_filter($items, fn ($item) => ! isset($item['can']) || auth()->user()->can($item['can'])))
+                    @if ($visible)
+                        @if ($title)
+                            <li class="nav-header">{{ __('app.'.$title) }}</li>
+                        @endif
+                        @foreach ($visible as $item)
+                            <li class="nav-item">
+                                <a href="{{ route($item['route']) }}" @class(['nav-link', 'active' => request()->routeIs($item['active'])])>
+                                    <i class="nav-icon lni {{ $item['icon'] }}"></i>
+                                    <p>
+                                        {{ __('app.'.$item['label']) }}
+                                        @if (! empty($item['badge']))
+                                            <span class="right badge bg-primary">{{ $item['badge'] }}</span>
+                                        @endif
+                                    </p>
+                                </a>
+                            </li>
+                        @endforeach
+                    @endif
+                @endforeach
+            </ul>
+        </nav>
+    </div>
+</aside>

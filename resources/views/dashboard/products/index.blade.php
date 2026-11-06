@@ -69,7 +69,7 @@
     <div style="min-width: 200px; flex-grow: 1;">
         <x-form.input 
             name="search" 
-            placeholder="Search..." 
+            placeholder="{{ __('app.search') }}" 
             class="form-control mb-0 h-100"
             :value="request('search')" 
         />
@@ -81,7 +81,7 @@
 <table class="table align-middle"> 
     <thead>
         <tr>
-            <th>ID</th>
+            <th>{{ __('app.id') }}</th>
             <th>{{ __('app.name') }}</th>
             <th>{{ __('app.category') }}</th>
             <th>{{ __('app.stock') }}</th>
@@ -120,8 +120,16 @@
             </td>
             <td>{{ $product->created_at }}</td>
             
-            <td class="text-center" style="width: 220px;">
+            <td class="text-center" style="width: 270px;">
                 <div class="d-flex align-items-center justify-content-center gap-1">
+                    <form action="{{ route('dashboard.products.featured', $product) }}" method="post" class="m-0 d-inline">
+                        @csrf
+                        @method('patch')
+                        <button type="submit" class="btn btn-sm {{ $product->is_featured ? 'btn-warning' : 'btn-outline-secondary' }}"
+                            title="{{ __('app.featured_product') }}" aria-label="{{ __('app.featured_product') }}" aria-pressed="{{ $product->is_featured ? 'true' : 'false' }}">
+                            <i class="lni {{ $product->is_featured ? 'lni-star-filled' : 'lni-star' }}"></i>
+                        </button>
+                    </form>
                     
                     <a href="{{ route('dashboard.products.show', $product->id) }}" class="btn btn-sm btn-outline-success text-nowrap m-0">
                         {{ __('app.show') }}
@@ -145,7 +153,7 @@
         </tr>
         @empty
         <tr>
-            <td colspan="8" class="text-center">No products defined.</td> 
+            <td colspan="8" class="text-center">{{ __('app.no_products_defined') }}</td> 
         </tr>
         @endforelse
     </tbody>

@@ -49,7 +49,7 @@ class AttributeValueController extends Controller
         // AttributeValue::create($data);
 
         return Redirect::route('dashboard.attribute-values.index')
-            ->with('success', 'attribute_values created');
+            ->with('success', __('app.created_successfully'));
     }
 
     public function edit (AttributeValue $attribute_value)
@@ -81,7 +81,7 @@ class AttributeValueController extends Controller
             ]);
 
         return Redirect::route('dashboard.attribute-values.index')
-            ->with('success', 'attribute_values updated');
+            ->with('success', __('app.updated_successfully'));
     }
 
     public function destroy (AttributeValue $attribute_value)
@@ -90,7 +90,7 @@ class AttributeValueController extends Controller
 
         $attribute_value->delete();
 
-        return back()->with('success', 'attribute Value Deleted ');
+        return back()->with('success', __('app.deleted_successfully'));
 
     }
 }

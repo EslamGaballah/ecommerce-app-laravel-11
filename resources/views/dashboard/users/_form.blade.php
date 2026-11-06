@@ -10,7 +10,6 @@
 <div class="form-group">
     <label for="">{{__('app.name')}}</label>
     <x-form.input 
-        label="name" 
         class="form-control-lg" 
         name="name" 
         :value="old('name', $user->name ?? '')"
@@ -21,7 +20,6 @@
 <div class="form-group">
     <label for="">{{__('app.email')}}</label>
     <x-form.input 
-        label="Email" 
         type="email" 
         name="email" 
         :value="old('email', $user->email ?? '')"
@@ -33,7 +31,6 @@
 <div class="form-group">
     <label for="">{{__('app.password')}}</label>
     <x-form.input 
-        label="password" 
         class="form-control-lg" 
         name="password" 
         type="password" />
@@ -43,7 +40,6 @@
 <div class="form-group">
     <label for="">{{__('app.confirm_password')}}</label>
     <x-form.input 
-        label="password" 
         class="form-control-lg" 
         name="password_confirmation" 
         type="password" required autocomplete="new-password" />
@@ -52,7 +48,7 @@
 </div>
 
 <fieldset>
-    <legend>{{ __('Roles') }}</legend>
+    <legend>{{ __('app.roles') }}</legend>
 
     @foreach ($roles as $role)
     <div class="form-check">
@@ -78,5 +74,5 @@
 </fieldset>
 
 <div class="form-group">
-    <button type="submit" class="btn btn-primary">{{ $button_label ?? 'Save' }}</button>
+    <button type="submit" class="btn btn-primary">{{ $button_label ?? __('app.save') }}</button>
 </div>

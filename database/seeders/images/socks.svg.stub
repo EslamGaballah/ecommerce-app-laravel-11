@@ -1,0 +1,7 @@
+<g fill="{dark}" transform="translate(-75 -10)">
+    <path d="M250 110h115v205q0 25 22 42l65 50q42 36 8 75-32 34-82 6l-118-82q-45-34-45-90z"/>
+</g>
+<g fill="{main}" stroke="{dark}" stroke-width="5" transform="translate(45 15)">
+    <path d="M250 110h115v205q0 25 22 42l65 50q42 36 8 75-32 34-82 6l-118-82q-45-34-45-90z"/>
+    <path d="M250 150h115M250 185h115" stroke-width="14"/>
+</g>

@@ -52,13 +52,14 @@ class OrderCreatedNotification extends Notification implements ShouldBroadcast, 
 
     private function message()
 {
-    return 'طلب جديد رقم # ' . $this->order->number;
+    return __('app.new_order_number', ['number' => $this->order->number]);
 }
 
     public function toDatabase(object $notifiable): array
     {
         return [
             'message' => $this->message(),
+            'number' => $this->order->number,
             'order_id' => $this->order->id,
         ];
     }

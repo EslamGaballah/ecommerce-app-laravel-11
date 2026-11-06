@@ -51,7 +51,7 @@ class GovernoratesController extends Controller
 
         return redirect()
             ->route('dashboard.governorates.index')
-            ->with('success', 'تم إضافة المحافظة بنجاح');
+            ->with('success', __('app.created_successfully'));
     
     }
 
@@ -87,7 +87,7 @@ class GovernoratesController extends Controller
 
         return redirect()
             ->route('dashboard.governorates.index')
-            ->with('success', 'تم تحديث المحافظة بنجاح');
+            ->with('success', __('app.updated_successfully'));
     
     }
 
@@ -100,7 +100,7 @@ class GovernoratesController extends Controller
 
         return redirect()
             ->route('dashboard.governorates.index')
-            ->with('success', 'تم حذف المحافظة');
+            ->with('success', __('app.deleted_successfully'));
     }
 
      public function toggleStatus(Governorate $governorate)

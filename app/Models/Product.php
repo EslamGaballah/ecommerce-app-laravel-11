@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use App\Helpers\Currency;
 use App\Enums\ProductStatus;
 use App\Enums\ProductType;
 use App\Models\Category;
@@ -31,6 +32,7 @@ class Product extends Model
 
         'rating_avg',
         'rating_count',
+        'is_featured',
         
         
     ];
@@ -38,6 +40,7 @@ class Product extends Model
     protected $casts = [
         'status' => ProductStatus::class,
         'product_type' => ProductType::class,
+        'is_featured' => 'boolean',
 
     ];
 
@@ -62,9 +65,77 @@ class Product extends Model
         });
     }
 
+        public function scopeFeatured($query)
+    {
+        return $query->where('products.is_featured', true);
+    }
+
+    public function scopeWithSoldQuantity($query)
+    {
+        return $query->withSum([
+            'orderItems as sold_quantity' => fn ($items) => $items->whereHas('order', fn ($orders) => $orders->whereNotIn('status', ['canceled', 'refunded'])),
+        ], 'quantity');
+    }
+
+    public function scopeBestSelling($query)
+    {
+        return $query->withSoldQuantity()->having('sold_quantity', '>', 0)->orderByDesc('sold_quantity');
+    }
+
+    public function scopeMostViewed($query)
+    {
+        return $query->where('products.views_count', '>', 0)->orderByDesc('products.views_count');
+    }
+
+    /** In stock, on sale for a while, and not sold in this many days. */
+    public function scopeStagnant($query, int $days)
+    {
+        return $query->inStock()
+            ->where('products.created_at', '<', now()->subDays($days))
+            ->whereDoesntHave('orderItems', fn ($items) => $items->whereHas('order', fn ($orders) => $orders
+                ->whereNotIn('status', ['canceled', 'refunded'])
+                ->where('created_at', '>=', now()->subDays($days))));
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
+    public function bundles()
+    {
+        return $this->belongsToMany(Bundle::class);
+    }
+
     public function scopeActive($query)
     {
         return $query->where('products.status', ProductStatus::Active);
+    }
+
+    public function scopeInStock($query)
+    {
+        return $query->where(fn ($query) => $query
+            ->where('products.stock', '>', 0)
+            ->orWhereHas('variations', fn ($variations) => $variations->where('stock', '>', 0)));
+    }
+
+    /**
+     * A variable product has no stock of its own, so its stock column is often null.
+     */
+    public function scopeOutOfStock($query)
+    {
+        return $query
+            ->where(fn ($query) => $query->whereNull('products.stock')->orWhere('products.stock', '<=', 0))
+            ->whereDoesntHave('variations', fn ($variations) => $variations->where('stock', '>', 0));
+    }
+
+    public function scopeOnSale($query)
+    {
+        return $query->where(fn ($query) => $query
+            ->whereColumn('products.compare_price', '>', 'products.price')
+            ->orWhereHas('variations', fn ($variations) => $variations
+                ->where('is_primary', true)
+                ->whereColumn('compare_price', '>', 'price')));
     }
 
     public function scopeFilter($query, $filters)
@@ -192,6 +263,94 @@ class Product extends Model
     public function getFinalComparePriceAttribute()
     {
         return $this->defaultVariation?->compare_price ?? $this->compare_price;
+    }
+
+    public function getDiscountPercentAttribute(): int
+    {
+        $price = (float) $this->final_price;
+        $comparePrice = (float) $this->final_compare_price;
+
+        return $comparePrice > $price ? (int) round(($comparePrice - $price) / $comparePrice * 100) : 0;
+    }
+
+    public function getInStockAttribute(): bool
+    {
+        return $this->variations->isNotEmpty()
+            ? $this->variations->sum('stock') > 0
+            : $this->stock > 0;
+    }
+
+    public function getImageUrlAttribute(): string
+    {
+        $path = $this->default_variation?->image ?? $this->images->first()?->image;
+
+        return $path ? asset('storage/'.$path) : asset('assets/images/product-placeholder.svg');
+    }
+
+    /**
+     * What a product card needs to switch between variations without opening the product page.
+     * Uses the loaded relations: variations.images and variations.values.attribute.
+     */
+    public function getCardOptionsAttribute(): array
+    {
+        $selected = $this->variations->first(fn ($variation) => $variation->is_primary && $variation->stock > 0)
+            ?? $this->variations->first(fn ($variation) => $variation->stock > 0)
+            ?? $this->default_variation;
+
+        $selectedValues = $selected->values->pluck('id');
+
+        $variations = $this->variations->map(function ($variation) {
+            $price = (float) $variation->price;
+            $compare = (float) $variation->compare_price;
+            $onSale = $compare > $price;
+
+            return [
+                'id' => $variation->id,
+                'values' => $variation->values->pluck('id')->all(),
+                'price' => Currency::format($price),
+                'compare' => $onSale ? Currency::format($compare) : null,
+                'discount' => $onSale ? (int) round(($compare - $price) / $compare * 100) : 0,
+                'stock' => (int) $variation->stock,
+                'image' => $variation->image ? asset('storage/'.$variation->image) : null,
+            ];
+        })->values();
+
+        $attributes = $this->variations
+            ->flatMap->values
+            ->groupBy('attribute_id')
+            ->map(fn ($values) => [
+                'id' => $values->first()->attribute_id,
+                'name' => $values->first()->attribute?->name,
+                'values' => $values->unique('id')->values()->map(function ($value) use ($selectedValues) {
+                    // In stock together with what is selected in the other attribute groups?
+                    $others = $selectedValues->reject(fn ($id) => $this->valueAttribute($id) === $value->attribute_id);
+
+                    return [
+                        'id' => $value->id,
+                        'label' => $value->value,
+                        'active' => $selectedValues->contains($value->id),
+                        'available' => $this->variations->contains(fn ($variation) => $variation->stock > 0
+                            && $variation->values->pluck('id')->contains($value->id)
+                            && $others->diff($variation->values->pluck('id'))->isEmpty()),
+                    ];
+                })->all(),
+            ])
+            ->values()
+            ->all();
+
+        return compact('attributes', 'selected', 'variations');
+    }
+
+    private function valueAttribute(int $valueId): ?int
+    {
+        return $this->variations->flatMap->values->firstWhere('id', $valueId)?->attribute_id;
+    }
+
+    public function getStockLeftAttribute(): int
+    {
+        return $this->variations->isNotEmpty()
+            ? (int) $this->variations->sum('stock')
+            : (int) $this->stock;
     }
 
     public function getTotalQuantityAttribute()

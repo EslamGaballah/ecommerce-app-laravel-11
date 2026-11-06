@@ -19,12 +19,12 @@
 
 {{-- start filter --}}
 <form id="filter-form" action="{{ url()->current() }}" class="d-flex justify-content-between mb-4">
-    <x-form.input name="name" id="search-name" placeholder="Name" class="mx-2" :value="request('name')" />
+    <x-form.input name="name" id="search-name" placeholder="{{ __('app.name') }}" class="mx-2" :value="request('name')" />
     
     <select name="user_type" id="user-type-select" class="form-control mx-2">
-        <option value="">All</option>
-        <option value="admins" @selected(request('user_type') == 'admins')>{{ __('الإدارة') }}</option>
-        <option value="regular" @selected(request('user_type') == 'regular')>{{ __('مستخدم عادي') }}</option>
+        <option value="">{{ __('app.all') }}</option>
+        <option value="admins" @selected(request('user_type') == 'admins')>{{ __('app.admins') }}</option>
+        <option value="regular" @selected(request('user_type') == 'regular')>{{ __('app.regular_user') }}</option>
     </select>
     
     <button type="submit" class="btn btn-dark mx-2">{{__('app.filter')}}</button>

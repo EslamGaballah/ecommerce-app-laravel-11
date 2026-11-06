@@ -1,11 +1,11 @@
 @extends('layouts.dashboard')
 
-@section('title', $order->name)
+@section('title', __('app.order_number').' '.$order->number)
 
 @section('breadcrumb')
 @parent
-<li class="breadcrumb-item active">Orders</li>
-<li class="breadcrumb-item active">{{ $order->name }}</li>
+<li class="breadcrumb-item active">{{ __('app.orders') }}</li>
+<li class="breadcrumb-item active">{{ $order->number }}</li>
 @endsection
 
 @section('content')
@@ -13,8 +13,8 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>{{ __('app.order_number') }}: {{ $order->number }}</h2>
         <div>
-            <a href="{{ route('dashboard.orders.index') }}" class="btn btn-secondary btn-sm">العودة للقائمة</a>
-            <button onclick="window.print()" class="btn btn-primary btn-sm">طباعة الفاتورة</button>
+            <a href="{{ route('dashboard.orders.index') }}" class="btn btn-secondary btn-sm">{{ __('app.back') }}</a>
+            <button onclick="window.print()" class="btn btn-primary btn-sm">{{ __('app.print_invoice') }}</button>
         </div>
     </div>
 
@@ -24,9 +24,9 @@
             <div class="card mb-4">
                 <div class="card-header bg-light"><strong>{{ __('app.customer') }}</strong></div>
                 <div class="card-body">
-                    <p><strong>{{ __('app.name') }}:</strong> {{ $order->user?->name ?? 'ضيف' }}</p>
-                    <p><strong>{{ __('app.email') }}:</strong> {{ $order->user?->email ?? 'N/A' }}</p>
-                    <p><strong>{{ __('app.phone') }}:</strong> {{ $order->address->phone_number ?? 'N/A' }}</p>
+                    <p><strong>{{ __('app.name') }}:</strong> {{ $order->user?->name ?? __('app.guest') }}</p>
+                    <p><strong>{{ __('app.email') }}:</strong> {{ $order->user?->email ?? '—' }}</p>
+                    <p><strong>{{ __('app.phone') }}:</strong> {{ $order->address->phone_number ?? '—' }}</p>
                     <hr>
                     <h6>{{ __('app.shipping_address') }}</h6>
                     <p>
@@ -70,6 +70,45 @@
         {{-- تفاصيل المنتجات وتحديث الحالة --}}
         <div class="col-md-8">
             <div class="card mb-4">
+                <div class="card-header bg-light"><strong>{{ __('app.payment') }}</strong></div>
+                <div class="card-body">
+                    <p>
+                        <span class="badge bg-{{ $order->payment_method->color() }}">{{ $order->payment_method->label() }}</span>
+                        <span class="badge bg-{{ $order->payment_status->color() }}">{{ $order->payment_status->label() }}</span>
+                    </p>
+                    @if ($order->payments->isNotEmpty())
+                        <table class="table table-sm mb-0">
+                            <thead>
+                                <tr>
+                                    <th>{{ __('app.date') }}</th>
+                                    <th>{{ __('app.payment_reference') }}</th>
+                                    <th>{{ __('app.payment_card') }}</th>
+                                    <th>{{ __('app.total') }}</th>
+                                    <th>{{ __('app.payment_status') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($order->payments as $payment)
+                                    <tr>
+                                        <td>{{ $payment->created_at }}</td>
+                                        <td>{{ $payment->reference }}</td>
+                                        <td>•••• {{ $payment->card_last4 }}</td>
+                                        <td>{{ Currency::format($payment->amount) }}</td>
+                                        <td>
+                                            {{ $payment->status->label() }}
+                                            @if ($payment->failure_reason)
+                                                <small class="text-muted d-block">{{ __('app.payment_failed_'.$payment->failure_reason) }}</small>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @endif
+                </div>
+            </div>
+
+            <div class="card mb-4">
                 <div class="card-header bg-light"><strong>{{ __('app.products') }}</strong></div>
                 <div class="card-body">
                     <table class="table table-bordered">
@@ -102,8 +141,14 @@
                                 <th colspan="3" class="text-end">{{ __('app.total_price') }} :</th>
                                 <td>{{ number_format($subtotal, 2) }}</td>
                             </tr>
+                            @if ($order->bundle_discount > 0)
                             <tr>
-                                <th colspan="3" class="text-end">{{ __('app.discount') }} :</th>
+                                <th colspan="3" class="text-end">{{ __('app.bundle_discount') }} :</th>
+                                <td class="text-danger">{{ number_format($order->bundle_discount, 2) }}</td>
+                            </tr>
+                            @endif
+                            <tr>
+                                <th colspan="3" class="text-end">{{ $order->bundle_discount > 0 ? __('app.total_discount') : __('app.discount') }} :</th>
                                 <td class="text-danger">- {{ number_format($order->discount, 2) }}</td>
                             </tr>
                             <tr>
@@ -225,7 +270,7 @@
         }
     })
     .catch(error => {
-        alert('Something went wrong!');
+        alert(@js(__('app.something_went_wrong')));
         select.value = oldStatus; 
         console.error('Error:', error);
     })

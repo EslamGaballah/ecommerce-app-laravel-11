@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Edit Tag')
+@section('title', __('app.edit_tag'))
 
 @section('breadcrumb')
 @parent
@@ -15,7 +15,7 @@
     @method('put')
     
     @include('dashboard.tags._form', [
-        'button_label' => 'Update'    
+        'button_label' => __('app.update')    
     ])
 </form>
 

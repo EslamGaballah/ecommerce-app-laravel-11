@@ -1,0 +1,3 @@
+<path d="M240 80l22 95q38 28 76 0l22-95 34 12-8 150 95 285H119l95-285-8-150z" fill="{main}" stroke="{dark}" stroke-width="6" stroke-linejoin="round"/>
+<path d="M214 242h172" stroke="{dark}" stroke-width="16"/>
+<path d="M240 300l-35 225M300 300v225M360 300l35 225" stroke="{dark}" stroke-width="5" opacity="0.6"/>

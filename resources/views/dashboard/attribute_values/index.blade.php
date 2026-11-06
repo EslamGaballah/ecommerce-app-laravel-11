@@ -23,7 +23,7 @@
 <table class="table">
     <thead>
         <tr>
-            <th>ID</th>
+            <th>{{ __('app.id') }}</th>
             <th>{{__('app.name')}}</th>
             <th>{{__('app.created_at')}}</th>
             <th colspan="3">{{__('app.actions')}}</th>
@@ -59,7 +59,7 @@
         </tr>
         @empty
         <tr>
-            <td colspan="9">No attribute values defined.</td>
+            <td colspan="9">{{ __('app.no_attribute_values_defined') }}</td>
         </tr>
         @endforelse
     </tbody>

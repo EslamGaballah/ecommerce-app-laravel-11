@@ -39,6 +39,16 @@ class ProductsController extends Controller
         return view('dashboard.products.index', compact('products', 'categories', 'brands'));
     }
 
+    /** The star on the products list: the admin's picks shown on the home page. */
+    public function toggleFeatured(Product $product)
+    {
+        $this->authorize('update', $product);
+
+        $product->update(['is_featured' => ! $product->is_featured]);
+
+        return back()->with('success', __('app.updated_successfully'));
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -66,7 +76,7 @@ class ProductsController extends Controller
 
             return redirect()
                 ->route('dashboard.products.index')
-                ->with('success', 'Product created');
+                ->with('success', __('app.created_successfully'));
 
         } catch (\Throwable $e) {
             return back()
@@ -145,7 +155,7 @@ class ProductsController extends Controller
 
             return redirect()
                 ->route('dashboard.products.index')
-                ->with('success', 'Product Updated');
+                ->with('success', __('app.updated_successfully'));
 
         } catch (\Throwable $e) {
             return back()->with('error', $e->getMessage());
@@ -161,7 +171,7 @@ class ProductsController extends Controller
 
         $this->productService->delete($product);
 
-        return back()->with('success', 'Deleted');
+        return back()->with('success', __('app.deleted_successfully'));
     }
 
     /**
@@ -188,7 +198,7 @@ class ProductsController extends Controller
 
         return redirect()
             ->route('dashboard.products.trash')
-            ->with('success', 'Product restored');
+            ->with('success', __('app.restored_successfully'));
     }
 
     /**
@@ -205,7 +215,7 @@ class ProductsController extends Controller
 
         $this->productService->forceDelete($product);
 
-        return back()->with('success', 'Deleted permanently');
+        return back()->with('success', __('app.deleted_permanently'));
     }
 
     public function deleteVariation(Request $request, ProductVariation $variation, ProductVariationService $variations)
@@ -216,7 +226,7 @@ class ProductsController extends Controller
 
         return $request->expectsJson()
             ? response()->json(['success' => true])
-            : back()->with('success', 'Deleted');
+            : back()->with('success', __('app.deleted_successfully'));
     }
 
 }

@@ -3,7 +3,9 @@
 use App\Http\Controllers\Dashboard\AttributesController;
 use App\Http\Controllers\Dashboard\AttributeValueController;
 use App\Http\Controllers\Dashboard\BrandsController;
+use App\Http\Controllers\Dashboard\BundlesController;
 use App\Http\Controllers\Dashboard\CategoriesController;
+use App\Http\Controllers\Dashboard\ContactMessagesController;
 use App\Http\Controllers\Dashboard\CouponController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Dashboard\GovernoratesController;
@@ -11,8 +13,10 @@ use App\Http\Controllers\Dashboard\OrdersController;
 use App\Http\Controllers\Dashboard\PostController;
 use App\Http\Controllers\Dashboard\ProductsController;
 use App\Http\Controllers\Dashboard\RolesController;
+use App\Http\Controllers\Dashboard\SettingsController;
 use App\Http\Controllers\Dashboard\TagsController;
 use App\Http\Controllers\Dashboard\UserController;
+use App\Http\Controllers\NotificationsController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,7 +37,8 @@ Route::middleware(['auth', 'can:access-dashboard'])
         Route::resource('categories', CategoriesController::class);
 
         Route::prefix('products')->name('products.')->controller(ProductsController::class)->group(function () {
-            Route::get('trash', 'trash')->name('trash');
+                        Route::get('trash', 'trash')->name('trash');
+            Route::patch('{product}/featured', 'toggleFeatured')->name('featured');
             Route::put('{id}/restore', 'restore')->name('restore');
             Route::delete('{id}/force-delete', 'forceDelete')->name('forceDelete');
             Route::delete('variations/{variation}', 'deleteVariation')->name('variation.delete');
@@ -70,6 +75,21 @@ Route::middleware(['auth', 'can:access-dashboard'])
 
         Route::middleware('can:manage-users')->group(function () {
             Route::resource('users', UserController::class);
+        });
+
+                Route::get('notifications', [NotificationsController::class, 'index'])->name('notifications.index');
+
+        Route::middleware('can:manage-bundles')->group(function () {
+            Route::resource('bundles', BundlesController::class)->except(['show']);
+        });
+
+        Route::middleware('can:manage-messages')->group(function () {
+            Route::resource('messages', ContactMessagesController::class)->only(['index', 'show', 'destroy']);
+        });
+
+        Route::middleware('can:manage-settings')->group(function () {
+            Route::get('settings', [SettingsController::class, 'edit'])->name('settings.edit');
+            Route::put('settings', [SettingsController::class, 'update'])->name('settings.update');
         });
 
         Route::middleware('can:manage-governorates')->group(function () {

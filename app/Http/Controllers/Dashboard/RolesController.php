@@ -60,12 +60,12 @@ class RolesController extends Controller
         } catch (Throwable $e) {
             DB::rollBack();
             throw $e;
-            return back()->with('error', 'Failed to create Role');
+            return back()->with('error', __('app.save_failed'));
         }
 
         return redirect()
             ->route('dashboard.roles.index')
-            ->with('success', 'Role created successfully');
+            ->with('success', __('app.created_successfully'));
     }
 
     /**
@@ -118,7 +118,7 @@ class RolesController extends Controller
 
         } catch (Throwable $e) {
             DB::rollBack();
-            return back()->with('error', 'Failed to create Role');
+            return back()->with('error', __('app.save_failed'));
         }
         return redirect()->route('dashboard.roles.index');
     }

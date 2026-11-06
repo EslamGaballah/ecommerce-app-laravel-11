@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Attribute;
+use App\Models\ContactMessage;
 use App\Models\AttributeValue;
 use App\Models\Brand;
 use App\Models\Category;
@@ -43,7 +44,10 @@ test('every GET route works for a guest, a customer, and an admin', function () 
     $order->address()->create(['first_name' => 'a', 'last_name' => 'b', 'email' => 'a@b.test', 'phone_number' => '1', 'city' => 'c', 'street_address' => 's', 'country' => 'EG']);
     $coupon = Coupon::forceCreate(['code' => 'C', 'type' => 'fixed', 'value' => 1]);
 
+    $contactMessage = ContactMessage::create(['name' => 'a', 'email' => 'a@b.test', 'subject' => 's', 'message' => 'a long enough message']);
+
     $parameters = [
+        'message' => $contactMessage->id,
         'product' => $product->id, 'post' => $post->id, 'order' => $order->id, 'coupon' => $coupon->id,
         'category' => $category->id, 'governorate' => Governorate::first()->id, 'role' => Role::first()->id,
         'user' => $customer->id, 'brand' => $brand->id, 'tag' => $tag->id, 'attribute' => $attribute->id,
@@ -52,7 +56,7 @@ test('every GET route works for a guest, a customer, and an admin', function () 
 
     $failures = [];
     foreach (Route::getRoutes() as $route) {
-        if (! in_array('GET', $route->methods()) || str_starts_with($route->uri(), 'sanctum') || str_contains($route->uri(), 'storage/')) {
+        if ($route->isFallback || ! in_array('GET', $route->methods()) || str_starts_with($route->uri(), 'sanctum') || str_contains($route->uri(), 'storage/')) {
             continue;
         }
 
@@ -110,4 +114,10 @@ test('every named route used in views exists', function () {
     }
 
     expect($missing)->toBe([]);
+});
+
+test('no two routes share a name', function () {
+    $names = collect(Route::getRoutes())->map(fn ($route) => $route->getName())->filter();
+
+    expect($names->duplicates()->values()->all())->toBe([]);
 });

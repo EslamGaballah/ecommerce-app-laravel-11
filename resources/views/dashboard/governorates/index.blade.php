@@ -21,9 +21,9 @@
 
 {{-- start filter --}}
 <form action="{{ url()->current() }}" method="get" class="d-flex justify-content-between mb-4">
-    <x-form.input name="name" placeholder="Name" class="mx-2" :value="request('name')" />
+    <x-form.input name="name" placeholder="{{ __('app.name') }}" class="mx-2" :value="request('name')" />
     <select name="is_active" class="form-control mx-2">
-        <option value="">All</option>
+        <option value="">{{ __('app.all') }}</option>
 
          @foreach(['1' => __('app.available'),
                 '0' => __('app.unavailable')] as $value => $label)
@@ -40,7 +40,7 @@
 <table class="table">
     <thead>
         <tr>
-            <th>ID</th>
+            <th>{{ __('app.id') }}</th>
             <th>{{__('app.name')}}</th>
             <th>{{__('app.shipping_price')}} </th>
             <th>{{__('app.delivery_days')}} </th>
@@ -75,7 +75,7 @@
         </tr>
         @empty
         <tr>
-            <td colspan="9">No governorates defined.</td>
+            <td colspan="9">{{ __('app.no_governorates_defined') }}</td>
         </tr>
         @endforelse
     </tbody>

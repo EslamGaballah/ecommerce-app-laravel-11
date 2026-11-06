@@ -55,6 +55,18 @@ return [
     'governorates' => [
         'manage-governorates',
     ],
+    'bundles' => [
+        'manage-bundles',
+    ],
+
+    'messages' => [
+        'manage-messages',
+    ],
+
+
+    'settings' => [
+        'manage-settings',
+    ],
 
     'cart' => [
         'view-cart',

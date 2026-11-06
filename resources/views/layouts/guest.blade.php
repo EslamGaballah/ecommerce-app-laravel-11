@@ -1,30 +1,44 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+<x-front-layout :title="$title">
+    @push('styles')
+        <link rel="stylesheet" href="{{ asset('assets/css/account.css') }}" />
+    @endpush
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
-
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-            <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-                </a>
-            </div>
-
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
-                {{ $slot }}
+    <x-slot:breadcrumb>
+        <div class="breadcrumbs">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 col-md-6 col-12">
+                        <h1 class="page-title">{{ $title }}</h1>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-12">
+                        <ul class="breadcrumb-nav">
+                            <li><a href="{{ route('home') }}"><i class="lni lni-home"></i> {{ __('app.home') }}</a></li>
+                            <li>{{ $title }}</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
-    </body>
-</html>
+    </x-slot:breadcrumb>
+
+    <div class="account-login section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 offset-lg-3 col-md-10 offset-md-1 col-12">
+                    <div class="card login-form">
+                        <div class="card-body">
+                            <div class="title">
+                                <h3>{{ $title }}</h3>
+                                @if ($subtitle)
+                                    <p>{{ $subtitle }}</p>
+                                @endif
+                            </div>
+
+                            {{ $slot }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</x-front-layout>

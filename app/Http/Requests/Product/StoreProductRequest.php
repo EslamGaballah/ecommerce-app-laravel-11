@@ -20,6 +20,8 @@ class StoreProductRequest extends FormRequest
 
     protected function prepareForValidation()
     {
+        $this->merge(['is_featured' => $this->boolean('is_featured')]);
+
         $variations = collect($this->variations ?? [])
             ->filter(function ($variation) {
                 return  !empty($variation['price']) ||
@@ -61,8 +63,9 @@ class StoreProductRequest extends FormRequest
         $rules = [
             'name_ar' => 'required|string|max:255',
             'name_en' => 'required|string|max:255',
-            'description' => 'nullable|string|max:255',
+            'description' => 'nullable|string|max:5000',
             'status' => ['required', new Enum(ProductStatus::class)],
+            'is_featured' => 'boolean',
             'category_id' => 'required|exists:categories,id',
             'brand_id' => 'nullable|exists:brands,id',
             'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
@@ -86,18 +89,12 @@ class StoreProductRequest extends FormRequest
             $rules['variations.*.compare_price'] = 'nullable|numeric';
             $rules['variations.*.stock'] = 'required|integer|min:0';
             $rules['variations.*.attribute_value_ids'] = 'required|array|min:1';
-            $rules['variations.*.image'] = 'nullable|array';
-            $rules['variations.*.image.*'] = 'image|mimes:jpg,jpeg,png,webp|max:2048';
+            $rules['variations.*.images'] = 'nullable|array';
+            $rules['variations.*.images.*'] = 'image|mimes:jpg,jpeg,png,webp|max:2048';
 
         }
 
         return $rules;
-    }
-
-
-    public function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
-    {
-        // dd($validator->errors()->toArray());
     }
 
 
@@ -112,7 +109,7 @@ class StoreProductRequest extends FormRequest
                 ) {
                     $validator->errors()->add(
                         "variations.$index.compare_price",
-                        'سعر المقارنة يجب أن يكون أكبر من السعر'
+                        __('app.compare_price_must_be_higher')
                     );
                 }
             }
@@ -125,7 +122,7 @@ class StoreProductRequest extends FormRequest
             ) {
                 $validator->errors()->add(
                     "compare_price",
-                    'سعر المقارنة يجب أن يكون أكبر من السعر'
+                    __('app.compare_price_must_be_higher')
                 );
             }
         }
@@ -135,9 +132,9 @@ class StoreProductRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required'  => 'اسم المنتج مطلوب',
-            'price.required' => 'السعر مطلوب',
-            'price.numeric'  => 'السعر يجب أن يكون رقم',
+            'name.required'  => __('app.product_name_required'),
+            'price.required' => __('app.price_required'),
+            'price.numeric'  => __('app.price_must_be_number'),
         ];
     }
 }

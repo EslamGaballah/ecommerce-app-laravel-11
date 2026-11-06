@@ -1,17 +1,21 @@
-<x-front-layout title="Order Success">
+<x-front-layout :title="__('app.order_confirmed')">
 
     <div class="container text-center py-5">
-        <h2>✅ تم تأكيد طلبك بنجاح</h2>
+        <h2>{{ __('app.order_confirmed') }}</h2>
 
-        <p>رقم الطلب: #{{ $order->id }}</p>
+        <p>{{ __('app.order_number') }}: #{{ $order->number }}</p>
 
-        <p>طريقة الدفع: الدفع عند الاستلام</p>
+        <p>{{ __('app.payment_method') }}: {{ $order->payment_method->label() }}</p>
 
-        <p>سيتم التواصل معك قريباً لتأكيد الطلب.</p>
+        <p>{{ __('app.payment_status') }}: {{ $order->payment_status->label() }}</p>
 
-        <a href="{{ route('home') }}" class="btn btn-primary mt-3">
-            الرجوع للرئيسية
-        </a>
+        @if ($order->isPayable() && ! app()->isProduction())
+            <a href="{{ route('front.payments.show', $order) }}" class="btn btn-primary mt-3">{{ __('app.pay_now') }}</a>
+        @else
+            <p>{{ __('app.order_contact_soon') }}</p>
+        @endif
+
+        <a href="{{ route('home') }}" class="btn btn-outline-primary mt-3">{{ __('app.back_to_home') }}</a>
     </div>
 
 </x-front-layout>

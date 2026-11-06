@@ -2,6 +2,7 @@
 
 namespace App\Facades\Filters;
 
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class ProductFilter
@@ -17,6 +18,7 @@ class ProductFilter
         'brand',
         'status',
         'sort_by',
+        'featured',
     ];
 
     /**
@@ -87,7 +89,10 @@ class ProductFilter
 
     public function category($query, $value)
     {
-       return $query->whereIn('category_id', (array) $value);  // multi-categories
+       $categoryIds = Category::whereIn('id', (array) $value)->get()
+           ->flatMap(fn (Category $category) => $category->selfAndDescendantIds());
+
+       return $query->whereIn('category_id', $categoryIds);  // multi-categories, with their subcategories
     }
 
     public function brand($query, $value)
@@ -105,13 +110,21 @@ class ProductFilter
     //     return $query->sortBy($value);       // from model product
     // }
 
+        public function featured($query, $value)
+    {
+        return $value ? $query->featured() : $query;
+    }
+
     public function sort_by($query, $value)
     {
         return match ($value) {
             'low_price'  => $query->orderBy('price', 'asc'),
             'high_price' => $query->orderBy('price', 'desc'),
             'newest'     => $query->orderBy('created_at', 'desc'),
-            'oldest'     => $query->orderBy('created_at', 'asc'),
+                        'oldest'     => $query->orderBy('created_at', 'asc'),
+            'rating'     => $query->orderByDesc('rating_avg'),
+            'best_selling' => $query->withSoldQuantity()->orderByDesc('sold_quantity'),
+            'most_viewed' => $query->orderByDesc('views_count'),
             default      => $query->orderBy('id', 'desc'),
         };
     }

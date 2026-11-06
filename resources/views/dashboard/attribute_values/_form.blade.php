@@ -1,7 +1,7 @@
 
 @if($errors->any())
 <div class="alert alert-danger">
-    <h3>Error Occured!</h3>
+    <h3>{{ __('app.error_occurred') }}</h3>
     <ul>
         @foreach($errors->all() as $error)
         <li>{{ $error }}</li>
@@ -21,7 +21,7 @@
 
 
     <div class="form-group">
-        <x-form.input label="{{ __('app.value') }}  ( افصل بين القيم بفاصلة ,  1, 2  ) " class="form-control-lg" role="input" name="value" :value="$attribute_value->value" />
+        <x-form.input label="{{ __('app.value') }}  {{ __('app.comma_separated_hint') }}" class="form-control-lg" role="input" name="value" :value="$attribute_value->value" />
     </div>
 
 

@@ -1,0 +1,417 @@
+/* Dark mode for the store. Only applies when <html data-theme="dark"> is set by partials/theme-script. */
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  --dark-bg: #0d1722;
+  --dark-surface: #152331;
+  --dark-surface-2: #1c2d3e;
+  --dark-border: #2a3b4d;
+  --dark-text: #c7d0dc;
+  --dark-heading: #f1f5f9;
+  --dark-muted: #94a3b8;
+}
+
+html[data-theme="dark"] body,
+html[data-theme="dark"] .section,
+html[data-theme="dark"] .home-section,
+html[data-theme="dark"] .home-offers,
+html[data-theme="dark"] .home-brands,
+html[data-theme="dark"] .home-hero,
+html[data-theme="dark"] .home-benefits,
+html[data-theme="dark"] .info-page,
+html[data-theme="dark"] .account-login,
+html[data-theme="dark"] .shopping-cart,
+html[data-theme="dark"] .checkout-wrapper,
+html[data-theme="dark"] .blog-section,
+html[data-theme="dark"] .blog-single,
+html[data-theme="dark"] .item-details,
+html[data-theme="dark"] .product-grids,
+html[data-theme="dark"] .trending-product {
+  background-color: var(--dark-bg) !important;
+  color: var(--dark-text);
+}
+
+html[data-theme="dark"] .home-section-tinted {
+  background-color: #101c29 !important;
+}
+
+html[data-theme="dark"] h1,
+html[data-theme="dark"] h2,
+html[data-theme="dark"] h3,
+html[data-theme="dark"] h4,
+html[data-theme="dark"] h5,
+html[data-theme="dark"] h6,
+html[data-theme="dark"] .page-title,
+html[data-theme="dark"] .title,
+html[data-theme="dark"] .title a,
+html[data-theme="dark"] .post-title a,
+html[data-theme="dark"] label {
+  color: var(--dark-heading) !important;
+}
+
+html[data-theme="dark"] p,
+html[data-theme="dark"] li,
+html[data-theme="dark"] .text-muted {
+  color: var(--dark-text);
+}
+
+html[data-theme="dark"] .text-muted,
+html[data-theme="dark"] small {
+  color: var(--dark-muted) !important;
+}
+
+/* Header */
+
+html[data-theme="dark"] .header,
+html[data-theme="dark"] .header .header-middle,
+html[data-theme="dark"] .header-bottom,
+html[data-theme="dark"] .navbar-area {
+  border-color: var(--dark-border) !important;
+  background-color: var(--dark-surface) !important;
+}
+
+html[data-theme="dark"] .header .navbar-nav .nav-item > a,
+html[data-theme="dark"] .header .mega-category-menu .cat-button,
+html[data-theme="dark"] .header .nav-social .title,
+html[data-theme="dark"] .header .nav-hotline h3 {
+  color: var(--dark-heading) !important;
+}
+
+html[data-theme="dark"] .header .navbar-nav .nav-item > a.active,
+html[data-theme="dark"] .header .navbar-nav .nav-item > a:hover {
+  color: #6ea8fe !important;
+}
+
+html[data-theme="dark"] .header .nav-hotline h3 span {
+  color: var(--dark-muted) !important;
+}
+
+html[data-theme="dark"] .header .mega-category-menu,
+html[data-theme="dark"] .header .navbar-cart .wishlist a,
+html[data-theme="dark"] .header .navbar-cart .cart-items .main-btn,
+html[data-theme="dark"] .header .nav-hotline i,
+html[data-theme="dark"] .header .nav-social ul li a {
+  border-color: var(--dark-border) !important;
+  color: var(--dark-text) !important;
+}
+
+html[data-theme="dark"] .header .main-menu-search .navbar-search,
+html[data-theme="dark"] .header .main-menu-search .search-select,
+html[data-theme="dark"] .header .main-menu-search .search-select select,
+html[data-theme="dark"] .header .main-menu-search .search-input,
+html[data-theme="dark"] .header .main-menu-search .search-input input {
+  border-color: var(--dark-border) !important;
+  background-color: var(--dark-surface-2) !important;
+  color: var(--dark-heading) !important;
+}
+
+html[data-theme="dark"] .header .main-menu-search option {
+  background-color: var(--dark-surface-2);
+}
+
+html[data-theme="dark"] .header .sub-category,
+html[data-theme="dark"] .header .inner-sub-category,
+html[data-theme="dark"] .header .sub-menu,
+html[data-theme="dark"] .header .shopping-item,
+html[data-theme="dark"] .dropdown-menu {
+  border-color: var(--dark-border) !important;
+  background-color: var(--dark-surface-2) !important;
+  color: var(--dark-text) !important;
+}
+
+html[data-theme="dark"] .header .sub-category a,
+html[data-theme="dark"] .header .inner-sub-category a,
+html[data-theme="dark"] .header .sub-menu a,
+html[data-theme="dark"] .header .shopping-item a,
+html[data-theme="dark"] .header .shopping-item span,
+html[data-theme="dark"] .header .shopping-item h4,
+html[data-theme="dark"] .dropdown-item {
+  color: var(--dark-text) !important;
+}
+
+html[data-theme="dark"] .dropdown-item:hover,
+html[data-theme="dark"] .header .sub-category li:hover > a {
+  background-color: var(--dark-surface) !important;
+  color: #6ea8fe !important;
+}
+
+html[data-theme="dark"] .mobile-menu-btn .toggler-icon {
+  background-color: var(--dark-heading) !important;
+}
+
+/* Page title band */
+
+html[data-theme="dark"] .breadcrumbs {
+  border-color: var(--dark-border) !important;
+  background-color: var(--dark-surface) !important;
+  box-shadow: none;
+}
+
+html[data-theme="dark"] .breadcrumb-nav li,
+html[data-theme="dark"] .breadcrumb-nav li a {
+  color: var(--dark-muted) !important;
+}
+
+/* Cards */
+
+html[data-theme="dark"] .single-product,
+html[data-theme="dark"] .single-blog,
+html[data-theme="dark"] .home-category,
+html[data-theme="dark"] .home-benefits li,
+html[data-theme="dark"] .home-brands a,
+html[data-theme="dark"] .info-page-card,
+html[data-theme="dark"] .login-form,
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .single-block,
+html[data-theme="dark"] .product-info,
+html[data-theme="dark"] .top-area,
+html[data-theme="dark"] .product-details-info,
+html[data-theme="dark"] .post-details,
+html[data-theme="dark"] .post-comments,
+html[data-theme="dark"] .comment-form,
+html[data-theme="dark"] .checkout-steps-form-style-1,
+html[data-theme="dark"] .checkout-sidebar-coupon,
+html[data-theme="dark"] .checkout-sidebar-price-table,
+html[data-theme="dark"] .cart-list-head,
+html[data-theme="dark"] .cart-single-list,
+html[data-theme="dark"] .cart-list-title,
+html[data-theme="dark"] .total-amount,
+html[data-theme="dark"] .total-amount .right,
+html[data-theme="dark"] .product-sidebar,
+html[data-theme="dark"] .single-widget,
+html[data-theme="dark"] .sidebar .widget,
+html[data-theme="dark"] .product-grid-topbar,
+html[data-theme="dark"] .bundle-card,
+html[data-theme="dark"] .bundle-hero,
+html[data-theme="dark"] .notification-item,
+html[data-theme="dark"] .modal-content {
+  border-color: var(--dark-border) !important;
+  background-color: var(--dark-surface) !important;
+  color: var(--dark-text);
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] .card-header,
+html[data-theme="dark"] .notification-item.is-unread {
+  border-color: var(--dark-border) !important;
+  background-color: var(--dark-surface-2) !important;
+  color: var(--dark-heading) !important;
+}
+
+html[data-theme="dark"] .single-product .product-info .category,
+html[data-theme="dark"] .single-product .review li span,
+html[data-theme="dark"] .product-option-label,
+html[data-theme="dark"] .home-category-count,
+html[data-theme="dark"] .home-benefits span,
+html[data-theme="dark"] .home-section-head p {
+  color: var(--dark-muted) !important;
+}
+
+html[data-theme="dark"] .home-category a,
+html[data-theme="dark"] .home-benefits h5,
+html[data-theme="dark"] .home-brands a,
+html[data-theme="dark"] .single-blog h4 a,
+html[data-theme="dark"] .contact-details strong {
+  color: var(--dark-heading) !important;
+}
+
+html[data-theme="dark"] .product-option {
+  border-color: var(--dark-border);
+  background: var(--dark-surface-2);
+  color: var(--dark-heading);
+}
+
+html[data-theme="dark"] .product-option.is-active {
+  border-color: #0167f3;
+  background: #0167f3;
+  color: #fff;
+}
+
+html[data-theme="dark"] .product-option.is-unavailable:not(.is-active) {
+  color: var(--dark-muted);
+}
+
+html[data-theme="dark"] .card-favorite {
+  background: var(--dark-surface-2);
+  color: var(--dark-text);
+}
+
+html[data-theme="dark"] .button .btn:not(.disabled):not(:disabled),
+html[data-theme="dark"] .single-blog .button .btn {
+  color: #fff;
+}
+
+html[data-theme="dark"] .single-blog .button .btn {
+  border-color: var(--dark-border);
+}
+
+/* Forms */
+
+html[data-theme="dark"] .form-control,
+html[data-theme="dark"] .form-select,
+html[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea {
+  border-color: var(--dark-border) !important;
+  background-color: var(--dark-surface-2) !important;
+  color: var(--dark-heading) !important;
+}
+
+html[data-theme="dark"] ::placeholder {
+  color: var(--dark-muted) !important;
+}
+
+html[data-theme="dark"] .accordion-item,
+html[data-theme="dark"] .accordion-button,
+html[data-theme="dark"] .accordion-body {
+  border-color: var(--dark-border);
+  background-color: var(--dark-surface);
+  color: var(--dark-text);
+}
+
+html[data-theme="dark"] .accordion-button:not(.collapsed) {
+  background-color: var(--dark-surface-2);
+  color: #6ea8fe;
+}
+
+html[data-theme="dark"] .accordion-button::after {
+  filter: invert(1);
+}
+
+html[data-theme="dark"] .info-page-help {
+  background: var(--dark-surface-2);
+  color: var(--dark-heading);
+}
+
+html[data-theme="dark"] .contact-details i {
+  background: var(--dark-surface-2);
+}
+
+/* Pagination and tables */
+
+html[data-theme="dark"] .page-link {
+  border-color: var(--dark-border);
+  background-color: var(--dark-surface);
+  color: var(--dark-text);
+}
+
+html[data-theme="dark"] .page-item.active .page-link {
+  border-color: #0167f3;
+  background-color: #0167f3;
+  color: #fff;
+}
+
+html[data-theme="dark"] .page-item.disabled .page-link {
+  background-color: var(--dark-surface);
+  color: var(--dark-muted);
+}
+
+html[data-theme="dark"] .table {
+  color: var(--dark-text);
+}
+
+html[data-theme="dark"] .alert-success {
+  border-color: #14532d;
+  background: #052e16;
+  color: #86efac;
+}
+
+html[data-theme="dark"] .alert-danger {
+  border-color: #7f1d1d;
+  background: #450a0a;
+  color: #fca5a5;
+}
+
+html[data-theme="dark"] .alert-info {
+  border-color: #1e3a8a;
+  background: #0c1f4a;
+  color: #93c5fd;
+}
+
+/* Prices and links stay readable */
+
+html[data-theme="dark"] .single-product .price span,
+html[data-theme="dark"] .home-link {
+  color: #6ea8fe;
+}
+
+html[data-theme="dark"] .single-product .price .discount-price {
+  color: var(--dark-muted);
+}
+
+html[data-theme="dark"] .home-banner .home-link,
+html[data-theme="dark"] .home-banner p {
+  color: #fff;
+}
+
+/* The dark variant of the default logo. */
+
+.logo-dark {
+  display: none !important;
+}
+
+html[data-theme="dark"] .logo-dark {
+  display: block !important;
+}
+
+html[data-theme="dark"] .logo-light {
+  display: none !important;
+}
+
+/* The menu is a floating panel only on tablets and phones; on wide screens it sits in the bar. */
+@media (max-width: 991.98px) {
+  html[data-theme="dark"] .header .navbar-collapse {
+    background-color: var(--dark-surface-2) !important;
+  }
+}
+
+@media (min-width: 992px) {
+  html[data-theme="dark"] .header .navbar-collapse {
+    background-color: transparent !important;
+  }
+}
+
+/* Text the theme colors directly. */
+html[data-theme="dark"] .cart-single-list a:not(.remove-item),
+html[data-theme="dark"] .cart-single-list .product-name,
+html[data-theme="dark"] .cart-single-list p,
+html[data-theme="dark"] .cart-list-title p,
+html[data-theme="dark"] .total-amount .right ul li,
+html[data-theme="dark"] .total-amount .right ul li span,
+html[data-theme="dark"] .checkout-sidebar-price-table .value,
+html[data-theme="dark"] .checkout-sidebar-price-table .price,
+html[data-theme="dark"] .single-checkbox label,
+html[data-theme="dark"] .single-form p,
+html[data-theme="dark"] .single-widget a,
+html[data-theme="dark"] .product-info .category a,
+html[data-theme="dark"] .comments-list h6,
+html[data-theme="dark"] .post-details .meta-info a {
+  color: var(--dark-text) !important;
+}
+
+html[data-theme="dark"] .total-items {
+  background: #0167f3 !important;
+  color: #fff !important;
+}
+
+html[data-theme="dark"] .attr-btn {
+  border-color: var(--dark-border);
+  background: var(--dark-surface-2);
+  color: var(--dark-heading);
+}
+
+html[data-theme="dark"] .attr-btn.active {
+  border-color: #0167f3;
+  background: #0167f3;
+  color: #fff;
+}
+
+html[data-theme="dark"] .sidebar .widget .widget-title {
+  border-color: #2a3b4d;
+  color: #f1f5f9;
+}
+
+html[data-theme="dark"] .sidebar .widget.popular-feeds .single-popular-feed {
+  border-color: #2a3b4d;
+}

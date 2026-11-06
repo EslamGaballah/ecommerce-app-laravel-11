@@ -26,7 +26,7 @@
                     </a>
                 </div>
                 <div class="content">
-                    <h4><a href="product-details.html">{{ $item->product->name }}</a></h4>
+                    <h4><a href="{{ route('products.show', $item->product->slug) }}">{{ $item->product->name }}</a></h4>
                     @php
                     $price = $item->variation?->price ?? $item->product->price;
                     @endphp

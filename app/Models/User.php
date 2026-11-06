@@ -7,6 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -24,6 +25,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'phone',
+        'secondary_phone',
     ];
 
     /**
@@ -47,6 +50,20 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::deleted(function (User $user) {
+            if ($user->avatar) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+        });
+    }
+
+    public function getAvatarUrlAttribute(): ?string
+    {
+        return $this->avatar ? asset('storage/'.$this->avatar) : null;
     }
 
    public function scopeFilter(Builder $builder, $filters)
@@ -86,6 +103,12 @@ class User extends Authenticatable
             ->whereHas('permissions', function ($query) use ($permission) {
                 $query->where('name', $permission);
             })->exists();
+    }
+
+        /** Every product card asks this, so each request reads the list once. */
+    public function favoriteProductIds(): array
+    {
+        return once(fn () => $this->favorites()->pluck('products.id')->all());
     }
 
     public function favorites()

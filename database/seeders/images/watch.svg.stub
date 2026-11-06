@@ -1,0 +1,7 @@
+<rect x="240" y="60" width="120" height="480" rx="24" fill="{dark}"/>
+<rect x="175" y="160" width="250" height="280" rx="58" fill="{main}" stroke="{dark}" stroke-width="5"/>
+<rect x="197" y="182" width="206" height="236" rx="40" fill="#0f172a"/>
+<rect x="425" y="260" width="20" height="62" rx="10" fill="{dark}"/>
+<text x="300" y="300" fill="#ffffff" font-family="sans-serif" font-size="56" font-weight="700" text-anchor="middle">10:09</text>
+<path d="M235 345h130" stroke="#38bdf8" stroke-width="12" stroke-linecap="round"/>
+<path d="M235 372h80" stroke="#4ade80" stroke-width="12" stroke-linecap="round"/>

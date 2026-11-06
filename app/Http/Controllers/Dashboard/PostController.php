@@ -69,10 +69,10 @@ class PostController extends Controller
              } catch (Throwable $e) {
                     DB::rollBack();
                     throw $e;
-                    return back()->with('error', 'Failed to create post');
+                    return back()->with('error', __('app.save_failed'));
             }
 
-        return Redirect::route('dashboard.posts.index')->with('success', 'post created');
+        return Redirect::route('dashboard.posts.index')->with('success', __('app.created_successfully'));
     }
 
     /**
@@ -128,10 +128,10 @@ class PostController extends Controller
 
              } catch (Throwable $e) {
                     DB::rollBack();
-                    return back()->with('error', 'Failed to update post');
+                    return back()->with('error', __('app.save_failed'));
             }
 
-              return Redirect::route('dashboard.posts.index')->with('success', 'post updated');
+              return Redirect::route('dashboard.posts.index')->with('success', __('app.updated_successfully'));
 
     }
 
@@ -160,10 +160,10 @@ class PostController extends Controller
         } catch (Throwable $e) {
             DB::rollBack();
             return Redirect::route('posts.index')
-                ->with('error', 'Failed to delete post');
+                ->with('error', __('app.delete_failed'));
         }
 
-        return back()->with('success', 'Post deleted successfully');
+        return back()->with('success', __('app.deleted_successfully'));
 
     }
 }

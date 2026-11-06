@@ -1,18 +1,20 @@
  <li>
     <div class="comment-img">
-        <img src="{{ $comment->user->image ?? ' http://127.0.0.1:8000/assets/images/logo/logo.svg ' }}" alt="img">
+        <img src="{{ $comment->user->avatar_url ?? asset('assets/images/logo/logo.svg') }}" alt="img">
     </div>
     <div class="comment-desc">
         <div class="desc-top">
             <h6>{{ $comment->user->name }}</h6>
             <span class="date">{{ $comment->updated_at->diffForHumans() }}</span>
             <!-- reply button-->
+@if (Setting::get('blog_comments_enabled'))
             <button type="button" 
                     onclick="event.preventDefault(); document.getElementById('reply-form-{{ $comment->id }}').classList.toggle('d-none')" 
                     class="reply-link" 
                     style="background:none; border:none; color:#081828; cursor:pointer;">
                 <i class="lni lni-reply"></i> {{ __('app.reply') }}
             </button>
+@endif
 
             @if(auth()->check() && auth()->id() == $comment->user_id)
                 <!-- edit comment button-->
@@ -67,9 +69,10 @@
         </div>
     </div>
             <!-- reply form-->
+@if (Setting::get('blog_comments_enabled'))
     <div id="reply-form-{{ $comment->id }}" class="comment-form d-none " 
         style="margin-top: 10px; padding-left: 20px;">
-        <h6 class="mb-2">Reply to {{ $comment->user->name }}</h6>
+        <h6 class="mb-2">{{ __('app.reply_to', ['name' => $comment->user->name]) }}</h6>
         <form class="add-comment-form"
             action="{{ route('comments.store', $comment->post_id) }}" 
             method="POST">
@@ -94,6 +97,7 @@
             </div>
         </form>
     </div>
+@endif
 </li>
 
 

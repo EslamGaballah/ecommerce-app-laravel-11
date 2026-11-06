@@ -1,4 +1,4 @@
-# E-commerce Store (Laravel 11)
+# E-commerce Store (Laravel 13)
 
 An Arabic/English online store with a customer storefront, an admin dashboard, and a JSON API.
 
@@ -7,13 +7,14 @@ An Arabic/English online store with a customer storefront, an admin dashboard, a
 - **Storefront:** product catalog with filters, simple and variable products, cart (guest and signed-in), checkout, order history, favorites, reviews, and a blog with comments.
 - **Dashboard:** products, categories, brands, attributes, tags, coupons, governorates (shipping prices), orders, posts, users, and roles with permissions.
 - **API:** public catalog and token-protected management and cart endpoints (Laravel Sanctum).
+- **Site settings:** site name, logo, contact details, social links, tax, and payment methods, under Site Settings in the dashboard.
 - **Notifications:** order notifications saved to the database and broadcast through Pusher.
 
-Cash on delivery is the only payment method that works today.
+Customers can pay with cash on delivery or a simulated test card. Test card payments move no money, take no real card details, and are always off when `APP_ENV=production`. A real payment provider is not connected yet.
 
 ## Requirements
 
-PHP 8.2+, Composer, Node.js 20+, and MySQL 8.
+PHP 8.4+, Composer, Node.js 20+, and MySQL 8.
 
 ## Setup
 

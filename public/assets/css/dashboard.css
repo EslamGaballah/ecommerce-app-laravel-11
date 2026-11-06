@@ -1,0 +1,1088 @@
+/*
+ * Gives the AdminLTE dashboard the look of the store theme (assets/css/main.css).
+ * Loaded after AdminLTE and Bootstrap. Logical properties keep it correct in Arabic and English.
+ */
+
+:root {
+  --dash-primary: #0167f3;
+  --dash-primary-soft: #e8f1fe;
+  --dash-navy: #081828;
+  --dash-navy-light: #12283f;
+  --dash-text: #4b5563;
+  --dash-muted: #888;
+  --dash-border: #e6e6e6;
+  --dash-bg: #f9f9f9;
+  --dash-radius: 10px;
+  --dash-shadow: 0 2px 10px rgba(8, 24, 40, 0.06);
+
+  --dash-sidebar-bg: #fff;
+  --dash-sidebar-border: #e6e6e6;
+  --dash-sidebar-title: #081828;
+  --dash-sidebar-text: #4b5563;
+  --dash-sidebar-heading: #6b7280;
+  --dash-sidebar-hover-bg: #e8f1fe;
+  --dash-sidebar-hover-text: #0167f3;
+}
+
+/* ---------- Base ---------- */
+
+body {
+  background: var(--dash-bg);
+  color: var(--dash-text);
+  font-family: "Manrope", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--dash-navy);
+  font-family: inherit;
+  font-weight: 700;
+}
+
+a {
+  color: var(--dash-primary);
+}
+
+a:hover {
+  color: var(--dash-navy);
+}
+
+.content-wrapper {
+  background: var(--dash-bg);
+}
+
+.content-wrapper > .content {
+  padding-bottom: 24px;
+}
+
+.content-header {
+  padding: 24px 8px 12px;
+}
+
+.content-header h1 {
+  font-size: 24px;
+}
+
+.dash-page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 24px;
+}
+
+.breadcrumb {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  font-size: 13px;
+}
+
+.breadcrumb-item.active {
+  color: var(--dash-muted);
+}
+
+.main-footer {
+  padding: 16px;
+  border-top: 1px solid var(--dash-border);
+  background: #fff;
+  color: var(--dash-muted);
+  font-size: 13px;
+}
+
+/* ---------- Navbar ---------- */
+
+.main-header.navbar {
+  min-height: 58px;
+  border-bottom: 1px solid var(--dash-border);
+  background: #fff;
+}
+
+/* In Arabic, ml-auto gets auto margins on both sides from AdminLTE and RTL Bootstrap, which centers the menu. */
+.dash-nav-end {
+  margin-inline-start: auto;
+}
+
+.main-header .nav-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--dash-navy) !important;
+  font-weight: 600;
+}
+
+.main-header .nav-link:hover {
+  color: var(--dash-primary) !important;
+}
+
+.main-header .nav-link i {
+  font-size: 17px;
+}
+
+.main-header .navbar-badge {
+  top: 3px;
+  inset-inline-end: 3px;
+  right: auto;
+  padding: 2px 5px;
+  background: var(--dash-primary);
+  color: #fff;
+  font-size: 10px;
+}
+
+.dash-avatar {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--dash-primary);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.dash-avatar {
+  overflow: hidden;
+}
+
+.dash-avatar img,
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-avatar-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.profile-avatar-row > div {
+  flex: 1;
+  min-width: 200px;
+}
+
+.profile-avatar {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: var(--dash-primary);
+  color: #fff;
+  font-size: 34px;
+  font-weight: 700;
+  overflow: hidden;
+  text-transform: uppercase;
+}
+
+.dropdown-menu {
+  border: 1px solid var(--dash-border);
+  border-radius: var(--dash-radius);
+  box-shadow: 0 8px 24px rgba(8, 24, 40, 0.12);
+  font-size: 14px;
+}
+
+.dropdown-item {
+  white-space: normal;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background: var(--dash-primary-soft);
+  color: var(--dash-primary);
+}
+
+.dropdown-item.active,
+.dropdown-item:active {
+  background: var(--dash-primary);
+  color: #fff;
+}
+
+.dash-dropdown-button,
+.dash-dropdown-link {
+  white-space: nowrap;
+}
+
+.dash-dropdown-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  text-align: start;
+}
+
+.dash-dropdown-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ---------- Sidebar ---------- */
+
+.main-sidebar,
+.main-sidebar::before {
+  background: var(--dash-sidebar-bg) !important;
+}
+
+.main-sidebar {
+  border-inline-end: 1px solid var(--dash-sidebar-border);
+}
+
+.main-sidebar .brand-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 58px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--dash-sidebar-border) !important;
+  color: var(--dash-sidebar-title);
+  overflow: hidden;
+}
+
+.main-sidebar .brand-link:hover {
+  color: var(--dash-sidebar-title);
+}
+
+.dash-brand-mark {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: var(--dash-primary);
+  color: #fff;
+  font-size: 18px;
+}
+
+.dash-brand-logo {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  padding: 2px;
+  border-radius: 8px;
+  background: #fff;
+  object-fit: contain;
+}
+
+.main-sidebar .brand-text {
+  font-size: 16px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.main-sidebar .user-panel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 !important;
+  padding: 14px 8px;
+  border-bottom: 1px solid var(--dash-sidebar-border);
+  overflow: hidden;
+}
+
+.main-sidebar .user-panel a {
+  padding: 0;
+  color: var(--dash-sidebar-title);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.nav-sidebar .nav-header {
+  padding: 16px 12px 6px;
+  color: var(--dash-sidebar-heading);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.nav-sidebar .nav-link {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  color: var(--dash-sidebar-text) !important;
+}
+
+.nav-sidebar .nav-link p {
+  font-weight: 600;
+}
+
+.nav-sidebar .nav-link .nav-icon {
+  flex-shrink: 0;
+  font-size: 17px;
+}
+
+.nav-sidebar .nav-item > .nav-link:hover {
+  background: var(--dash-sidebar-hover-bg) !important;
+  color: var(--dash-sidebar-hover-text) !important;
+}
+
+.nav-sidebar .nav-item > .nav-link.active {
+  background: var(--dash-primary) !important;
+  box-shadow: none !important;
+  color: #fff !important;
+}
+
+/* ---------- Buttons ---------- */
+
+.btn {
+  border-radius: 6px;
+  font-weight: 600;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.btn-primary,
+.btn-dark:hover,
+.btn-dark:focus {
+  border-color: var(--dash-primary);
+  background: var(--dash-primary);
+  color: #fff;
+}
+
+.btn-dark,
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:not(:disabled):not(.disabled):active {
+  border-color: var(--dash-navy);
+  background: var(--dash-navy);
+  color: #fff;
+}
+
+.btn-outline-primary {
+  border-color: var(--dash-primary);
+  color: var(--dash-primary);
+}
+
+.btn-outline-primary:hover {
+  border-color: var(--dash-primary);
+  background: var(--dash-primary);
+  color: #fff;
+}
+
+.btn-outline-dark {
+  border-color: var(--dash-navy);
+  color: var(--dash-navy);
+}
+
+.btn-outline-dark:hover {
+  border-color: var(--dash-navy);
+  background: var(--dash-navy);
+  color: #fff;
+}
+
+/* ---------- Cards and tables ---------- */
+
+.card {
+  border: 0;
+  border-radius: var(--dash-radius);
+  box-shadow: var(--dash-shadow);
+}
+
+.card-header {
+  border-bottom: 1px solid var(--dash-border);
+  border-radius: var(--dash-radius) var(--dash-radius) 0 0 !important;
+  background: #fff;
+  color: var(--dash-navy);
+  font-weight: 700;
+}
+
+.card-header.bg-primary {
+  background: var(--dash-primary) !important;
+  color: #fff;
+}
+
+.card-header.bg-dark {
+  background: var(--dash-navy) !important;
+  color: #fff;
+}
+
+.card-title {
+  color: inherit;
+}
+
+.table {
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--dash-text);
+}
+
+.table a {
+  font-weight: 600;
+}
+
+.table th {
+  color: var(--dash-navy);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.table td,
+.table th {
+  border-top: 1px solid #f0f0f0;
+  vertical-align: middle;
+}
+
+.table thead th {
+  border-top: 0;
+  border-bottom: 1px solid var(--dash-border);
+  background: #f4f6f9;
+}
+
+.table .table-dark > td,
+.table .table-dark > th {
+  border-color: var(--dash-navy);
+  background: var(--dash-navy);
+  color: #fff;
+}
+
+/* Tables placed directly on the page get the same card as everything else. */
+.content > .container-fluid > .table,
+.content > .container-fluid > .table-responsive {
+  border-radius: var(--dash-radius);
+  background: #fff;
+  box-shadow: var(--dash-shadow);
+}
+
+/* Wide tables scroll inside the page instead of being cut off. */
+.content > .container-fluid,
+.table-responsive {
+  overflow-x: auto;
+}
+
+.table .form-control,
+.table .form-select {
+  min-width: 135px;
+}
+
+.badge {
+  padding: 5px 9px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ---------- Forms ---------- */
+
+label {
+  color: var(--dash-navy);
+  font-weight: 600;
+}
+
+.form-control,
+.form-select {
+  border: 1px solid var(--dash-border);
+  border-radius: 6px;
+  color: var(--dash-navy);
+  font-size: 14px;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--dash-primary);
+  box-shadow: 0 0 0 3px rgba(1, 103, 243, 0.12);
+}
+
+.form-control-lg {
+  height: 44px;
+  font-size: 14px;
+}
+
+textarea.form-control-lg {
+  height: auto;
+}
+
+.form-select {
+  display: block;
+  width: 100%;
+  height: 38px;
+  padding: 6px 12px;
+  background-color: #fff;
+}
+
+.alert {
+  border: 0;
+  border-radius: var(--dash-radius);
+}
+
+/* ---------- Settings ---------- */
+
+.settings-tabs {
+  gap: 6px;
+}
+
+.settings-tabs .nav-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--dash-border);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--dash-navy);
+  font-weight: 600;
+}
+
+.settings-tabs .nav-link.active {
+  border-color: var(--dash-primary);
+  background: var(--dash-primary);
+  color: #fff;
+}
+
+.custom-control-label {
+  cursor: pointer;
+}
+
+.custom-control-input:checked ~ .custom-control-label::before {
+  border-color: var(--dash-primary);
+  background-color: var(--dash-primary);
+}
+
+.maintenance-banner {
+  padding: 8px 16px;
+  background: #dc3545;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.maintenance-banner a {
+  margin-inline-start: 8px;
+  color: #fff;
+  text-decoration: underline;
+}
+
+/* ---------- Product and bundle forms ---------- */
+
+.product-thumbnail-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 180px;
+  border: 1px dashed var(--dash-border);
+  border-radius: 8px;
+  background: var(--dash-bg);
+  color: var(--dash-muted);
+  font-size: 40px;
+  overflow: hidden;
+}
+
+.product-thumbnail-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.bundle-product-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.bundle-product-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 8px;
+  border: 1px solid var(--dash-border);
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.bundle-product-option img {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+/* Nine columns have to fit next to the side panel, so its inputs are compact. */
+#variantTable th,
+#variantTable td {
+  padding: 4px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+#variantTable .form-control {
+  min-width: 0;
+  height: 34px;
+  padding: 4px 6px;
+  font-size: 13px;
+}
+
+#variantTable [data-field="sku"] {
+  width: 110px;
+}
+
+#variantTable [data-field="price"],
+#variantTable [data-field="compare_price"] {
+  width: 70px;
+}
+
+#variantTable [data-field="stock"] {
+  width: 58px;
+}
+
+#variantTable [data-field="images"] {
+  width: 80px;
+  padding: 2px;
+  font-size: 11px;
+}
+
+/* ---------- Notifications page ---------- */
+
+.notifications-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.notifications-filters,
+.notifications-actions,
+.notification-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.notification-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--dash-border);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.notification-item.is-unread {
+  border-inline-start: 4px solid var(--dash-primary);
+  background: #f4f8ff;
+}
+
+.notification-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--dash-primary-soft);
+  color: var(--dash-primary);
+  font-size: 18px;
+}
+
+.notification-body {
+  flex: 1;
+  min-width: 180px;
+}
+
+.notification-text {
+  display: block;
+  color: var(--dash-navy);
+  font-weight: 600;
+}
+
+.notification-body small {
+  color: var(--dash-muted);
+}
+
+.notifications-empty {
+  padding: 48px 16px;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--dash-muted);
+  text-align: center;
+}
+
+.notifications-empty i {
+  color: var(--dash-primary);
+  font-size: 44px;
+}
+
+/* ---------- Theme switch ---------- */
+
+.theme-icon-light {
+  display: none;
+}
+
+html[data-theme="dark"] .theme-icon-light {
+  display: inline;
+}
+
+html[data-theme="dark"] .theme-icon-dark {
+  display: none;
+}
+
+/* ---------- Pagination ---------- */
+
+.page-link {
+  border-color: var(--dash-border);
+  color: var(--dash-navy);
+}
+
+.page-link:hover {
+  background: var(--dash-primary-soft);
+  color: var(--dash-primary);
+}
+
+.page-item.active .page-link {
+  border-color: var(--dash-primary);
+  background: var(--dash-primary);
+}
+
+/* ---------- Dashboard home ---------- */
+
+.dash-welcome {
+  margin-bottom: 20px;
+  padding: 24px 28px;
+  border-radius: 12px;
+  background: linear-gradient(120deg, #081828, #123a6b);
+  color: #dbe5f1;
+}
+
+.dash-welcome h2 {
+  margin-bottom: 4px;
+  color: #fff;
+  font-size: 22px;
+}
+
+.dash-welcome p {
+  margin: 0;
+}
+
+.dash-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.dash-stat {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px;
+  border-radius: var(--dash-radius);
+  background: #fff;
+  box-shadow: var(--dash-shadow);
+  color: inherit;
+  transition: transform 0.2s ease;
+}
+
+.dash-stat:hover {
+  color: inherit;
+  transform: translateY(-2px);
+}
+
+.dash-stat-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--dash-primary-soft);
+  color: var(--dash-primary);
+  font-size: 21px;
+}
+
+.dash-stat-icon.is-danger {
+  background: #fdecee;
+  color: #dc3545;
+}
+
+.dash-stat-label {
+  display: block;
+  color: var(--dash-muted);
+  font-size: 13px;
+}
+
+.dash-stat-value {
+  display: block;
+  color: var(--dash-navy);
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.3;
+  /* An amount split across two lines reads wrong, especially with a currency in Arabic. */
+  white-space: nowrap;
+}
+
+.dash-stat-note {
+  display: block;
+  color: var(--dash-muted);
+  font-size: 12px;
+}
+
+.dash-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* AdminLTE's clearfix would count as a third flex item. */
+.dash-panel-header::after {
+  display: none;
+}
+
+.dash-panel-header h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.dash-empty {
+  margin: 0;
+  padding: 28px 16px;
+  color: var(--dash-muted);
+  text-align: center;
+}
+
+.dash-stock-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dash-stock-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.dash-stock-list li:first-child {
+  border-top: 0;
+}
+
+.dash-stock-list img {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.dash-stock-list a {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+}
+
+/* ---------- Bootstrap 5 classes the views use on top of Bootstrap 4 ---------- */
+
+.gap-1 { gap: 0.25rem; }
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 1rem; }
+.fw-bold { font-weight: 700; }
+.fw-semibold { font-weight: 600; }
+.text-end { text-align: end !important; }
+.text-start { text-align: start !important; }
+.text-decoration-line-through { text-decoration: line-through; }
+.me-1 { margin-inline-end: 0.25rem; }
+.me-2 { margin-inline-end: 0.5rem; }
+.ms-1 { margin-inline-start: 0.25rem; }
+.ms-2 { margin-inline-start: 0.5rem; }
+.ms-auto { margin-inline-start: auto; }
+.form-label { margin-bottom: 0.5rem; }
+.form-select-sm { height: 31px; padding: 4px 8px; font-size: 13px; }
+.row.g-2 > * { margin-bottom: 0.5rem; }
+.row.g-3 > * { margin-bottom: 1rem; }
+
+.btn-close {
+  border: 0;
+  background: none;
+  color: inherit;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.btn-close::before {
+  content: "\00d7";
+}
+
+/* ---------- Small screens ---------- */
+
+@media (max-width: 575.98px) {
+  .main-header .nav-link span.dash-hide-sm {
+    display: none;
+  }
+
+  .dash-welcome {
+    padding: 18px;
+  }
+}
+
+/* ---------- Dark mode ---------- */
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  --dash-text: #c7d0dc;
+  --dash-muted: #94a3b8;
+  --dash-border: #2a3b4d;
+  --dash-bg: #0d1722;
+  --dash-primary-soft: #1c2d3e;
+  --dash-shadow: none;
+
+  --dash-sidebar-bg: #081828;
+  --dash-sidebar-border: rgba(255, 255, 255, 0.08);
+  --dash-sidebar-title: #fff;
+  --dash-sidebar-text: #c7d0dc;
+  --dash-sidebar-heading: #7f8ea3;
+  --dash-sidebar-hover-bg: #12283f;
+  --dash-sidebar-hover-text: #fff;
+}
+
+html[data-theme="dark"] body,
+html[data-theme="dark"] .wrapper,
+html[data-theme="dark"] .content-wrapper {
+  background: #0d1722 !important;
+  color: #c7d0dc;
+}
+
+html[data-theme="dark"] h1,
+html[data-theme="dark"] h2,
+html[data-theme="dark"] h3,
+html[data-theme="dark"] h4,
+html[data-theme="dark"] h5,
+html[data-theme="dark"] h6,
+html[data-theme="dark"] label,
+html[data-theme="dark"] .table th,
+html[data-theme="dark"] .dash-stat-value,
+html[data-theme="dark"] .notification-text {
+  color: #f1f5f9 !important;
+}
+
+html[data-theme="dark"] .main-header.navbar,
+html[data-theme="dark"] .main-footer,
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .card-header,
+html[data-theme="dark"] .dash-stat,
+html[data-theme="dark"] .dropdown-menu,
+html[data-theme="dark"] .notification-item,
+html[data-theme="dark"] .notifications-empty,
+html[data-theme="dark"] .settings-tabs .nav-link:not(.active),
+html[data-theme="dark"] .content > .container-fluid > .table,
+html[data-theme="dark"] .content > .container-fluid > .table-responsive {
+  border-color: #2a3b4d !important;
+  background: #152331 !important;
+  color: #c7d0dc;
+}
+
+html[data-theme="dark"] .notification-item.is-unread,
+html[data-theme="dark"] .table thead th {
+  background: #1c2d3e !important;
+}
+
+html[data-theme="dark"] .main-header .nav-link,
+html[data-theme="dark"] .settings-tabs .nav-link:not(.active) {
+  color: #f1f5f9 !important;
+}
+
+html[data-theme="dark"] .table,
+html[data-theme="dark"] .table td,
+html[data-theme="dark"] .table th {
+  border-color: #2a3b4d;
+  color: #c7d0dc;
+}
+
+html[data-theme="dark"] .form-control,
+html[data-theme="dark"] .form-select,
+html[data-theme="dark"] .custom-file-label,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):not([type="file"]) {
+  border-color: #2a3b4d !important;
+  background-color: #1c2d3e !important;
+  color: #f1f5f9 !important;
+}
+
+html[data-theme="dark"] .page-link {
+  border-color: #2a3b4d;
+  background: #152331;
+  color: #c7d0dc;
+}
+
+html[data-theme="dark"] .page-item.active .page-link {
+  background: var(--dash-primary);
+  color: #fff;
+}
+
+html[data-theme="dark"] .dropdown-item {
+  color: #c7d0dc;
+}
+
+html[data-theme="dark"] .dropdown-divider {
+  border-color: #2a3b4d;
+}
+
+html[data-theme="dark"] .text-muted {
+  color: #94a3b8 !important;
+}
+
+html[data-theme="dark"] .btn-outline-dark {
+  border-color: #94a3b8;
+  color: #f1f5f9;
+}
+
+html[data-theme="dark"] .btn-dark {
+  background: #1c2d3e;
+  border-color: #2a3b4d;
+}
+
+html[data-theme="dark"] .bg-light,
+html[data-theme="dark"] .bg-white {
+  background: #1c2d3e !important;
+  color: #c7d0dc;
+}
+
+html[data-theme="dark"] a:not(.btn):not(.nav-link):not(.brand-link):not(.dropdown-item) {
+  color: #6ea8fe;
+}
+
+html[data-theme="dark"] .dash-stock-list li {
+  border-color: #2a3b4d;
+}
+
+html[data-theme="dark"] .dash-stat-icon.is-danger {
+  background: #3f1d22;
+}
+
+html[data-theme="dark"] .dash-stock-list img {
+  background: #fff;
+}

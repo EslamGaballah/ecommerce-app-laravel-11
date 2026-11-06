@@ -36,7 +36,7 @@ class TagsController extends Controller
 
         Tag::create($data);
 
-        return redirect()->route('dashboard.tags.index')->with('success', 'Tag created!');
+        return redirect()->route('dashboard.tags.index')->with('success', __('app.created_successfully'));
     }
 
     public function show(Tag $tag)
@@ -62,13 +62,13 @@ class TagsController extends Controller
 
         $tag->update($data);
 
-        return redirect()->route('dashboard.tags.index')->with('success', 'Tag updated successfully!');
+        return redirect()->route('dashboard.tags.index')->with('success', __('app.updated_successfully'));
     }
 
     public function destroy(Tag $tag)
     {
         $tag->delete();
 
-        return redirect()->route('dashboard.tags.index')->with('success', 'Tag deleted!');
+        return redirect()->route('dashboard.tags.index')->with('success', __('app.deleted_successfully'));
     }
 }

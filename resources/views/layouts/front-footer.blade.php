@@ -108,6 +108,45 @@
             </div>
         </div> --}}
         <!-- End Footer Middle -->
+        <!-- Start Footer Links -->
+        <div class="footer-links">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4 col-12 footer-links-column">
+                        <h3>{{ Setting::get('site_name') }}</h3>
+                        <p>{{ __('pages.about.intro', ['site' => Setting::get('site_name')]) }}</p>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-6 footer-links-column">
+                        <h3>{{ __('app.shop') }}</h3>
+                        <ul>
+                            <li><a href="{{ route('products.index') }}">{{ __('app.products') }}</a></li>
+                            <li><a href="{{ route('front.posts.index') }}">{{ __('app.blog') }}</a></li>
+                            <li><a href="{{ route('cart.index') }}">{{ __('app.cart') }}</a></li>
+                            <li><a href="{{ route('front.orders.index') }}">{{ __('app.my_orders') }}</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-6 footer-links-column">
+                        <h3>{{ __('app.information') }}</h3>
+                        <ul>
+                            <li><a href="{{ route('pages.about') }}">{{ __('app.about') }}</a></li>
+                            <li><a href="{{ route('contact') }}">{{ __('app.contact') }}</a></li>
+                            <li><a href="{{ route('pages.faq') }}">{{ __('pages.faq.title') }}</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-12 footer-links-column">
+                        <h3>{{ __('app.policies') }}</h3>
+                        <ul>
+                            <li><a href="{{ route('pages.privacy') }}">{{ __('pages.privacy.title') }}</a></li>
+                            <li><a href="{{ route('pages.terms') }}">{{ __('pages.terms.title') }}</a></li>
+                            <li><a href="{{ route('pages.shipping') }}">{{ __('pages.shipping.title') }}</a></li>
+                            <li><a href="{{ route('pages.returns') }}">{{ __('pages.returns.title') }}</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Footer Links -->
+
         <!-- Start Footer Bottom -->
         <div class="footer-bottom">
             <div class="container">
@@ -115,26 +154,25 @@
                     <div class="row align-items-center">
                         <div class="col-lg-4 col-12">
                             <div class="payment-gateway">
-                                <span>We Accept:</span>
-                                <img src="{{ asset('assets/images/footer/credit-cards-footer.png') }}" alt="#">
+                                <span>{{ __('app.we_accept') }}:</span>
+                                {{ collect(App\Enums\PaymentMethod::enabled())->map->label()->implode(' · ') }}
                             </div>
                         </div>
                         <div class="col-lg-4 col-12">
                             <div class="copyright">
-                                <p>Designed and Developed by<a href="https://graygrids.com/" rel="nofollow"
-                                        target="_blank">GrayGrids</a></p>
+                                <p>{{ __('app.copyright', ['year' => date('Y')]) }}</p>
+                                <p>{{ __('app.developed_by') }}</p>
                             </div>
                         </div>
                         <div class="col-lg-4 col-12">
-                            <ul class="socila">
+                            @if (Setting::get('show_social_footer') && App\Models\Setting::hasSocialLinks())
+                                <ul class="socila">
                                 <li>
-                                    <span>Follow Us On:</span>
+                                    <span>{{ __('app.follow_us') }}:</span>
                                 </li>
-                                <li><a href="javascript:void(0)"><i class="lni lni-facebook-filled"></i></a></li>
-                                <li><a href="javascript:void(0)"><i class="lni lni-twitter-original"></i></a></li>
-                                <li><a href="javascript:void(0)"><i class="lni lni-instagram"></i></a></li>
-                                <li><a href="javascript:void(0)"><i class="lni lni-google"></i></a></li>
+                                @include('partials.social-links')
                             </ul>
+                            @endif
                         </div>
                     </div>
                 </div>

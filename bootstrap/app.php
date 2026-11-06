@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\CheckMaintenanceMode;
 use App\Http\Middleware\CheckUserType;
 use App\Http\Middleware\SetAppLang;
 use App\Http\Middleware\UpdateUserLastActiveAt;
@@ -21,11 +22,13 @@ return Application::configure(basePath: dirname(__DIR__))
         // $middleware->append( SetAppLang::class); 
         $middleware->web(append:[
             SetAppLang::class,
-             UpdateUserLastActiveAt::class,
+                          UpdateUserLastActiveAt::class,
+             CheckMaintenanceMode::class,
         ]); // append middleware during every http request
 
         $middleware->api(append: [
-            SetAppLang::class, 
+                        SetAppLang::class,
+            CheckMaintenanceMode::class,
         ]);
 
         $middleware->alias([

@@ -31,7 +31,7 @@ class AttributesController extends Controller
         Attribute::create($data);
 
         return Redirect::route('dashboard.attributes.index')
-            ->with('success', 'arrtibute created');
+            ->with('success', __('app.created_successfully'));
     }
 
 
@@ -52,7 +52,7 @@ class AttributesController extends Controller
             $attribute->update($data);
 
         return Redirect::route('dashboard.attributes.index')
-            ->with('success', 'attributes updated');
+            ->with('success', __('app.updated_successfully'));
     }
 
     public function destroy (Attribute $attribute)
@@ -61,6 +61,6 @@ class AttributesController extends Controller
 
         $attribute->delete();
 
-        return back()->with('success', 'attribute Deleted ');
+        return back()->with('success', __('app.deleted_successfully'));
     }
 }

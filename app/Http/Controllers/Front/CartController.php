@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Front;
 
+
 use App\Helpers\Currency;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Services\Bundle\BundleService;
 use App\Services\Order\CartService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -53,7 +55,7 @@ class CartController extends Controller
         if ($request->expectsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Item added to cart!',
+                'message' => __('app.added_to_cart'),
                 'count' => $this->cart->count(),
                 'total' => Currency::format($this->cart->total()),
             ], 201);
@@ -61,7 +63,7 @@ class CartController extends Controller
 
         return redirect()
             ->route('cart.index')
-            ->with('success', 'Product added to cart!');
+            ->with('success', __('app.added_to_cart'));
     }
 
     /**
@@ -77,14 +79,10 @@ class CartController extends Controller
 
         $price = $item->variation?->price ?? $item->product->price;
 
-        $cartTotal = $this->cart->total(); 
-
-
         return response()->json([
             'success' => true,
             'item_total' => Currency::format($item->quantity * $price),
-            'cart_subtotal' => Currency::format($cartTotal),
-            'cart_total' => Currency::format($cartTotal),
+            ...$this->totals(),
         ]);
     }
 
@@ -95,13 +93,26 @@ class CartController extends Controller
     {
         $this->cart->delete($id);
 
-        $cartTotal = $this->cart->total();
-
         return response()->json([
             'success' => true,
-            'cart_subtotal' => Currency::format($cartTotal),
-            'cart_total' => Currency::format($cartTotal),
+            ...$this->totals(),
         ]);
+    }
+
+    /** The figures the cart page redraws after a quantity changes. */
+    private function totals(): array
+    {
+        $items = $this->cart->items();
+        $subtotal = $this->cart->total();
+        $bundles = app(BundleService::class);
+        $discount = $bundles->calculate($items)['discount'];
+
+        return [
+            'cart_subtotal' => Currency::format($subtotal),
+            'cart_total' => Currency::format(max($subtotal - $discount, 0)),
+            'bundle_discount' => $discount > 0 ? Currency::format($discount) : null,
+            'bundle_progress' => view('front.bundles._cart-progress', ['progress' => $bundles->progress($items)])->render(),
+        ];
     }
 
     public function empty(Request $request)
@@ -111,13 +122,13 @@ class CartController extends Controller
         if ($request->expectsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Cart cleared successfully!'
+                'message' => __('app.cart_cleared')
             ]);
         }
 
         return redirect()
             ->route('cart.index')
-            ->with('success', 'Cart cleared successfully!');
+            ->with('success', __('app.cart_cleared'));
     }
 
     public function cartJson()

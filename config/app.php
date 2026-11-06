@@ -132,6 +132,7 @@ return [
 
 'aliases' => Illuminate\Support\Facades\Facade::defaultAliases()->merge([
         'Currency' => App\Helpers\Currency::class,
+        'Setting' => App\Models\Setting::class,
     ])->toArray(),
 
 

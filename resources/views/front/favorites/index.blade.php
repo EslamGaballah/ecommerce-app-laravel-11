@@ -1,66 +1,34 @@
-@extends('layouts.dashboard')
+<x-front-layout :title="__('app.favorites')">
+    @push('page-styles')
+        <link rel="stylesheet" href="{{ asset('assets/css/home.css') }}" />
+    @endpush
 
-@section('title', 'Favorites')
+    <x-slot:breadcrumb>
+        @include('partials.page-breadcrumb', ['title' => __('app.favorites')])
+    </x-slot:breadcrumb>
 
-@section('breadcrumb')
-    @parent
-    <li class="breadcrumb-item active">{{ __('app.favorites') }}</li>
-@endsection
+    <section class="home-section home-section-tinted">
+        <div class="container">
+            <x-alert type="success" />
 
-@section('content')
+            <div id="favorites-list" @class(['row home-products', 'd-none' => $favorites->isEmpty()])>
+                @foreach ($favorites as $product)
+                    <div class="col-lg-3 col-md-4 col-6" data-favorite-item>
+                        <x-product-card :product="$product" />
+                    </div>
+                @endforeach
+            </div>
 
-<x-alert type="success" />
-<x-alert type="info" />
+            <div id="favorites-empty" @class(['info-page-card text-center', 'd-none' => $favorites->isNotEmpty()])>
+                <i class="lni lni-heart favorites-empty-icon"></i>
+                <h2>{{ __('app.no_favorites') }}</h2>
+                <p>{{ __('app.no_favorites_text') }}</p>
+                <div class="button"><a href="{{ route('products.index') }}" class="btn">{{ __('app.shop_now') }}</a></div>
+            </div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>{{ __('app.images') }}</th>
-            <th>ID</th>
-            <th>{{ __('app.products') }}</th>
-            <th>{{ __('app.categories') }}</th>
-            <th>{{ __('app.description') }} </th>
-            <th colspan="2">{{ __('app.actions') }}</th>
-        </tr>
-    </thead>
-    <tbody>
-        @forelse($favorites as $favorite)
-        <tr>
-            <td>
-                @php
-                    // نجيب الصورة حسب الحالة
-                    $image = optional($favorite->default_variation)->image   // صورة الفارييشن الافتراضي لو موجود
-                            ?? $favorite->image                              // صورة المنتج الأساسية
-                            ?? $favorite->images->first()?->image           // أول صورة في gallery
-                            ?? 'default.png';                               // صورة افتراضية لو مفيش أي صورة
-                @endphp
-
-                <img src="{{ asset('storage/' . $image) }}" alt="{{ $favorite->name }}" height="50">
-            </td>
-            <td>{{ $favorite->id }}</td>
-            <td><a href="{{ route('dashboard.products.show', $favorite->id) }}">{{ $favorite->name }}</a></td>
-            <td>
-                {{ $favorite->category?->name ?? '-' }}
-            </td>
-            <td>{{ $favorite->description }}</td>
-
-            <td>
-                <form method="POST" action="{{ route('favorites.toggle', $favorite->id) }}">
-                    @csrf
-                    <button type="submit" class="btn btn-sm btn-outline-danger">
-                        {{ __('app.remove_from_favorites') }}
-                    </button>
-                </form>
-            </td>
-        </tr>
-        @empty
-        <tr>
-            <td colspan="9">No favorites defined.</td>
-        </tr>
-        @endforelse
-    </tbody>
-</table>
-
-{{ $favorites->withQueryString()->links('pagination::bootstrap-5') }}
-
-@endsection
+            <div class="mt-3">
+                {{ $favorites->links('pagination::bootstrap-5') }}
+            </div>
+        </div>
+    </section>
+</x-front-layout>

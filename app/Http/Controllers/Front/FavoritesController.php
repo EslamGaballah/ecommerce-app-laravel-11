@@ -8,41 +8,34 @@ use Illuminate\Http\Request;
 
 class FavoritesController extends Controller
 {
-        public function index()
+    public function index(Request $request)
     {
-        $favorites = auth()->user()
+        $favorites = $request->user()
             ->favorites()
-            ->with('images')
-            ->paginate(10);
+            ->active()
+            ->with(BundleController::CARD_RELATIONS)
+            ->paginate(12);
 
         return view('front.favorites.index', compact('favorites'));
     }
 
-    // public function store(Product $product)
-    // {
-    //     auth()->user()->favorites()->syncWithoutDetaching($product->id);
-
-    //     return back()->with('success', 'Added to favorites');
-    // }
-
-    // public function destroy(Product $product)
-    // {
-    //     auth()->user()->favorites()->detach($product->id);
-
-    //     return back()->with('success', 'Removed from favorites');
-    // }
-
-     public function toggle(Product $product)
+    public function toggle(Request $request, Product $product)
     {
-        $user = auth()->user();
+        $user = $request->user();
+        $favorited = ! $user->favorites()->whereKey($product->id)->exists();
 
-        if ($user->favorites()->where('product_id', $product->id)->exists()) {
-            $user->favorites()->detach($product->id);
-            return back()->with('success', 'تم الحذف من المفضلة');
+        $favorited ? $user->favorites()->attach($product->id) : $user->favorites()->detach($product->id);
+
+        $message = $favorited ? __('app.added_to_favorites') : __('app.removed_from_favorites');
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'favorited' => $favorited,
+                'count' => $user->favorites()->count(),
+                'message' => $message,
+            ]);
         }
 
-        $user->favorites()->attach($product->id);
-        return back()->with('success', 'تمت الإضافة إلى المفضلة');
+        return back()->with('success', $message);
     }
-
 }

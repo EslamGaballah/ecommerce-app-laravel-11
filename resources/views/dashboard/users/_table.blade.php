@@ -1,7 +1,7 @@
 <table class="table">
     <thead>
         <tr>
-            <th>ID</th>
+            <th>{{ __('app.id') }}</th>
             <th>{{__('app.name')}}</th>
             <th>{{__('app.email')}}</th>
             <th>{{__('app.roles')}}</th>
@@ -36,7 +36,7 @@
         </tr>
         @empty
         <tr>
-            <td colspan="6">No users defined.</td>
+            <td colspan="6">{{ __('app.no_users_defined') }}</td>
         </tr>
         @endforelse
     </tbody>

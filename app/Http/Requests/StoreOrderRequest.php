@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\PaymentMethod;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -31,6 +32,7 @@ class StoreOrderRequest extends FormRequest
             'city' => ['required', 'string', 'max:255'],
             'street_address' => ['required', 'string', 'max:255'],
             'country' => ['required', 'string', 'max:255'],
+            'payment_method' => ['required', Rule::in(array_column(PaymentMethod::enabled(), 'value'))],
         ];
     }
 }

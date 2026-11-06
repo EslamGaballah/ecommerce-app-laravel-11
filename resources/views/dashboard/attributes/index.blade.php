@@ -23,7 +23,7 @@
 <table class="table">
     <thead>
         <tr>
-            <th>ID</th>
+            <th>{{ __('app.id') }}</th>
             <th>{{__('app.name')}}</th>
             <th>{{__('app.values')}}</th>
             <th>{{__('app.created_at')}}</th>

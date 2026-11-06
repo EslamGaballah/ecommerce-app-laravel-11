@@ -16,7 +16,16 @@
                                     @endcan
 
                                     <li class="nav-item">
-                                        <a href="{{ route('home') }}" aria-label="Toggle navigation">{{__('app.home')}}</a>
+                                        <a href="{{ route('home') }}" @class(['active' => request()->routeIs('home')])>{{ __('app.home') }}</a>
+                                    </li>
+                                    <li class="nav-item d-lg-none">
+                                        <a class="dd-menu collapsed" href="javascript:void(0)" data-bs-toggle="collapse"
+                                            data-bs-target="#submenu-categories" aria-expanded="false">{{ __('app.categories') }}</a>
+                                        <ul class="sub-menu collapse" id="submenu-categories">
+                                            @foreach ($categories as $category)
+                                                <li class="nav-item"><a href="{{ route('products.index', ['category' => $category->id]) }}">{{ $category->name }}</a></li>
+                                            @endforeach
+                                        </ul>
                                     </li>
                                     {{-- <li class="nav-item">
                                         <a class="dd-menu active collapsed" href="javascript:void(0)"
@@ -56,14 +65,18 @@
                                         </ul>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="dd-menu collapsed" href="javascript:void(0)" data-bs-toggle="collapse"
-                                            data-bs-target="#submenu-1-4" aria-controls="navbarSupportedContent"
-                                            aria-expanded="false" aria-label="Toggle navigation">{{ __('app.blog') }}</a>
-                                        <ul class="sub-menu collapse" id="submenu-1-4">
-                                            <li class="nav-item"><a href="{{ route('front.posts.index') }}">{{ __('app.blog') }}</a>
-                                            </li>
-                                        </ul>
+                                        <a href="{{ route('bundles.index') }}" @class(['active' => request()->routeIs('bundles.*')])>{{ __('app.bundles') }}</a>
                                     </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('products.index', ['featured' => 1]) }}">{{ __('app.featured_products') }}</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('products.index', ['sort_by' => 'best_selling']) }}">{{ __('app.best_sellers') }}</a>
+                                    </li>
+                                    <li class="nav-item d-lg-none"><a href="{{ route('pages.about') }}">{{ __('app.about') }}</a></li>
+                                    <li class="nav-item d-lg-none"><a href="{{ route('front.posts.index') }}">{{ __('app.blog') }}</a></li>
+                                    <li class="nav-item d-lg-none"><a href="{{ route('pages.faq') }}">{{ __('pages.faq.title') }}</a></li>
+                                    <li class="nav-item d-lg-none"><a href="{{ route('contact') }}">{{ __('app.contact') }}</a></li>
                                     {{-- <li class="nav-item">
                                         <a href="contact.html" aria-label="Toggle navigation">Contact Us</a>
                                     </li> --}}

@@ -22,6 +22,7 @@ class Order extends Model
         'shipping',
         'tax',
         'discount',
+        'bundle_discount',
         'total',
         'coupon_id',
     ];
@@ -62,6 +63,28 @@ class Order extends Model
         $builder->when($filters['status'] ?? false, function($builder, $value) {
             $builder->where('orders.status', '=', $value);
         });
+    }
+
+    /**
+     * A card order waiting for its payment. A failed attempt can be tried again.
+     */
+    public function isPayable(): bool
+    {
+        return $this->payment_method === PaymentMethod::VISA
+            && $this->status === OrderStatus::PENDING
+            && in_array($this->payment_status, [PaymentStatus::PENDING, PaymentStatus::FAILED], true);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    public function getCustomerNameAttribute(): string
+    {
+        $addressName = trim($this->address?->first_name.' '.$this->address?->last_name);
+
+        return $addressName ?: ($this->user?->name ?? __('app.guest'));
     }
 
     public function user()

@@ -93,11 +93,11 @@ class UserController extends Controller
          } catch (Throwable $e) {
                     DB::rollBack();
                     throw $e;
-                    return back()->with('error', 'Failed to create user');
+                    return back()->with('error', __('app.save_failed'));
             }
 
         return redirect()->route('dashboard.users.index')
-                        ->with('success','User created successfully');
+                        ->with('success', __('app.created_successfully'));
 
     }
 
@@ -162,11 +162,11 @@ class UserController extends Controller
          } catch (Throwable $e) {
                     DB::rollBack();
                     report($e);
-                    return back()->with('error', 'Failed to update user');
+                    return back()->with('error', __('app.save_failed'));
             }
 
 
-        return Redirect()->route('dashboard.users.index')->with('success','User updated successfully');
+        return Redirect()->route('dashboard.users.index')->with('success', __('app.updated_successfully'));
 
     }
 
@@ -178,10 +178,10 @@ class UserController extends Controller
         $this->ensureCanManage($user);
 
         if ($user->is(auth()->user())) {
-            return back()->with('error', 'You cannot delete your own account here');
+            return back()->with('error', __('app.cannot_delete_own_account'));
         }
 
        $user->delete();
-        return redirect()->route('dashboard.users.index')->with('success','User deleted');
+        return redirect()->route('dashboard.users.index')->with('success', __('app.deleted_successfully'));
     }
 }

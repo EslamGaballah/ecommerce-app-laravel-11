@@ -1,0 +1,5 @@
+<circle cx="290" cy="300" r="165" fill="none" stroke="{dark}" stroke-width="58"/>
+<circle cx="290" cy="300" r="165" fill="none" stroke="{main}" stroke-width="44"/>
+<circle cx="290" cy="300" r="100" fill="none" stroke="{main}" stroke-width="30"/>
+<rect x="405" y="240" width="110" height="120" rx="14" fill="none" stroke="#cbd5e1" stroke-width="20"/>
+<path d="M460 300h-70" stroke="#94a3b8" stroke-width="16" stroke-linecap="round"/>

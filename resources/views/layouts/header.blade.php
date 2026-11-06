@@ -1,272 +1,185 @@
 <header class="header navbar-area">
-        <!-- Start Topbar -->
-    <div class="topbar">
-        <div class="container" style="display: inline">
-            <div class="row align-items-center">
-                <div class="col-lg-4 col-md-4 col-12">
-                    <div class="top-left">
-                        <ul class="menu-top-link">
-                            <li>
-                                <div class="select-position">
-                                    <form 
-                                    action="{{ route('home') }}"
-                                        method="post">
-                                        @csrf
-                                        <select name="currency_code" onchange="this.form.submit()">
-                                            <option value="USD" @selected('USD' == session('currency_code'))>$ USD</option>
-                                            {{-- <option value="EUR" @selected('EUR' == session('currency_code'))>€ EURO</option> --}}
-                                        </select>
-                                    </form>
-                                </div>
-                            </li>
+    @if (Setting::get('announcement'))
+        <div class="announcement-bar">{{ Setting::get('announcement') }}</div>
+    @endif
 
-                            <li>
-                                <div class="select-position">
-                                    <select name="lang" onchange="window.location.href='{{ route('lang.switch', '') }}/' + this.value">
-                                        @foreach(config('app.available_locales') as $localeCode => $details)
-                                            <option value="{{ $localeCode }}" 
-                                                @selected($localeCode == app()->getLocale())>
-                                                {{ $details['name'] }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
+
+    {{-- Top bar --}}
+    <div class="topbar">
+        <div class="container">
+            <div class="topbar-inner">
+                <div class="topbar-side">
+                    @foreach (config('app.available_locales') as $localeCode => $details)
+                        @continue($localeCode === app()->getLocale())
+                        <a href="{{ route('lang.switch', $localeCode) }}" class="topbar-link" lang="{{ $localeCode }}">
+                            <i class="lni lni-world"></i> {{ $details['name'] }}
+                        </a>
+                    @endforeach
+
+                    @if (Setting::get('phone'))
+                        <a href="tel:{{ preg_replace('/[^0-9+]/', '', Setting::get('phone')) }}" class="topbar-link topbar-phone" dir="ltr">
+                            <i class="lni lni-phone"></i> {{ Setting::get('phone') }}
+                        </a>
+                    @endif
                 </div>
-                <div class="col-lg-4 col-md-4 col-12">
-                    <div class="top-middle">
-                        <ul class="useful-links">
-                            <li><a href="{{ route('home') }}">{{ trans('app.home') }}</a></li>
-                            {{-- <li><a href="about-us.html">@lang('app.about')</a></li> --}}
-                            {{-- <li><a href="contact.html">{{ __('app.contact') }}</a></li> --}}
-                        </ul>
-                    </div>
-                </div>
-                {{-- start user --}}
-               <div class="col-lg-4 col-md-4 col-12">
-                    <div class="top-end">
-                        @auth
-                            <div class="dropdown">
-                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="color: #ffffff">
-                                    <i class="lni lni-user me-2"></i>
-                                    <span>{{ auth()->user()->name }}</span>
-                                </a>
-                                
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                    <li><a class="dropdown-item" href="{{ route('profile.edit') }}">{{ __('app.profile') }}</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('front.orders.index') }}"> {{ __('app.orders') }}</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <form method="POST" action="{{ route('logout') }}">
-                                            @csrf
-                                            <button type="submit" class="dropdown-item text-danger">تسجيل الخروج</button>
-                                        </form>
-                                    </li>
-                                </ul>
-                            </div>
-                        @else
-                            <div class="user-login">
-                                <a href="{{ route('login') }}"><i class="lni lni-user"></i> تسجيل الدخول</a>
-                            </div>
-                        @endauth
-                    </div>
+
+                <nav class="topbar-pages" aria-label="{{ __('app.information') }}">
+                    <a href="{{ route('pages.about') }}">{{ __('app.about') }}</a>
+                    <a href="{{ route('front.posts.index') }}">{{ __('app.blog') }}</a>
+                    <a href="{{ route('pages.faq') }}">{{ __('pages.faq.title') }}</a>
+                    <a href="{{ route('contact') }}">{{ __('app.contact') }}</a>
+                </nav>
+
+                <div class="topbar-side topbar-end">
+                    @if (Setting::get('dark_mode_enabled'))
+                        <button type="button" class="topbar-link topbar-theme" data-theme-toggle aria-label="{{ __('app.toggle_theme') }}">
+                            <i class="lni lni-night theme-icon-dark"></i>
+                            <i class="lni lni-sun theme-icon-light"></i>
+                        </button>
+                    @endif
+
+                    @auth
+                        <div class="dropdown">
+                            <a class="topbar-link dropdown-toggle" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                @if (auth()->user()->avatar_url)
+                                    <img src="{{ auth()->user()->avatar_url }}" alt="" class="topbar-avatar">
+                                @else
+                                    <i class="lni lni-user"></i>
+                                @endif
+                                <span>{{ auth()->user()->name }}</span>
+                            </a>
+
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                @can('access-dashboard')
+                                    <li><a class="dropdown-item" href="{{ route('dashboard.index') }}">{{ __('app.dashboard') }}</a></li>
+                                @endcan
+                                <li><a class="dropdown-item" href="{{ route('profile.edit') }}">{{ __('app.profile') }}</a></li>
+                                <li><a class="dropdown-item" href="{{ route('front.orders.index') }}">{{ __('app.my_orders') }}</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item text-danger">{{ __('app.logout') }}</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    @else
+                        <a href="{{ route('login') }}" class="topbar-link"><i class="lni lni-user"></i> {{ __('app.login') }}</a>
+                                                @if (Setting::get('registration_enabled'))
+                            <a href="{{ route('register') }}" class="topbar-link">{{ __('app.register') }}</a>
+                        @endif
+                    @endauth
                 </div>
             </div>
         </div>
-        <!-- End Topbar -->
     </div>
-        
-        <!-- Start Header Middle -->
+
+    {{-- Logo, search, and icons --}}
     <div class="header-middle">
         <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-3 col-md-3 col-7">
-                    <!-- Start Header Logo -->
-                    <a class="navbar-brand" href="{{ route('home') }}">
-                        <img src="{{ asset('assets/images/logo/logo.svg') }}" alt="Logo">
-                    </a>
-                    <!-- End Header Logo -->
-                </div>
-                <div class="col-lg-5 col-md-7 d-xs-none">
+            <div class="header-middle-inner">
+                <a class="navbar-brand" href="{{ route('home') }}">
+                    @if (Setting::get('logo'))
+                        <img src="{{ asset('storage/'.Setting::get('logo')) }}" alt="{{ Setting::get('site_name') }}">
+                    @else
+                        <img src="{{ asset('assets/images/logo/logo.svg') }}" alt="{{ Setting::get('site_name') }}" class="logo-light">
+                        <img src="{{ asset('assets/images/logo/white-logo.svg') }}" alt="{{ Setting::get('site_name') }}" class="logo-dark">
+                    @endif
+                </a>
 
-                    <!-- Start Main Menu Search -->
-                    <div class="main-menu-search">
-                        <!-- navbar search start -->
-                        <form action="{{ route('products.index') }}" method="GET" 
-                            class="navbar-search search-style-5">
-                            <div class="search-select">
-                                <div class="select-position">
-                                    <select name="category" id="select1">
-                                        <option value="">{{__('app.all')}}</option>
-                                        
-                                        @foreach($categories as $category)
-                                            <option value="{{ $category->id }}"
-                                                {{ request('category') == $category->id ? 'selected' : '' }}>
-                                                {{ $category->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                <div class="main-menu-search">
+                    <form action="{{ route('products.index') }}" method="GET" class="navbar-search search-style-5">
+                        <div class="search-select">
+                            <div class="select-position">
+                                <select name="category" id="select1" aria-label="{{ __('app.categories') }}">
+                                    <option value="">{{ __('app.all') }}</option>
+                                    @foreach ($categories as $category)
+                                        <option value="{{ $category->id }}" @selected(request()->query('category') == $category->id)>{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
-                            <div class="search-input">
-                                <input type="text" name="search" value="{{ request('search') }}" placeholder="{{__('app.search')}}">
-                            </div>
-                            <div class="search-btn">
-                                <button><i class="lni lni-search-alt"></i></button>
-                            </div>
-                            <!-- navbar search Ends -->
-                        </form>
-                        <!-- End Main Menu Search -->
-                    </div>
+                        </div>
+                        <div class="search-input">
+                            <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('app.search') }}" aria-label="{{ __('app.search') }}">
+                        </div>
+                        <div class="search-btn">
+                            <button aria-label="{{ __('app.search') }}"><i class="lni lni-search-alt"></i></button>
+                        </div>
+                    </form>
                 </div>
-                
-                <div class="col-lg-4 col-md-2 col-5">
-                    <div class="middle-right-area">
-                        <!-- Start Hotline area -->
+
+                <div class="middle-right-area">
+                    @if (Setting::get('phone'))
                         <div class="nav-hotline">
                             <i class="lni lni-phone"></i>
                             <h3>{{ __('app.hotline') }}:
-                                <span>(+20) 1091070473</span>
+                                <span dir="ltr">{{ Setting::get('phone') }}</span>
                             </h3>
                         </div>
-                         <!-- Notifications Start -->
-                        <div class="navbar-cart">
+                    @endif
+
+                    <div class="navbar-cart">
+                        @auth
+                            @php($unreadNotifications = auth()->user()->unreadNotifications)
                             <div class="cart-items">
-                                <a href="javascript:void(0)" class="main-btn">
-                                    <i class="lni lni-heart"></i>
-                                     <span class="total-items" 
-                                        id="notification-count" 
-                                        >
-                                        @auth
-                                            {{ auth()->user()->unreadNotifications->count() }}
-                                        @endauth
-                                    </span>
+                                <a href="javascript:void(0)" class="main-btn" aria-label="{{ __('app.notifications') }}">
+                                    <i class="lni lni-alarm"></i>
+                                    <span class="total-items" id="notification-count">{{ $unreadNotifications->count() }}</span>
                                 </a>
-                                @auth
-                                    <div class="shopping-item">
-                                        <div class="dropdown-cart-header">
-                                            <span id="notification-count" >
-                                                (  {{ auth()->user()->unreadNotifications->count() }} )
-                                                un read Notifications
-                                            </span>
-                                            <a href="{{ route('notifications.index') }}">{{ __('app.notifications') }}</a>
-                                        </div>
-                                         <ul class="shopping-list"
-                                            id="notification-list"
-                                             >
-                                            @forelse(auth()->user()->unreadNotifications as $notification)
-                                                <li>
-                                                    <a href="{{ route('dashboard.orders.show', $notification->data['order_id'] ?? '#') }}">
-                                                        {{ $notification->data['message'] ?? $notification->data['body'] ?? 'إشعار جديد' }}
-                                                    </a>
-                                                </li>
-                                            @empty
-                                                <li class="text-muted px-3">لا يوجد إشعارات</li>
-                                            @endforelse
-                                        </ul>
-                                    {{-- <div class="dropdown-divider"></div> --}}
-                                    <a href="{{ route('notifications.index') }}" class="dropdown-item dropdown-footer">
-                                       {{__('app.see_all_notifications')}}
-                                    </a>
-                                    </div>
-                                @endauth
-                                <!-- Notifications End -->
-                            </div>
-                            <div class="wishlist">
-                                {{-- <a href="javascript:void(0)"> --}}
-                                <a href=" {{ route('favorites.index') }}">
-                                    <i class="lni lni-heart"></i>
-                                    <span class="total-items">
-                                        {{ auth()->check() ? auth()->user()->favorites()->count() : 0 }}
-                                    </span>
-                                </a>
-                            </div>
-                            {{-- start cart menu --}}
-                            <x-cart-menu />
-                            {{-- end cart menu --}}
-
-                            {{-- <div class="cart-items">
-                                <a href="javascript:void(0)" class="main-btn">
-                                    <i class="lni lni-user"></i>
-                                </a>
-                                <!-- Shopping Items -->
                                 <div class="shopping-item">
-
-                                <ul class="shopping-list">
-                                    
-                                        <li class="nav-item">
-                                            <a href="{{ route('front.orders.index') }}">
-                                                {{ __('app.orders') }}
-                                            </a>
-                                        </li>
-                                    
-                                        @if (!auth()->check())
-                                            <li class="nav-item active"><a href="{{route('login')}}">{{ __('app.login') }}</a></li>
-                                            <li class="nav-item"><a href="{{route('register')}}">{{ __('app.register') }}</a></li>
-                                        @endif
-
-                                        @if (auth()->check())
-                                            <li class="nav-item active">
-                                                <form method="POST" action="{{ route('logout') }}" class="nav-link">
-                                                    @csrf
-                                                    <button type="submit">{{ __('app.logout') }}</button>
-                                                </form>
+                                    <div class="dropdown-cart-header">
+                                        <span>{{ __('app.unread_notifications', ['count' => $unreadNotifications->count()]) }}</span>
+                                        <a href="{{ route('notifications.index') }}">{{ __('app.notifications') }}</a>
+                                    </div>
+                                    <ul class="shopping-list" id="notification-list">
+                                        @forelse ($unreadNotifications->take(5) as $notification)
+                                            <li>
+                                                <a href="{{ route('notifications.open', $notification->id) }}">
+                                                    @include('partials.notification-text')
+                                                </a>
                                             </li>
-                                        @endif
+                                        @empty
+                                            <li class="text-muted px-3">{{ __('app.no_notifications') }}</li>
+                                        @endforelse
                                     </ul>
-
+                                    <a href="{{ route('notifications.index') }}" class="dropdown-item dropdown-footer">{{ __('app.see_all_notifications') }}</a>
                                 </div>
-                                <!--/ End Shopping Items -->
-                            </div> --}}
+                            </div>
+                        @endauth
+
+                        <div class="wishlist">
+                            <a href="{{ route('favorites.index') }}" aria-label="{{ __('app.favorites') }}">
+                                <i class="lni lni-heart"></i>
+                                <span class="total-items favorites-count">{{ auth()->check() ? auth()->user()->favorites()->count() : 0 }}</span>
+                            </a>
                         </div>
+
+                        <x-cart-menu />
                     </div>
                 </div>
             </div>
         </div>
     </div>
-        <!-- End Header Middle -->
 
-        <!-- Start Header Bottom -->
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-8 col-md-6 col-12">
+    {{-- Categories and main menu --}}
+    <div class="header-bottom">
+        <div class="container">
+            <div class="header-bottom-inner">
                 <div class="nav-inner">
-                    <!-- Start Mega Category Menu -->
-                        @include('partials.category-menu')
-                    <!-- End Mega Category Menu -->
-
-                    <!-- Start Navbar -->
-                        @include('partials.nav')
-                    <!-- End Navbar -->
-
+                    @include('partials.category-menu')
+                    @include('partials.nav')
                 </div>
-            </div>
-            <div class="col-lg-4 col-md-6 col-12">
-                <!-- Start Nav Social -->
-                <div class="nav-social">
-                    <h5 class="title">{{ __('app.follow_us') }}:</h5>
-                    <ul>
-                        <li>
-                            <a href="javascript:void(0)"><i class="lni lni-facebook-filled"></i></a>
-                        </li>
-                        <li>
-                            <a href="javascript:void(0)"><i class="lni lni-twitter-original"></i></a>
-                        </li>
-                        <li>
-                            <a href="javascript:void(0)"><i class="lni lni-instagram"></i></a>
-                        </li>
-                        <li>
-                            <a href="https://wa.me/201091070473" target="_blank">
-                                <i class="lni lni-whatsapp"></i>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-                <!-- End Nav Social -->
+
+                @if (Setting::get('show_social_header') && App\Models\Setting::hasSocialLinks())
+                    <div class="nav-social">
+                        <h5 class="title">{{ __('app.follow_us') }}:</h5>
+                        <ul>
+                            @include('partials.social-links')
+                        </ul>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
-        <!-- End Header Bottom -->
 </header>

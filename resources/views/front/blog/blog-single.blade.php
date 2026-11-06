@@ -1,4 +1,4 @@
-    <x-front-layout title="Checkout">
+    <x-front-layout :title="$post->title">
 
         <x-slot:breadcrumb>
             <div class="breadcrumbs">
@@ -12,7 +12,7 @@
                         <div class="col-lg-6 col-md-6 col-12">
                             <ul class="breadcrumb-nav">
                                 <li><a href="{{ route('home') }}"><i class="lni lni-home"></i> {{ __('app.home') }}</a></li>
-                                <li><a href="{{ route('home') }}">{{ __('app.blog') }}</a></li>
+                                <li><a href="{{ route('front.posts.index') }}">{{ __('app.blog') }}</a></li>
                                 <li>{{$post->title}}</li>
                             </ul>
                         </div>
@@ -25,16 +25,16 @@
     <section class="section blog-single">
         <div class="container">
             <div class="row">
-                <div class="col-lg-10 offset-lg-1 col-md-12 col-12">
+                {{-- The dashboard preview renders this page without the side lists. --}}
+                @php($hasLists = collect($sections ?? [])->contains(fn ($list) => $list->isNotEmpty()))
+                <div @class(['col-md-12 col-12', 'col-lg-8' => $hasLists, 'col-lg-10 offset-lg-1' => ! $hasLists])>
                     <div class="single-inner">
                         <div class="post-details">
                             <div class="main-content-head">
-                                <div class="post-thumbnils"  style="width:100%; height:500px; overflow:hidden; object-fit:cover;">
-                                    <img
-                                        src="{{ $post->images->first()?->image
-                                            ? asset('storage/' . $post->images->first()->image)
-                                            : 'لا يوجد صورة' }}"
-                                    >
+                                <div class="post-thumbnils" style="width:100%; max-height:500px; overflow:hidden;">
+                                    @if ($post->images->first()?->image)
+                                        <img src="{{ asset('storage/'.$post->images->first()->image) }}" alt="{{ $post->title }}">
+                                    @endif
                                 </div>
                                 <div class="meta-information">
                                     <h2 class="post-title">
@@ -47,7 +47,7 @@
                                                 {{$post->user->name ?? 'admin'}}</a>
                                         </li>
                                         <li>
-                                            <a href="javascript:void(0)"><i class="lni lni-calendar"></i> {{$post->updated_at}}
+                                            <a href="javascript:void(0)"><i class="lni lni-calendar"></i> {{ $post->created_at->format('Y-m-d') }}
                                             </a>
                                         </li>
                                         @if($post->category)
@@ -55,14 +55,11 @@
                                                 <a href="javascript:void(0)"><i class="lni lni-tag"></i> {{ $post->category->name }}</a>
                                             </li>
                                         @endif
-                                        <li>
-                                            <a href="javascript:void(0)"><i class="lni lni-timer"></i> 5 min read</a>
-                                        </li>
                                     </ul>
                                     <!-- End Meta Info -->
                                 </div>
                                 <div class="detail-inner">
-                                    <p>{{$post->content}}</p>
+                                    <p>{!! nl2br(e($post->content)) !!}</p>
 
                                     <div class="post-bottom-area">
                                         <!-- Start Post Tag -->
@@ -132,6 +129,7 @@
                                 </ul>
                             </div>
 
+                            @if (Setting::get('blog_comments_enabled'))
                             <div class="comment-form">
                                 <h3 class="comment-reply-title">{{ __('app.leave_comment') }}</h3>
                                     <form class="add-comment-form"
@@ -155,9 +153,15 @@
                                     </div>
                                 </form>
                             </div>
+                            @else
+                                <p class="text-muted mt-3">{{ __('app.comments_closed') }}</p>
+                            @endif
                         </div>
                     </div>
                 </div>
+                @if ($hasLists)
+                    @include('front.blog._sidebar', ['similarTitle' => __('app.similar_posts')])
+                @endif
             </div>
         </div>
     </section>
@@ -189,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // --- منطق الحذف (Confirm) ---
             if (isDelete) {
-                if (!confirm('هل أنت متأكد من حذف هذا التعليق؟')) return;
+                if (!confirm(@js(__('app.are_you_sure')))) return;
             }
 
             // تجهيز البيانات
@@ -251,7 +255,7 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('عذراً، حدث خطأ ما. يرجى المحاولة مرة أخرى.');
+                alert(@js(__('app.something_went_wrong')));
             });
         }
     });

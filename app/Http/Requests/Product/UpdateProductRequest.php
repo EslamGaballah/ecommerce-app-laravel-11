@@ -18,6 +18,8 @@ class UpdateProductRequest extends FormRequest
 
     protected function prepareForValidation()
     {
+        $this->merge(['is_featured' => $this->boolean('is_featured')]);
+
         $variations = collect($this->variations ?? [])
             ->filter(function ($variation) {
                 return  !empty($variation['price']) ||
@@ -53,9 +55,10 @@ class UpdateProductRequest extends FormRequest
 
             'name_ar' => 'required|string|max:255',
             'name_en' => 'required|string|max:255',
-            'description' => 'nullable|string|max:255',
+            'description' => 'nullable|string|max:5000',
 
             'status' => ['required', new Enum(ProductStatus::class)],
+            'is_featured' => 'boolean',
 
             'category_id' => 'required|exists:categories,id',
 
@@ -91,9 +94,9 @@ class UpdateProductRequest extends FormRequest
 
             $rules['variations.*.attribute_value_ids'] = 'required|array|min:1';
 
-            $rules['variations.*.image'] = 'nullable|array';
+            $rules['variations.*.images'] = 'nullable|array';
 
-            $rules['variations.*.image.*'] = 'image|mimes:jpg,jpeg,png,webp|max:2048';
+            $rules['variations.*.images.*'] = 'image|mimes:jpg,jpeg,png,webp|max:2048';
 
         }
 
@@ -114,7 +117,7 @@ class UpdateProductRequest extends FormRequest
 
                     $validator->errors()->add(
                         "variations.$index.compare_price",
-                        'سعر المقارنة يجب أن يكون أكبر من السعر'
+                        __('app.compare_price_must_be_higher')
                     );
                 }
             }
@@ -128,7 +131,7 @@ class UpdateProductRequest extends FormRequest
 
                     $validator->errors()->add(
                         "compare_price",
-                        'سعر المقارنة يجب أن يكون أكبر من السعر'
+                        __('app.compare_price_must_be_higher')
                     );
                 }
             }
@@ -141,11 +144,11 @@ class UpdateProductRequest extends FormRequest
     {
         return [
 
-            'name.required'  => 'اسم المنتج مطلوب',
+            'name.required'  => __('app.product_name_required'),
 
-            'price.required' => 'السعر مطلوب',
+            'price.required' => __('app.price_required'),
 
-            'price.numeric'  => 'السعر يجب أن يكون رقم',
+            'price.numeric'  => __('app.price_must_be_number'),
 
         ];
     }

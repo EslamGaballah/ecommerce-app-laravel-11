@@ -145,7 +145,7 @@
                     <td>
                         @if($variation->images && $variation->images->first())
                             <img src="{{ asset('storage/' . $variation->images->first()->image) }}" 
-                                alt="Variation Image" 
+                                alt="" 
                                 width="50" height="50" 
                                 class="rounded border shadow-sm shadow-hover"
                                 style="object-fit: cover; cursor: pointer;"
@@ -188,7 +188,7 @@
                     <td>
                         {{-- <form method="POST"
                             action="{{ route('dashboard.products.variation.delete', $variation->id) }}"
-                            onsubmit="return confirm('هل أنت متأكد من الحذف؟')">
+                            onsubmit="return confirm(@js(__('app.are_you_sure')))">
                             @csrf
                             @method('DELETE')
 
@@ -210,7 +210,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" class="text-center">{{ __('No variations available') }}</td>
+                    <td colspan="6" class="text-center">{{ __('app.no_variations') }}</td>
                 </tr>
                 @endforelse
             </tbody>
@@ -226,7 +226,7 @@
 document.querySelectorAll('.delete-variation').forEach(btn => {
     btn.onclick = function () {
 
-        if (!confirm('تأكيد حذف الـ Variation؟')) return;
+        if (!confirm(@js(__('app.confirm_delete_variation')))) return;
         
        const url = this.dataset.url;
        

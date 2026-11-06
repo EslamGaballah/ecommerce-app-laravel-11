@@ -1,0 +1,332 @@
+/* Store top bar and header. Loaded after the theme; logical properties keep it correct in Arabic and English. */
+
+/* ---------- Top bar ---------- */
+
+.header .topbar {
+  position: relative;
+  z-index: 100;
+  padding: 0;
+  background: #081828;
+}
+
+.topbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 42px;
+}
+
+.topbar-side {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 20px;
+}
+
+.topbar-end {
+  justify-content: flex-end;
+}
+
+.header .topbar .topbar-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.header .topbar .topbar-link:hover {
+  color: #6ea8fe;
+}
+
+.topbar-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.header .topbar .dropdown-menu {
+  min-width: 170px;
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+/* The hotline shows the phone in the next row on wide screens. */
+@media (min-width: 992px) {
+  .topbar-phone {
+    display: none !important;
+  }
+}
+
+.topbar-pages {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 18px;
+}
+
+.header .topbar .topbar-pages a {
+  color: #c7d0dc;
+  font-size: 13px;
+  transition: color 0.2s;
+}
+
+.header .topbar .topbar-pages a:hover {
+  color: #fff;
+}
+
+.topbar-theme {
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.theme-icon-light {
+  display: none;
+}
+
+html[data-theme="dark"] .theme-icon-light {
+  display: inline;
+}
+
+html[data-theme="dark"] .theme-icon-dark {
+  display: none;
+}
+
+@media (max-width: 991.98px) {
+  .topbar-pages {
+    display: none;
+  }
+}
+
+/* ---------- Logo, search, and icons ---------- */
+
+.header .header-middle {
+  display: block;
+  position: relative;
+  padding: 18px 0;
+}
+
+.header-middle-inner {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px 32px;
+}
+
+.header .navbar-brand {
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+
+.header .navbar-brand img {
+  display: block;
+  /* An explicit size: an SVG logo has no width of its own inside an auto grid column. */
+  width: 190px;
+  height: 48px;
+  object-fit: contain;
+  object-position: left center;
+}
+
+[dir="rtl"] .header .navbar-brand img {
+  object-position: right center;
+}
+
+.header .main-menu-search {
+  display: block;
+  width: 100%;
+  margin: 0;
+}
+
+.header .main-menu-search .navbar-search {
+  width: 100%;
+}
+
+.header .main-menu-search .search-input {
+  flex: 1;
+  width: auto;
+  min-width: 0;
+}
+
+.header .main-menu-search .search-input input {
+  width: 100%;
+}
+
+.header .middle-right-area {
+  display: flex;
+  float: none;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 24px;
+}
+
+.header .nav-hotline {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.header .navbar-cart {
+  gap: 14px;
+}
+
+.header .navbar-cart .wishlist,
+.header .navbar-cart .cart-items {
+  margin: 0;
+}
+
+/* ---------- Menu row ---------- */
+
+.header-bottom {
+  position: relative;
+  border-bottom: 1px solid #eee;
+}
+
+.header-bottom-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.header .nav-inner {
+  flex: 1;
+  min-width: 0;
+}
+
+.header .nav-social {
+  display: flex;
+  flex-shrink: 0;
+  float: none;
+  align-items: center;
+  margin: 0;
+}
+
+@media (min-width: 992px) {
+  .header .mega-category-menu {
+    margin-inline-end: 24px;
+    padding-inline-end: 48px;
+  }
+}
+
+/* ---------- Tablets and phones ---------- */
+
+@media (max-width: 1199.98px) {
+  .header .nav-hotline {
+    display: none;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .header .nav-inner {
+    padding: 10px 0;
+  }
+
+  .header .nav-social .title {
+    display: none;
+  }
+
+  /* The open menu spans the page width, measured from the menu row. */
+  .header .nav-inner,
+  .header .navbar {
+    position: static;
+  }
+
+  .header .navbar-collapse {
+    top: 100%;
+    right: 0;
+    left: 0;
+    width: auto;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .topbar-inner {
+    min-height: 38px;
+  }
+
+  .header .topbar .topbar-link {
+    font-size: 12px;
+  }
+
+  .header .header-middle {
+    padding: 12px 0;
+  }
+
+  .header-middle-inner {
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+  }
+
+  .header .main-menu-search {
+    display: block;
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .header .main-menu-search .search-select {
+    display: none;
+  }
+
+  .header .navbar-brand img {
+    width: 130px;
+    height: 38px;
+  }
+
+  .topbar-side {
+    flex: none;
+    flex-wrap: nowrap;
+    gap: 12px;
+  }
+
+  .topbar-side span {
+    display: inline-block;
+    max-width: 90px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .header .navbar-cart {
+    gap: 8px;
+  }
+
+  /* Menus open across the screen, so they never run off the side. */
+  .header .navbar-cart,
+  .header .navbar-cart .cart-items {
+    position: static;
+  }
+
+  .header .navbar-cart .cart-items .shopping-item {
+    top: 100%;
+    inset-inline: 12px;
+    width: auto;
+    max-width: none;
+  }
+}
+
+/* ---------- Added to cart message ---------- */
+
+.cart-toast {
+  position: fixed;
+  z-index: 9999;
+  bottom: 20px;
+  inset-inline-start: 20px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  background: #198754;
+  color: #fff;
+  font-weight: 600;
+}
+
+.cart-toast.is-error {
+  background: #dc3545;
+}

@@ -47,7 +47,7 @@ class BrandsController extends Controller
         ]);
 
         return redirect()->route('dashboard.brands.index')
-            ->with('success', 'Brand created successfully');
+            ->with('success', __('app.created_successfully'));
     }
 
     /**
@@ -88,7 +88,7 @@ class BrandsController extends Controller
         ]);
 
         return redirect()->route('dashboard.brands.index')
-            ->with('success', 'Brand updated successfully');
+            ->with('success', __('app.updated_successfully'));
     }
 
     /**
@@ -99,6 +99,6 @@ class BrandsController extends Controller
         $brand->delete();
 
         return redirect()->route('dashboard.brands.index')
-            ->with('success', 'Brand deleted successfully');
+            ->with('success', __('app.deleted_successfully'));
     }
 }

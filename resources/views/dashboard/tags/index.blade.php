@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Tags')
+@section('title', __('app.tags'))
 
 @section('breadcrumb')
     @parent
@@ -18,7 +18,7 @@
 
 {{-- start filter --}}
 <form action="{{ url()->current() }}" method="get" class="d-flex justify-content-between mb-4">
-    <x-form.input name="name" placeholder="Name" class="mx-2" :value="request('name')" />
+    <x-form.input name="name" placeholder="{{ __('app.name') }}" class="mx-2" :value="request('name')" />
     <button class="btn btn-dark mx-2">{{__('app.filter')}}</button>
 </form>
 {{-- end filter --}}
@@ -27,7 +27,7 @@
     <thead>
         <tr>
             
-            <th>ID</th>
+            <th>{{ __('app.id') }}</th>
             <th>{{__('app.name')}}</th>
             <th>{{__('app.numper')}}</th>
             <th>{{__('app.created_at')}}</th>
@@ -64,7 +64,7 @@
         </tr>
         @empty
         <tr>
-            <td colspan="9">No tags defined.</td>
+            <td colspan="9">{{ __('app.no_tags_defined') }}</td>
         </tr>
         @endforelse
     </tbody>

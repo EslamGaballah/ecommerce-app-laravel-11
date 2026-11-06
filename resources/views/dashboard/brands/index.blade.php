@@ -20,11 +20,11 @@
 
 {{-- start filter --}}
 <form action="{{ url()->current() }}" method="get" class="d-flex justify-content-between mb-4">
-    <x-form.input name="name" placeholder="Name" class="mx-2" :value="request('name')" />
+    <x-form.input name="name" placeholder="{{ __('app.name') }}" class="mx-2" :value="request('name')" />
     <select name="status" class="form-control mx-2">
-        <option value="">All</option>
+        <option value="">{{ __('app.all') }}</option>
 
-            @foreach (['active' => 'Active' ,'archived' => 'Archived'] as $value => $label )
+            @foreach (['active' => __('app.active'), 'archived' => __('app.archived')] as $value => $label )
                 <option value="{{ $value }}" @selected(request('status') == $value)>
                     {{ $label }}
                 </option>
@@ -38,7 +38,7 @@
     <thead>
         <tr>
             <th>#</th>
-            <th>ID</th>
+            <th>{{ __('app.id') }}</th>
             <th>{{__('app.name')}}</th>
             {{-- <th>{{__('app.parent')}}</th> --}}
             <th>{{__('app.description')}} </th>
@@ -59,7 +59,7 @@
 
 
             <td>{{ $brand->products_count }}</td>
-            <td>{{ $brand->status }}</td>
+            <td>{{ __('app.'.$brand->status) }}</td>
             <td>{{ $brand->created_at }}</td>
             <td>
                 {{-- @can('categories.update') --}}

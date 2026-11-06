@@ -10,7 +10,6 @@
 @section('content')
 
 <div class="mb-5">
-    <a href="{{ route('dashboard.products.trash') }}" class="btn btn-sm btn-outline-dark">{{ __('app.trash') }}</a>
 </div>
 
 <x-alert type="success" />
@@ -18,10 +17,10 @@
 
 {{-- Filter --}}
 <form action="{{ request()->url() }}" method="get" class="d-flex justify-content-between mb-4">
-    <x-form.input name="number" placeholder="Order number" class="mx-2" :value="request('number')" />
+    <x-form.input name="number" placeholder="{{ __('app.order_number') }}" class="mx-2" :value="request('number')" />
     
     <select name="status" class="form-control mx-2">
-        <option value="">{{ __('All') }}</option>
+        <option value="">{{ __('app.all') }}</option>
         @foreach(\App\Enums\OrderStatus::cases() as $status)
             <option value="{{ $status->value }}" @selected(request('status') == $status->value)>
                 {{ $status->label() }}
@@ -36,7 +35,7 @@
     <table class="table">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>{{ __('app.id') }}</th>
                 <th>{{ __('app.order_number') }}</th>
                 <th>{{ __('app.customer') }}</th>
                 <th>{{ __('app.total_price') }}</th>
@@ -55,13 +54,7 @@
             <tr>
                 <td>{{ $order->id }}</td>
                 <td><a href="{{ route('dashboard.orders.show', $order->id) }}">{{ $order->number }}</a></td>
-                {{-- <td>{{ $order->user?->name ?? 'Guest' }}</td> --}}
-                <td>
-                    {{  ($order->address?->first_name . ' ' . $order->address?->last_name) 
-                        ?? $order->user?->name 
-                        ?? 'Guest' 
-                    }}
-                </td>
+                <td>{{ $order->customer_name }}</td>
                 <td>{{ $order->total }}</td>
                 <td>
                     <span class="badge bg-{{ $order->payment_method->color() }}">
@@ -99,10 +92,10 @@
                 </td>
                 <td>{{ $order->created_at }}</td>
                 <td>
-                    <form action="{{ route('dashboard.orders.destroy', $order->id) }}" method="post" onsubmit="return confirm('Are you sure?')">
+                    <form action="{{ route('dashboard.orders.destroy', $order->id) }}" method="post" onsubmit="return confirm(@js(__('app.are_you_sure')))">
                         @csrf
                         @method('delete')
-                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        <button type="submit" class="btn btn-sm btn-outline-danger">{{ __('app.delete') }}</button>
                     </form>
                 </td>
             </tr>
@@ -188,7 +181,7 @@
         }
     })
     .catch(error => {
-        alert('Something went wrong!');
+        alert(@js(__('app.something_went_wrong')));
         select.value = oldStatus; 
         console.error('Error:', error);
     })

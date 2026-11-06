@@ -20,10 +20,10 @@
 
     {{-- start filter --}}
     <form action="{{ url()->current() }}" method="get" class="d-flex justify-content-between mb-4">
-        <x-form.input name="code" placeholder="Code" class="mx-2" :value="request('code')" />
+        <x-form.input name="code" placeholder="{{ __('app.code') }}" class="mx-2" :value="request('code')" />
         <select name="status" class="form-control mx-2">
-            <option value="">All</option>
-            @foreach (['active' => 'Active', 'inactive' => 'Inactive'] as $value => $label)
+            <option value="">{{ __('app.all') }}</option>
+            @foreach (['active' => __('app.active'), 'inactive' => __('app.inactive')] as $value => $label)
                 <option value="{{ $value }}" @selected(request('status') == $value)>{{ $label }}</option>
             @endforeach
         </select>
@@ -73,7 +73,7 @@
                         <form action="{{ route('dashboard.coupons.destroy', $coupon->id) }}" method="post">
                             @csrf
                             @method('delete')
-                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('هل أنت متأكد؟')">{{__('app.delete')}}</button>
+                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm(@js(__('app.are_you_sure')))">{{__('app.delete')}}</button>
                         </form>
                     @endcan
                 </td>

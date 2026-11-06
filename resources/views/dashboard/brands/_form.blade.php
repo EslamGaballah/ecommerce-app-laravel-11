@@ -1,6 +1,6 @@
 @if($errors->any())
 <div class="alert alert-danger">
-    <h3>Error Occured!</h3>
+    <h3>{{ __('app.error_occurred') }}</h3>
     <ul>
         @foreach($errors->all() as $error)
         <li>{{ $error }}</li>
@@ -12,7 +12,7 @@
 {{-- start form --}}
 <div class="form-group">
     <x-form.input 
-        label="الاسم بالعربية" 
+        label="{{ __('app.name_ar') }}" 
         class="form-control-lg" 
         name="name_ar" 
         :value="old('name_ar', $brand->name_ar ?? '')" 
@@ -21,7 +21,7 @@
 
 <div class="form-group">
     <x-form.input 
-        label="NAME_EN" 
+        label="{{ __('app.name_en') }}" 
         class="form-control-lg" 
         name="name_en" 
         :value="old('name_en', $brand->name_en ?? '')" 
@@ -39,7 +39,7 @@
 {{-- image (اختياري) --}}
 {{-- 
 <div class="form-group">
-    <x-form.label id="image">Image</x-form.label>
+    <x-form.label id="image">{{ __('app.image') }}</x-form.label>
     <x-form.input type="file" name="image" accept="image/*" />
 
     @if(!empty($brand->image))

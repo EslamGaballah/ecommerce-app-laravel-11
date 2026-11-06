@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Comment\StoreCommentRequest;
 use App\Http\Requests\Comment\UpdateCommentRequest;
 use App\Models\Comment;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 
@@ -30,8 +31,11 @@ class CommentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreCommentRequest $request)
+        public function store(StoreCommentRequest $request)
     {
+        abort_unless(Setting::get('blog_comments_enabled'), 403);
+
+
         $data = $request->validated();
 
         $data['user_id'] = auth()->id();
@@ -79,7 +83,7 @@ class CommentController extends Controller
         ]);
 
         return response()->json([
-        'message' => 'Comment updated successfully',
+        'message' => __('app.updated_successfully'),
         'body' => $comment->body,
         'id' => $comment->id
         ]);
@@ -95,7 +99,7 @@ class CommentController extends Controller
         $comment->delete();
 
         return response()->json([
-            'message' => 'Deleted',
+            'message' => __('app.deleted_successfully'),
             'id' => $comment->id,
         ]);
     }

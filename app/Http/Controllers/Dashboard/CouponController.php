@@ -40,7 +40,7 @@ class CouponController extends Controller
         Coupon::create($this->validated($request));
 
         return redirect()->route('dashboard.coupons.index')
-            ->with('success', 'تم إضافة الكوبون بنجاح');
+            ->with('success', __('app.created_successfully'));
     }
 
     /**
@@ -59,7 +59,7 @@ class CouponController extends Controller
         $coupon->update($this->validated($request, $coupon));
 
         return redirect()->route('dashboard.coupons.index')
-            ->with('success', 'تم تحديث الكوبون بنجاح');
+            ->with('success', __('app.updated_successfully'));
     }
 
     /**
@@ -70,7 +70,7 @@ class CouponController extends Controller
         $coupon->delete();
 
         return redirect()->route('dashboard.coupons.index')
-            ->with('success', 'تم حذف الكوبون بنجاح');
+            ->with('success', __('app.deleted_successfully'));
     }
 
     private function validated(Request $request, ?Coupon $coupon = null): array

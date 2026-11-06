@@ -15,7 +15,7 @@
     @method('put')
     
     @include('dashboard.attributes._form', [
-        'button_label' => 'Update'    
+        'button_label' => __('app.update')    
     ])
 </form>
 

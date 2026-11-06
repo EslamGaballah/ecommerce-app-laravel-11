@@ -1,0 +1,2 @@
+<path d="M210 110 125 165 75 275l85 40 28-42v227h224V273l28 42 85-40-50-110-85-55q-90 62-180 0z" fill="{main}" stroke="{dark}" stroke-width="6" stroke-linejoin="round"/>
+<path d="M210 110q90 62 180 0" fill="none" stroke="{dark}" stroke-width="14"/>

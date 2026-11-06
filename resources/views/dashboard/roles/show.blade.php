@@ -1,25 +1,25 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Roles')
+@section('title', __('app.roles'))
 
 @section('breadcrumb')
     @parent
-    <li class="breadcrumb-item active">Roles</li>
+    <li class="breadcrumb-item active">{{ __('app.roles') }}</li>
 @endsection
 
 @section('content')
 <div class="container">
     <div class="card mb-4">
         <div class="card-header bg-dark text-white">
-            <h5 class="mb-0">{{ __('Role Details') }}: {{ $role->name }}</h5>
+            <h5 class="mb-0">{{ __('app.role_details') }}: {{ $role->name }}</h5>
         </div>
         <div class="card-body">
-            <p><strong>{{ __('Role Name') }}:</strong> {{ $role->name }}</p>
-            <p><strong>{{ __('Created At') }}:</strong> {{ $role->created_at->format('Y-m-d') }}</p>
+            <p><strong>{{ __('app.role_name') }}:</strong> {{ $role->name }}</p>
+            <p><strong>{{ __('app.created_at') }}:</strong> {{ $role->created_at->format('Y-m-d') }}</p>
         </div>
     </div>
 
-    <h5 class="mb-3 text-secondary">{{ __('Assigned Permissions') }}</h5>
+    <h5 class="mb-3 text-secondary">{{ __('app.assigned_permissions') }}</h5>
 
     <div class="row">
         @foreach ($groupedPermissions as $groupName => $groupItems)
@@ -51,8 +51,8 @@
     </div>
 
     <div class="mt-3">
-        <a href="{{ route('dashboard.roles.edit', $role->id) }}" class="btn btn-primary">{{ __('Edit Role') }}</a>
-        <a href="{{ route('dashboard.roles.index') }}" class="btn btn-secondary">{{ __('Back to List') }}</a>
+        <a href="{{ route('dashboard.roles.edit', $role->id) }}" class="btn btn-primary">{{ __('app.edit_role') }}</a>
+        <a href="{{ route('dashboard.roles.index') }}" class="btn btn-secondary">{{ __('app.back') }}</a>
     </div>
 </div>
 

@@ -3,6 +3,8 @@
 namespace App\Services\Order;
 
 use App\Enums\OrderStatus;
+use App\Enums\PaymentMethod;
+use App\Enums\PaymentStatus;
 use App\Exceptions\CheckoutException;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -12,13 +14,16 @@ use Illuminate\Support\Facades\Auth;
 
 class OrderService
 {
-    public function createOrder($totals, $shipping, $tax, $coupon = null)
+    public function createOrder($totals, $shipping, $tax, PaymentMethod $paymentMethod, $coupon = null)
     {
         return Order::create([
             'user_id' => Auth::id(),
             'status' => OrderStatus::PENDING,
+            'payment_method' => $paymentMethod,
+            'payment_status' => PaymentStatus::PENDING,
             'coupon_id' => $coupon?->id,
             'discount' => $totals['discount'],
+            'bundle_discount' => $totals['bundle_discount'] ?? 0,
             'shipping' => $shipping,
             'tax' => $tax,
             'total' => $totals['total'],

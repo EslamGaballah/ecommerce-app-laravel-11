@@ -1,4 +1,4 @@
-<x-front-layout title="Checkout">
+<x-front-layout :title="__('app.checkout')">
 
     @if ($errors->any())
     <div class="alert alert-danger">
@@ -8,6 +8,10 @@
             @endforeach
         </ul>
     </div>
+@endif
+
+@if ((float) Setting::get('free_shipping_min') > 0)
+    <div class="alert alert-info">{{ __('app.free_shipping_over', ['amount' => Currency::format(Setting::get('free_shipping_min'))]) }}</div>
 @endif
 
 @if(session('error'))
@@ -68,7 +72,7 @@
                                                     <div class="single-form form-default">
                                                         <label>{{ __('app.email_address') }}</label>
                                                         <div class="form-input form">
-                                                            <x-form.input name="email" placeholder="{{ __('app.checkout') }} " />
+                                                            <x-form.input name="email" placeholder="{{ __('app.email_address') }}" />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -97,8 +101,7 @@
                                                                 <option
                                                                     value="{{ $gov->id }}"
                                                                     data-price="{{ $gov->shipping_price }}">
-                                                                    {{ $gov->name }} - شحن {{ $gov->shipping_price }} جنيه
-                                                                    ({{ $gov->delivery_days }} أيام)
+                                                                    {{ __('app.governorate_option', ['name' => $gov->name, 'price' => Currency::format($gov->shipping_price), 'days' => $gov->delivery_days]) }}
                                                                 </option>
                                                             @endforeach
                                                         </select>
@@ -136,7 +139,7 @@
                                 <div class="single-form form-default">
 
                                     <div class="form-input form">
-                                        <input type="text" id="coupon_code" placeholder="Enter Coupon Code">
+                                        <input type="text" id="coupon_code" placeholder="{{ __('app.enter_coupon_code') }}">
                                     </div>
 
                                     <div class="button">
@@ -162,8 +165,15 @@
                                             </p>
                                         </div>
 
+                                        @if (($totals['bundle_discount'] ?? 0) > 0)
+                                            <div class="total-price">
+                                                <p class="value">{{ __('app.bundle_discount') }}:</p>
+                                                <p class="price">- {{ Currency::format($totals['bundle_discount']) }}</p>
+                                            </div>
+                                        @endif
+
                                         <div class="total-price discount">
-                                            <p class="value">{{__('app.discount')}}:</p>
+                                            <p class="value">{{ ($totals['bundle_discount'] ?? 0) > 0 ? __('app.total_discount') : __('app.discount') }}:</p>
                                             <p class="price" id="discount">
                                                 {{ Currency::format($totals['discount']) }}
                                             </p>
@@ -194,8 +204,33 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="mb-3">
+                                    <h6 class="mb-2">{{ __('app.payment_method') }}</h6>
+                                    @php
+                                        // A method chosen earlier may no longer apply to this cart.
+                                        $chosenMethod = collect($paymentMethods)->first(fn ($method) => $method->value === old('payment_method')) ?? ($paymentMethods[0] ?? null);
+                                    @endphp
+                                    @foreach ($paymentMethods as $method)
+                                        <div class="form-check">
+                                            <input type="radio" class="form-check-input" name="payment_method" id="payment-{{ $method->value }}" value="{{ $method->value }}" required
+                                                @checked($chosenMethod === $method)>
+                                            <label class="form-check-label" for="payment-{{ $method->value }}">{{ $method->label() }}</label>
+                                        </div>
+                                    @endforeach
+                                    @if ($cashBlockedReason)
+                                        <div class="alert alert-info small mt-2 mb-0">
+                                            {{ $cashBlockedReason }}
+                                            @if (empty($paymentMethods))
+                                                <a href="{{ route('contact') }}">{{ __('app.cod_no_method_contact') }}</a>
+                                            @endif
+                                        </div>
+                                    @endif
+                                    @error('payment_method')
+                                        <div class="text-danger small">{{ $message }}</div>
+                                    @enderror
+                                </div>
                                 <div>
-                                    <button type="submit" class="btn btn-primary">{{__('app.checkout')}}</button>
+                                    <button type="submit" class="btn btn-primary" @disabled(empty($paymentMethods))>{{__('app.checkout')}}</button>
                                 </div>
 
 
@@ -257,7 +292,7 @@
                 // نجاح العملية
                 const msgElement = document.getElementById('coupon-message');
                 if (msgElement && code) {
-                    msgElement.innerText = "Coupon applied successfully!";
+                    msgElement.innerText = @js(__('app.coupon_applied'));
                     msgElement.style.color = 'green';
                 }
                 // تحديث الأرقام
@@ -270,7 +305,7 @@
             // إنهاء حالة التحميل
             if (triggerBtn) {
                 triggerBtn.disabled = false;
-                triggerBtn.innerText = 'Apply Coupon';
+                triggerBtn.innerText = @js(__('app.apply_coupon'));
             }
         }
     }
@@ -281,7 +316,7 @@
         let governorate = document.getElementById('governorate_id').value;
 
         if (!code) {
-            document.getElementById('coupon-message').innerText = "Please enter coupon code";
+            document.getElementById('coupon-message').innerText = @js(__('app.enter_coupon_code'));
             document.getElementById('coupon-message').style.color = 'orange';
             return;
         }

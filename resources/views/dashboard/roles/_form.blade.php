@@ -24,7 +24,7 @@
                             <input class="form-check-input select-all-group" type="checkbox" 
                                    id="select-all-{{ $groupName }}" {{ $allChecked ? 'checked' : '' }}>
                             <label class="form-check-label text-white small" for="select-all-{{ $groupName }}">
-                                {{ __('Select All') }}
+                                {{ __('app.select_all') }}
                             </label>
                         </div>
                     </div>
@@ -62,7 +62,7 @@
 </fieldset>
 
 <div class="form-group">
-    <button type="submit" class="btn btn-primary">{{ $button_label ?? 'Save' }}</button>
+    <button type="submit" class="btn btn-primary">{{ $button_label ?? __('app.save') }}</button>
 </div>
 
 <script>

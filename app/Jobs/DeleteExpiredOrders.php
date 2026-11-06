@@ -13,12 +13,13 @@ class DeleteExpiredOrders implements ShouldQueue
     use Queueable;
 
     /**
-     * Delete pending orders older than 30 days and return their items to stock.
+     * Delete unpaid pending orders older than 30 days and return their items to stock.
      */
     public function handle(OrderService $orderService): void
     {
         Order::whereDate('created_at', '<', now()->subDays(30))
             ->where('status', 'pending')
+            ->where('payment_status', '!=', 'paid')
             ->chunkById(100, function ($orders) use ($orderService) {
                 foreach ($orders as $order) {
                     DB::transaction(function () use ($order, $orderService) {

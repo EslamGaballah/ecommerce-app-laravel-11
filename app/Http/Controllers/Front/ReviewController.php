@@ -5,12 +5,16 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Review;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 
 class ReviewController extends Controller
 {
-    public function store(Request $request, Product $product) 
+        public function store(Request $request, Product $product)
     {
+        abort_unless(Setting::get('product_reviews_enabled') && Setting::get('product_ratings_visible'), 403);
+
+
         $request->validate([
             'product_id' => 'required|exists:products,id',
             'rating' => 'required|integer|min:1|max:5',
@@ -35,6 +39,6 @@ class ReviewController extends Controller
 
         $product->refresh();
 
-        return back()->with('success', 'تم إضافة التقييم بنجاح ⭐');
+        return back()->with('success', __('app.review_added'));
     }
 }

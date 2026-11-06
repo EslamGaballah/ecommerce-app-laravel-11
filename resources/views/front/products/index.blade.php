@@ -50,7 +50,7 @@
                                             name="brand[]" 
                                             value="{{ $brand->id }}" 
                                             id="brand-{{ $brand->id }}"
-                                            @checked(in_array($brand->id, request('brand', [])))>
+                                            @checked(in_array($brand->id, (array) request('brand', [])))>
                                         <label class="form-check-label" for="brand-{{ $brand->id }}">{{ $brand->name }}
                                             <span>({{ $brand->products_count }})</span>
                                         </label>
@@ -69,7 +69,7 @@
                                             name="category[]" 
                                             value="{{ $category->id }}" 
                                             id="cat-{{ $category->id }}"
-                                            @checked(in_array($category->id, request('category', [])))
+                                            @checked(in_array($category->id, (array) request('category', [])))
                                             >
                                         <label class="form-check-label" for="cat-{{ $category->id }}">{{ $category->name }}
                                             <span>({{ $category->products_count }})</span>
@@ -81,13 +81,13 @@
                             </div>
                             <!-- Start Single Widget -->
                             <div class="single-widget condition">
-                                <h3>Filter by Price</h3>
+                                <h3>{{ __('app.filter_by_price') }}</h3>
                                 <div class="form-check">
                                     <input class="form-control filter-input"
                                          type="number"
                                         name= "min_price" 
                                         value="{{ request('min_price') }}" 
-                                        placeholder="أقل سعر"
+                                        placeholder="{{ __('app.min_price') }}"
                                         >
                                  
                                 </div>
@@ -96,7 +96,7 @@
                                         type="number"
                                         name= "max_price" 
                                         value="{{ request('max_price') }}" 
-                                        placeholder="اعلى سعر"
+                                        placeholder="{{ __('app.max_price') }}"
                                         >
                                 </div>
                                 <!-- End Single Widget -->
@@ -115,37 +115,39 @@
                                     <div class="product-sorting">
 
                                        <form method="GET" id="sortingForm">
-                                            <label for="sorting">Sort by:</label>
+                                            <label for="sorting">{{ __('app.sort_by') }}:</label>
                                             <select class="form-control filter-input" id="sorting" name="sort_by"
                                                  {{-- onchange="this.form.submit()" --}}
                                                  >
-                                                <option value="">Default</option>
-                                                <option value="low_price" @selected(request('sort_by') == 'low_price')> Lower Price</option>
-                                                <option value="high_price" @selected(request('sort_by') == 'high_price')> higher Price</option>
-                                                <option value="rating" @selected(request('sort_by') == 'rating')>Average Rating</option>
-                                                <option value="newest" @selected(request('sort_by') == 'newest')>Newest</option>
-                                                <option value="oldest" @selected(request('sort_by') == 'oldest')></option>
+                                                <option value="">{{ __('app.default') }}</option>
+                                                <option value="low_price" @selected(request('sort_by') == 'low_price')>{{ __('app.low_price') }}</option>
+                                                <option value="high_price" @selected(request('sort_by') == 'high_price')>{{ __('app.high_price') }}</option>
+@if (Setting::get('product_ratings_visible'))
+                                                <option value="rating" @selected(request('sort_by') == 'rating')>{{ __('app.average_rating') }}</option>
+@endif
+                                                <option value="best_selling" @selected(request('sort_by') == 'best_selling')>{{ __('app.best_sellers') }}</option>
+                                                <option value="most_viewed" @selected(request('sort_by') == 'most_viewed')>{{ __('app.most_viewed') }}</option>
+                                                <option value="newest"  @selected(request('sort_by') == 'newest')>{{ __('app.newest') }}</option>
+                                                <option value="oldest" @selected(request('sort_by') == 'oldest')>{{ __('app.oldest') }}</option>
                                             </select>
-                                            <h3 class="total-show-product">Showing: 
-                                                <span>{{ $products->firstItem() }} to {{ $products->lastItem() }}
-                                                of {{ $products->total() }} items
-                                                </span></h3>
+                                            <label for="per-page">{{ __('app.per_page') }}:</label>
+                                            <select class="form-control filter-input per-page-select" id="per-page" name="per_page">
+                                                @foreach ($perPageOptions as $option)
+                                                    <option value="{{ $option }}" @selected($option === $perPage)>{{ $option }}</option>
+                                                @endforeach
+                                            </select>
+                                            <h3 class="total-show-product">{{ __('app.showing') }}:
+                                                <span id="products-range-text">{{ __('app.showing_range', ['first' => $products->firstItem() ?? 0, 'last' => $products->lastItem() ?? 0, 'total' => $products->total()]) }}</span></h3>
                                         </form>
 
                                        
                                     </div>
                                 </div>
                                 <div class="col-lg-5 col-md-4 col-12">
-                                    <nav>
-                                        <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                                            <button class="nav-link active" id="nav-grid-tab" data-bs-toggle="tab"
-                                                data-bs-target="#nav-grid" type="button" role="tab"
-                                                aria-controls="nav-grid" aria-selected="true"><i
-                                                    class="lni lni-grid-alt"></i></button>
-                                            <button class="nav-link" id="nav-list-tab" data-bs-toggle="tab"
-                                                data-bs-target="#nav-list" type="button" role="tab"
-                                                aria-controls="nav-list" aria-selected="false"><i
-                                                    class="lni lni-list"></i></button>
+                                    <nav aria-label="{{ __('app.view_as') }}">
+                                        <div class="nav nav-tabs" id="nav-tab">
+                                            <button class="nav-link active" type="button" data-view="grid" aria-pressed="true" title="{{ __('app.view_grid') }}" aria-label="{{ __('app.view_grid') }}"><i class="lni lni-grid-alt"></i></button>
+                                            <button class="nav-link" type="button" data-view="list" aria-pressed="false" title="{{ __('app.view_list') }}" aria-label="{{ __('app.view_list') }}"><i class="lni lni-list"></i></button>
                                         </div>
                                     </nav>
                                 </div>
@@ -167,7 +169,7 @@
                                             <!-- End Single Product -->
                                         </div>
                                     @empty
-                                             <p>No Products! </p>
+                                             <p>{{ __('app.no_products') }}</p>
                                     @endforelse --}}
 
                         </div>
@@ -186,46 +188,43 @@
     </a>
 
     
-@push('style')
-<style>
-.pagination {
-    display: flex !important;
-    justify-content: center;
-}
-</style>
-@endpush
-
-
-
 @push('script')
 <script>
 let timer = null;
 let isLoading = false;
 
+// The sidebar and sort forms. The header has its own search box, and its own forms must keep working.
+const FILTERS = '.product-grids';
+
 /* =========================
    BUILD DATA
 ========================= */
 function getFiltersData() {
+    const params = new URLSearchParams(window.location.search);
+
     return {
-        category: $('input[name="category[]"]:checked').map(function () {
+        category: $(FILTERS + ' input[name="category[]"]:checked').map(function () {
             return $(this).val();
         }).get(),
 
-        brand: $('input[name="brand[]"]:checked').map(function () {
+        brand: $(FILTERS + ' input[name="brand[]"]:checked').map(function () {
             return $(this).val();
         }).get(),
 
-        sort_by: $('select[name="sort_by"]').val(),
-        min_price: $('input[name="min_price"]').val(),
-        max_price: $('input[name="max_price"]').val(),
-        search: $('input[name="search"]').val(),
+        sort_by: $(FILTERS + ' select[name="sort_by"]').val(),
+        per_page: $(FILTERS + ' select[name="per_page"]').val(),
+        min_price: $(FILTERS + ' input[name="min_price"]').val(),
+        max_price: $(FILTERS + ' input[name="max_price"]').val(),
+        search: $(FILTERS + ' input[name="search"]').val(),
+        // Arrived by a link with no control on this page, such as Our Picks.
+        featured: params.get('featured') || '',
     };
 }
 
 /* =========================
    UPDATE URL
 ========================= */
-function updateUrl(data) {
+function updateUrl(data, page) {
     const url = new URL("{{ route('products.index') }}");
 
     Object.keys(data).forEach(key => {
@@ -238,35 +237,52 @@ function updateUrl(data) {
         }
     });
 
+    if (page && page !== '1') {
+        url.searchParams.set('page', page);
+    }
+
     window.history.pushState({}, '', url.toString());
 }
 
 /* =========================
    RESTORE INPUTS FROM URL
 ========================= */
+// Links use category=1, the checkboxes category[]=1, and the home page brand[0]=1.
+function valuesFromUrl(params, name) {
+    return [...params.entries()]
+        .filter(([key]) => key === name || key === name + '[]' || key.startsWith(name + '['))
+        .map(([, value]) => value);
+}
+
 function restoreInputsFromUrl() {
     const params = new URLSearchParams(window.location.search);
+    const categories = valuesFromUrl(params, 'category');
+    const brands = valuesFromUrl(params, 'brand');
 
     // checkboxes
-    $('input[name="category[]"]').each(function () {
-        $(this).prop('checked', params.getAll('category[]').includes($(this).val()));
+    $(FILTERS + ' input[name="category[]"]').each(function () {
+        $(this).prop('checked', categories.includes($(this).val()));
     });
 
-    $('input[name="brand[]"]').each(function () {
-        $(this).prop('checked', params.getAll('brand[]').includes($(this).val()));
+    $(FILTERS + ' input[name="brand[]"]').each(function () {
+        $(this).prop('checked', brands.includes($(this).val()));
     });
 
     // inputs
-    $('input[name="min_price"]').val(params.get('min_price') || '');
-    $('input[name="max_price"]').val(params.get('max_price') || '');
-    $('input[name="search"]').val(params.get('search') || '');
-    $('select[name="sort_by"]').val(params.get('sort_by') || '');
+    $(FILTERS + ' input[name="min_price"]').val(params.get('min_price') || '');
+    $(FILTERS + ' input[name="max_price"]').val(params.get('max_price') || '');
+    $(FILTERS + ' input[name="search"]').val(params.get('search') || '');
+    $(FILTERS + ' select[name="sort_by"]').val(params.get('sort_by') || '');
+
+    if (params.get('per_page')) {
+        $(FILTERS + ' select[name="per_page"]').val(params.get('per_page'));
+    }
 }
 
 /* =========================
    FETCH PRODUCTS
 ========================= */
-function fetchProducts(url = null) {
+function fetchProducts(url = null, remember = true) {
 
     if (isLoading) return;
 
@@ -286,8 +302,12 @@ function fetchProducts(url = null) {
         success: function (response) {
             $('#products-container').html(response);
             $('#products-container').css('opacity', '1');
+            $('#products-range-text').text($('#products-range').text());
 
-            updateUrl(data);
+            // Going back or forward is already in the browser's history.
+            if (remember) {
+                updateUrl(data, url ? new URL(url, window.location.href).searchParams.get('page') : null);
+            }
 
             if (url) {
                 $('html, body').animate({
@@ -303,22 +323,55 @@ function fetchProducts(url = null) {
 }
 
 /* =========================
+   GRID OR LIST
+========================= */
+function showView(view) {
+    const isList = view === 'list';
+
+    $('#products-container').toggleClass('view-list', isList);
+
+    $('[data-view]').each(function () {
+        const active = $(this).data('view') === view;
+
+        $(this).toggleClass('active', active).attr('aria-pressed', active ? 'true' : 'false');
+    });
+}
+
+function savedView() {
+    try {
+        return localStorage.getItem('products-view') || 'grid';
+    } catch (error) {
+        return 'grid';
+    }
+}
+
+$(document).on('click', '[data-view]', function () {
+    const view = $(this).data('view');
+
+    showView(view);
+
+    try {
+        localStorage.setItem('products-view', view);
+    } catch (error) {}
+});
+
+/* =========================
    EVENTS
 ========================= */
 
 // change filters
-$(document).on('change', '.filter-input', function () {
+$(document).on('change', FILTERS + ' .filter-input', function () {
     fetchProducts();
 });
 
 // search (debounce)
-$(document).on('input', 'input[name="search"]', function () {
+$(document).on('input', FILTERS + ' input[name="search"]', function () {
     clearTimeout(timer);
     timer = setTimeout(fetchProducts, 500);
 });
 
 // pagination
-$(document).on('click', '.pagination a', function (e) {
+$(document).on('click', '#products-container .pagination a', function (e) {
     e.preventDefault();
 
     let url = $(this).attr('href');
@@ -328,8 +381,8 @@ $(document).on('click', '.pagination a', function (e) {
     }
 });
 
-// prevent form submit
-$(document).on('submit', 'form', function (e) {
+// The filters update the list in place.
+$(document).on('submit', FILTERS + ' form', function (e) {
     e.preventDefault();
 });
 
@@ -338,7 +391,7 @@ $(document).on('submit', 'form', function (e) {
 ========================= */
 window.addEventListener('popstate', function () {
     restoreInputsFromUrl();
-    fetchProducts();
+    fetchProducts(window.location.href, false);
 });
 
 /* =========================
@@ -346,6 +399,7 @@ window.addEventListener('popstate', function () {
 ========================= */
 $(document).ready(function () {
     restoreInputsFromUrl();
+    showView(savedView());
 });
 </script>
 @endpush

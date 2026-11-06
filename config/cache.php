@@ -105,4 +105,16 @@ return [
 
     'prefix' => env('CACHE_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_cache_'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Serializable Classes
+    |--------------------------------------------------------------------------
+    |
+    | Which PHP classes may be restored from the cache. Keeping this false means
+    | the cache holds plain values only, which blocks deserialization attacks.
+    |
+    */
+
+    'serializable_classes' => false,
+
 ];

@@ -1,7 +1,7 @@
 
 @if($errors->any())
 <div class="alert alert-danger">
-    <h3>Error Occured!</h3>
+    <h3>{{ __('app.error_occurred') }}</h3>
     <ul>
         @foreach($errors->all() as $error)
         <li>{{ $error }}</li>
@@ -63,7 +63,7 @@
                 <div class="mb-2">
                     <img src="{{ asset('storage/' . $image->image) }}" height="60">
 
-                    <label>Alt</label>
+                    <label>{{ __('app.alt_text') }}</label>
                     <x-form.input
                         name="existing_image_alt[{{ $image->id }}]"
                         :value="old('existing_image_alt.' . $image->id, $image->alt)"
@@ -96,7 +96,7 @@
                             type="text"
                             name="image_alt[]"
                             class="form-control"
-                            placeholder="Alt text"
+                            placeholder="{{ __('app.alt_text') }}"
                         >
                     </div>
                 `;

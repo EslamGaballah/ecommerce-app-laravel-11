@@ -28,10 +28,18 @@ class CheckoutController extends Controller
                 'total' => $data['cartTotal'],
                 'totals' => $data['totals'],
                 'governorates' => Governorate::active()->get(),
+                ...$this->paymentOptionsForView(),
             ]);
         } catch (CheckoutException $e) {
             return redirect()->route('home')->with('info', $e->getMessage());
         }
+    }
+
+    private function paymentOptionsForView(): array
+    {
+        $options = $this->checkout->paymentOptions();
+
+        return ['paymentMethods' => $options['methods'], 'cashBlockedReason' => $options['cashBlockedReason']];
     }
 
     public function store(StoreOrderRequest $request)
@@ -39,9 +47,7 @@ class CheckoutController extends Controller
         try {
             $order = $this->checkout->checkout($request->validated());
 
-            return redirect()
-                ->route('front.orders.success', $order->id)
-                ->with('success', 'order created successfully');
+            return redirect()->route($order->isPayable() ? 'front.payments.show' : 'front.orders.success', $order);
         } catch (CheckoutException $e) {
             return back()->withInput()->with('error', $e->getMessage());
         } catch (\Throwable $e) {

@@ -36,13 +36,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Only the storefront header needs the menu; once() runs the query a single time per request.
+        // Only the storefront header needs the menu.
         View::composer(['layouts.header', 'partials.category-menu'], function ($view) {
-            $view->with('categories', once(fn () => Category::whereNull('parent_id')
-                ->where('status', 'active')
-                ->with('childrenRecursive')
-                ->withCount('products')
-                ->get()));
+            $view->with('categories', Category::menuTree());
         });
 
     }

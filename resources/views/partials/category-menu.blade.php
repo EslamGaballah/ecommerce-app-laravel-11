@@ -2,10 +2,13 @@
     <span class="cat-button"><i class="lni lni-menu"></i>{{ __('app.categories') }}</span>
     <ul class="sub-category">
         @foreach ($categories as $category )
-            <li><a href="{{ route('dashboard.categories.show', $category->id) }}">
+            <li><a href="{{ route('products.index', ['category' => $category->id]) }}">
                 {{ $category->name }}
-                <i class="lni lni-chevron-right"></i></a>
-                
+                @if ($category->childrenRecursive->isNotEmpty())
+                    <i class="lni lni-chevron-right"></i>
+                @endif
+                </a>
+
                 @if ($category->childrenRecursive->isNotEmpty())
                 {{-- @if ($category->childern->count()) --}}
                      @include('partials.category-tree', [

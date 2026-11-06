@@ -21,13 +21,21 @@ class ProductService
 
     public function getAll (ProductFilter $filters)
     {
-       $key = 'products_' . md5(json_encode(request()->query()));  // mdf يستخدم فقط عند وجود بيانات معقدة (array / query / filters)
+        return $this->productRepo->getAll($filters);
+    }
 
-    //    $key = 'products_' . json_encode($filters);
+        /** Two products may share a name, but a slug is their address. */
+    private function uniqueSlug(string $name, ?int $ignoreId = null): string
+    {
+        $base = str()->slug($name) ?: 'product';
+        $slug = $base;
+        $suffix = 2;
 
-        return cache()->remember($key, 60, function () use ($filters) {
-            return $this->productRepo->getAll($filters);
-        });
+        while (Product::withTrashed()->where('slug', $slug)->when($ignoreId, fn ($query) => $query->whereKeyNot($ignoreId))->exists()) {
+            $slug = $base.'-'.$suffix++;
+        }
+
+        return $slug;
     }
 
     public function create($request)
@@ -37,7 +45,7 @@ class ProductService
         try {
             $data = $request->validated();
             $data['user_id'] = auth()->id();
-            $data['slug'] = str()->slug($request->name_en);
+            $data['slug'] = $this->uniqueSlug($request->name_en);
 
             $product = $this->productRepo->create($data);
 
@@ -73,7 +81,9 @@ class ProductService
         try {
             $data = $request->validated();
             $data['user_id'] = auth()->id();
-            $data['slug'] = str()->slug($request->name_en);
+            if ($request->name_en !== $product->name_en) {
+                $data['slug'] = $this->uniqueSlug($request->name_en, $product->id);
+            }
 
             $product->update($data);
 

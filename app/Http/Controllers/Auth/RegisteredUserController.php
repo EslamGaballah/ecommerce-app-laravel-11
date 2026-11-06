@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Interfaces\CartRepositoryInterface;
 use App\Models\Role;
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -20,8 +21,11 @@ class RegisteredUserController extends Controller
     /**
      * Display the registration view.
      */
-    public function create(): View
+        public function create(): View
     {
+        abort_unless(Setting::get('registration_enabled'), 404);
+
+
         return view('auth.register');
     }
 
@@ -30,8 +34,11 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): RedirectResponse
+        public function store(Request $request): RedirectResponse
     {
+        abort_unless(Setting::get('registration_enabled'), 404);
+
+
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
